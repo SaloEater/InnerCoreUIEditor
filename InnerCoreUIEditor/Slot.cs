@@ -15,6 +15,7 @@ namespace InnerCoreUIEditor
     public partial class Slot : InnerControl
     {
         private bool Visual { get; set; }
+        private bool TransparentBg { get; set; }
         private Image ActiveImage { get; set; }
         public string Clicker { get; set; }
         public string ImageName { get; set; }
@@ -26,9 +27,8 @@ namespace InnerCoreUIEditor
             ActiveImage = ResizeImage(Resources._default_slot_light, new Size(Size.Width, Size.Height));
             pictureBoxSlot.Image = ActiveImage;
             pictureBoxSlot.Click += PictureBoxSlot_Click;
-
             ImageName = "_default_slot_light.png";
-            Visual = false;
+            Visual = false;            
         }
 
         private void PictureBoxSlot_Click(object sender, EventArgs e)
@@ -61,13 +61,13 @@ namespace InnerCoreUIEditor
 
             Label _size = new Label();
             _size.Location = new Point(0, elementY += 20);
-            _size.Size = new Size(102, 20);
+            _size.Size = new Size(51, 20);
             _size.Text = "Размер";
             propPanel.Controls.Add(_size);
 
             TextBox _sizeValue = new TextBox();
-            _sizeValue.Location = new Point(103, elementY);
-            _sizeValue.Size = new Size(100, 20);
+            _sizeValue.Location = new Point(52, elementY);
+            _sizeValue.Size = new Size(151, 20);
             _sizeValue.Text = Size.Height.ToString();
             _sizeValue.LostFocus += _sizeValue_LostFocus;
             _sizeValue.KeyDown += _sizeValue_KeyDown;
@@ -141,6 +141,19 @@ namespace InnerCoreUIEditor
             _visualCheck.CheckedChanged += (sender, e) => { Visual = ((CheckBox)sender).Checked; };
             propPanel.Controls.Add(_visualCheck);
 
+            Label _transpBg = new Label();
+            _transpBg.Location = new Point(0, elementY += 20);
+            _transpBg.Size = new Size(102, 20);
+            _transpBg.Text = "Прозрачный фон";
+            propPanel.Controls.Add(_transpBg);
+
+            CheckBox _transpBgCheck = new CheckBox();
+            _transpBgCheck.Location = new Point(103, elementY);
+            _transpBgCheck.Size = new Size(101, 20);
+            _transpBgCheck.Checked = Visual;
+            _transpBgCheck.CheckedChanged += (sender, e) => { TransparentBg = ((CheckBox)sender).Checked; };
+            propPanel.Controls.Add(_transpBgCheck);
+
             /* Придумать как сделать окно для вставки функции кликера
             Label _clicker = new Label();
             _clicker.Location = new Point(0, elementY += 20);
@@ -155,13 +168,14 @@ namespace InnerCoreUIEditor
             _imagePicPath.GotFocus += new EventHandler(_imagePicPath_GotFocus);
             _imagePicPath.ReadOnly = true;
             propPanel.Controls.Add(_imagePicPath);*/
+            AddRemoveButton(elementY, propPanel);
         }
 
         internal void Apply(string name, int x, int y, int size, bool visual, string imageName, string clicker)
         {
             if(name!="")elementName = name;
             Location = new Point(x, y);
-            ResizeControl(size);
+            Size = new Size(size, size);
             Visual = visual;
             if(ImageName != imageName)
             {
@@ -181,7 +195,15 @@ namespace InnerCoreUIEditor
 
         private Bitmap CreateBitmap(string path)
         {
-            Bitmap bitmap = new Bitmap(path);
+            Bitmap bitmap;
+            try
+            {
+                bitmap = new Bitmap(path);
+            }catch(ArgumentException)
+            {
+                MessageBox.Show("Отсутствует файл " + path + ". Добавьте его и загрузите заново");
+                return Resources._default_slot_light;
+            }
             for (int _x = 0; _x < bitmap.Width; _x++)
             {
                 for (int _y = 0; _y < bitmap.Height; _y++)
@@ -236,9 +258,10 @@ namespace InnerCoreUIEditor
 
             if (textBox.Text == Size.Height.ToString()) return;
 
-            ResizeControl(size);
-            Refresh();
-            Global.panelWorkspace.Refresh();
+            SizeF sizeF = new SizeF((float)size/GetWidth(), (float)size / GetWidth());
+            Point oldLocation = Location;
+            this.Scale(sizeF);
+            Location = oldLocation;
         }
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
@@ -306,5 +329,29 @@ namespace InnerCoreUIEditor
             }
         }
 
+        internal override string MakeOutput()
+        {
+            string element = "\n\t";
+            element += '\"' + elementName + "\": {";
+            element += "type: \"slot\",";
+            element += "x: " + Location.X + ',';
+            element += "y: " + Location.Y + ',';
+            element += "size: " + Width + ',';
+            if(ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
+            if(Visual) element += "visual: true,";
+            if (TransparentBg) element += "isTransparentBackground: true,";
+            element += "}";
+            return element;
+        }
+
+        public override float GetWidth()
+        {
+            return (float)Width;
+        }
+
+        public override float GetHeight()
+        {
+            return (float)Height;
+        }
     }
 }

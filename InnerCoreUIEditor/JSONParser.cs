@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -146,6 +147,19 @@ namespace InnerCoreUIEditor
                 }
             }
             return answer;
+        }
+
+        internal static void Save(string filename)
+        {
+            string elements = "elements: \n{";
+
+            foreach(InnerControl c in Global.panelWorkspace.Controls)
+            {
+                elements += c.MakeOutput();
+            }
+
+            elements += "\n}";
+            File.WriteAllText(filename, elements);
         }
     }
 }

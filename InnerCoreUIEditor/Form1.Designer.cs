@@ -69,7 +69,6 @@
             this.panelProperties.Name = "panelProperties";
             this.panelProperties.Size = new System.Drawing.Size(204, 226);
             this.panelProperties.TabIndex = 0;
-            this.panelProperties.Visible = false;
             // 
             // panelElements
             // 
@@ -84,7 +83,7 @@
             // 
             // slotAdder1
             // 
-            this.slotAdder1.Location = new System.Drawing.Point(68, 6);
+            this.slotAdder1.Location = new System.Drawing.Point(11, 4);
             this.slotAdder1.Name = "slotAdder1";
             this.slotAdder1.Size = new System.Drawing.Size(60, 99);
             this.slotAdder1.TabIndex = 0;
@@ -111,14 +110,14 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(132, 22);
             this.toolStripMenuItem1.Text = "Сохранить";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(132, 22);
             this.toolStripMenuItem2.Text = "Загрузить";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 

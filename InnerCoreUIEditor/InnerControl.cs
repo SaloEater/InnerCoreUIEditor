@@ -18,6 +18,16 @@ namespace InnerCoreUIEditor
         {
             InitializeComponent();
             elementName = this.GetType().ToString() + "_" + Global.counter;
+            Disposed += InnerControl_Disposed;
+        }
+
+        private void InnerControl_Disposed(object sender, EventArgs e)
+        {
+            foreach(Control c in Global.panelProperties.Controls)
+            {
+                c.Dispose();
+            }
+            Global.panelProperties.Controls.Clear();
         }
 
         public virtual void FillPropPanel(Panel propPanel)
@@ -26,13 +36,13 @@ namespace InnerCoreUIEditor
 
             Label _name = new Label();
             _name.Location = new Point(0, elementY += 20);
-            _name.Size = new Size(102, 20);
+            _name.Size = new Size(60, 20);
             _name.Text = "Название";
             propPanel.Controls.Add(_name);
 
             TextBox _nameValue = new TextBox();
-            _nameValue.Location = new Point(103, elementY);
-            _nameValue.Size = new Size(100, 20);
+            _nameValue.Location = new Point(61, elementY);
+            _nameValue.Size = new Size(142, 20);
             _nameValue.Text = elementName;
             _nameValue.LostFocus += _nameValue_LostFocus;
             _nameValue.KeyDown += _nameValue_KeyDown;
@@ -72,15 +82,64 @@ namespace InnerCoreUIEditor
             propPanel.Controls.Clear();
         }
 
-        public virtual void ResizeControl(int size)
+        public virtual void ResizeControl(char longestSide, int distance)
         {
-            if (size + Left < 0 || size + Left > Global.X || size + Top > Global.Y)return;
-            if (Top < 0 && size - Top > Global.Y) return;
-            Size = new Size(size, size);
-            foreach(Control c in Controls)
+            switch (longestSide)
             {
-                c.Size = new Size(size, size);
+                case 'x':
+                    {
+                        if (distance < 0) distance = (int)GetWidth() + distance;
+                        float scale = (float)distance / GetWidth();
+                        Point oldLocation = Location;
+                        this.Scale(new SizeF(scale, scale));
+                        Location = oldLocation;
+                        break;
+                    }
+
+                case 'y':
+                    {
+                        if (distance < 0) distance = (int)GetHeight() + distance;
+                        float scale = (float)distance / GetHeight();
+                        Point oldLocation = Location;
+                        this.Scale(new SizeF(scale, scale));
+                        Location = oldLocation;
+                        break;
+                    }
             }
+        }
+
+        public virtual float GetWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual float GetHeight()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddRemoveButton(int elementY, Panel propPanel)
+        {
+            Button removeButton = new Button();
+            removeButton.Location = new Point(0, elementY+=20);
+            removeButton.Size = new Size(102, 20);
+            removeButton.Text = "Удалить";
+            removeButton.TextAlign = ContentAlignment.MiddleCenter;
+            removeButton.Click += RemoveButton_Click;
+            propPanel.Controls.Add(removeButton);
+        }
+
+        private void RemoveButton_Click(object sender, EventArgs e)
+        {
+            Global.panelWorkspace.Controls.Remove(this);
+            Global.ReloadExporer();
+            this.Dispose();
+        }
+
+        internal virtual string MakeOutput()
+        {
+            MessageBox.Show(this.GetType() + " не содержит выходной функции");
+            return "";
         }
     }
 }
