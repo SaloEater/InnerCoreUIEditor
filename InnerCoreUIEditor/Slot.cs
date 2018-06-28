@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnerCoreUIEditor.Properties;
+using System.IO;
 
 namespace InnerCoreUIEditor
 {
@@ -15,8 +16,8 @@ namespace InnerCoreUIEditor
     {
         private bool Visual { get; set; }
         private Image ActiveImage { get; set; }
-        private string Clicker { get; set; }
-        private string ImageName { get; set; }
+        public string Clicker { get; set; }
+        public string ImageName { get; set; }
 
         public Slot()
         {
@@ -156,6 +157,43 @@ namespace InnerCoreUIEditor
             propPanel.Controls.Add(_imagePicPath);*/
         }
 
+        internal void Apply(string name, int x, int y, int size, bool visual, string imageName, string clicker)
+        {
+            if(name!="")elementName = name;
+            Location = new Point(x, y);
+            ResizeControl(size);
+            Visual = visual;
+            if(ImageName != imageName)
+            {
+                ImageName = imageName;
+                string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
+                ApplyImage(path);                
+            }
+            Clicker = clicker;
+        }
+
+        private void ApplyImage(string path)
+        {
+            Bitmap bitmap = CreateBitmap(path);
+            ActiveImage = ResizeImage(bitmap, new Size(Size.Width, Size.Height));
+            pictureBoxSlot.Image = ActiveImage;
+        }
+
+        private Bitmap CreateBitmap(string path)
+        {
+            Bitmap bitmap = new Bitmap(path);
+            for (int _x = 0; _x < bitmap.Width; _x++)
+            {
+                for (int _y = 0; _y < bitmap.Height; _y++)
+                {
+                    Color pixelColor = bitmap.GetPixel(_x, _y);
+                    Color newColor = Color.FromArgb(pixelColor.R, pixelColor.G, pixelColor.B);
+                    bitmap.SetPixel(_x, _y, newColor);
+                }
+            }
+            return bitmap;
+        }
+
         private void _coordsXValue_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -201,7 +239,6 @@ namespace InnerCoreUIEditor
             ResizeControl(size);
             Refresh();
             Global.panelWorkspace.Refresh();
-            //пуш
         }
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
@@ -222,10 +259,7 @@ namespace InnerCoreUIEditor
             }
 
             ImageName = openFileDialog1.SafeFileName;
-            ActiveImage = ResizeImage(Image.FromFile(openFileDialog1.FileName), new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
-            pictureBoxSlot.Refresh();
-            
+            ApplyImage(openFileDialog1.FileName);
         }
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)

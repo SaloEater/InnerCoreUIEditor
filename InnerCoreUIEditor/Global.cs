@@ -62,6 +62,7 @@ namespace InnerCoreUIEditor
                 textBox.Size = new Size(panelExplorer.Width, 20);
                 textBox.Text = c.elementName;
                 textBox.Click += TextBox_Click; //Выбор объекта на рабочем столе
+                textBox.ReadOnly = true;
                 _panelExplorer.Controls.Add(textBox);
             }
         }
