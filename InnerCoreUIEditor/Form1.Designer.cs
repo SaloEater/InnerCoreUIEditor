@@ -28,18 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelWorkspace = new System.Windows.Forms.Panel();
             this.panelExplorer = new System.Windows.Forms.Panel();
             this.panelProperties = new System.Windows.Forms.Panel();
             this.panelElements = new System.Windows.Forms.Panel();
-            this.slotAdder1 = new InnerCoreUIEditor.SlotAdder();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.сохранитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.invSlotAdder1 = new InnerCoreUIEditor.InvSlotAdder();
+            this.slotAdder1 = new InnerCoreUIEditor.SlotAdder();
+            this.buttonAdder1 = new InnerCoreUIEditor.ButtonAdder();
             this.panelElements.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -76,19 +79,13 @@
             this.panelElements.AutoScroll = true;
             this.panelElements.BackColor = System.Drawing.SystemColors.ControlDark;
             this.panelElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelElements.Controls.Add(this.buttonAdder1);
             this.panelElements.Controls.Add(this.invSlotAdder1);
             this.panelElements.Controls.Add(this.slotAdder1);
             this.panelElements.Location = new System.Drawing.Point(0, 34);
             this.panelElements.Name = "panelElements";
             this.panelElements.Size = new System.Drawing.Size(850, 108);
             this.panelElements.TabIndex = 2;
-            // 
-            // slotAdder1
-            // 
-            this.slotAdder1.Location = new System.Drawing.Point(11, 4);
-            this.slotAdder1.Name = "slotAdder1";
-            this.slotAdder1.Size = new System.Drawing.Size(60, 99);
-            this.slotAdder1.TabIndex = 0;
             // 
             // menuStrip1
             // 
@@ -123,12 +120,30 @@
             this.toolStripMenuItem2.Text = "Загрузить";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // invSlotAdder1
             // 
             this.invSlotAdder1.Location = new System.Drawing.Point(78, 4);
             this.invSlotAdder1.Name = "invSlotAdder1";
             this.invSlotAdder1.Size = new System.Drawing.Size(60, 99);
             this.invSlotAdder1.TabIndex = 1;
+            // 
+            // slotAdder1
+            // 
+            this.slotAdder1.Location = new System.Drawing.Point(11, 4);
+            this.slotAdder1.Name = "slotAdder1";
+            this.slotAdder1.Size = new System.Drawing.Size(60, 99);
+            this.slotAdder1.TabIndex = 0;
+            // 
+            // buttonAdder1
+            // 
+            this.buttonAdder1.Location = new System.Drawing.Point(145, 4);
+            this.buttonAdder1.Name = "buttonAdder1";
+            this.buttonAdder1.Size = new System.Drawing.Size(60, 99);
+            this.buttonAdder1.TabIndex = 2;
             // 
             // Form1
             // 
@@ -165,6 +180,8 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private InvSlotAdder invSlotAdder1;
+        private System.Windows.Forms.Timer timer1;
+        private ButtonAdder buttonAdder1;
     }
 }
 

@@ -68,7 +68,16 @@ namespace InnerCoreUIEditor
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
             string gui = File.ReadAllText(openFileDialog1.FileName);
+            foreach(InnerControl c in panelWorkspace.Controls)
+            {
+                c.Remove();
+            }
             JSONParser.Parse(gui);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (Global.activeElement != null) Global.activeElement.Select();
         }
     }
 }

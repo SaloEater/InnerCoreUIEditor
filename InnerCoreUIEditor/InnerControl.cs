@@ -86,12 +86,18 @@ namespace InnerCoreUIEditor
             }
         }
 
+        internal void Remove()
+        {
+            RemoveButton_Click(null, null);
+        }
+
         internal void SelectControl()
         {
             if (Global.activeElement != null) Global.activeElement.DeselectControl();
             Global.activeElement = this;
             propPanelCleared = false;
             elementY = 0;
+            //Сделать фокусировку панели на элементе
             Global.activeElement.FillPropPanel(Global.panelProperties);
             ExplorerPainter.Color(elementName);
         }
@@ -126,24 +132,25 @@ namespace InnerCoreUIEditor
             {
                 case 'x':
                     {
+                        Console.WriteLine('x');
                         if (distance < 0) distance = (int)GetWidth() + distance;
-                        float scale = (float)distance / GetWidth();
-                        Point oldLocation = Location;
-                        this.Scale(new SizeF(scale, scale));
-                        Location = oldLocation;
+                        CountScale('x', distance);
                         break;
                     }
 
                 case 'y':
                     {
+                        Console.WriteLine('y');
                         if (distance < 0) distance = (int)GetHeight() + distance;
-                        float scale = (float)distance / GetHeight();
-                        Point oldLocation = Location;
-                        this.Scale(new SizeF(scale, scale));
-                        Location = oldLocation;
+                        CountScale('y', distance);
                         break;
                     }
             }
+        }
+
+        public virtual void CountScale(char axis, int distance)
+        {
+            throw new NotImplementedException();
         }
 
         public virtual float GetWidth()

@@ -13,6 +13,7 @@ namespace InnerCoreUIEditor
         {
             //int standartPosition = FindEntrance(gui, "standart:");
             //ParseStandart(gui);
+            gui = Clear(gui);
             string elements = GetBigField(gui, "elements");
             ParseElements(elements);
         }
@@ -91,25 +92,64 @@ namespace InnerCoreUIEditor
         private static void VisualizeElement(string name, string element)
         {
             string type = GetClearField(element, "type");
-            switch(type)
+            switch (type)
             {
                 case "slot":
-                    Slot slot = new Slot();
-                    int x;
-                    if (!int.TryParse(GetClearField(element, "x").Split('.')[0], out x)) x = Global.X / 2;
-                    int y;
-                    if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out y)) y = Global.Y / 2;
-                    int size;
-                    if (!int.TryParse(GetClearField(element, "size").Split('.')[0], out size)) size = slot.Width;
-                    bool visual;
-                    if (!bool.TryParse(GetClearField(element, "visual"), out visual)) visual = false;
-                    string ImageName = GetClearField(element, "bitmap");
-                    if (ImageName == "") ImageName = slot.ImageName;
-                    string Clicker = GetField(element, "clicker");
-                    slot.Apply(name, x, y, size, visual, ImageName, Clicker);
-                    Global.panelWorkspace.Controls.Add(slot);
-                    break;
+                    { 
+                        Slot slot = new Slot();
+                        int x;
+                        if (!int.TryParse(GetClearField(element, "x").Split('.')[0], out x)) x = Global.X / 2;
+                        int y;
+                        if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out y)) y = Global.Y / 2;
+                        int size;
+                        if (!int.TryParse(GetClearField(element, "size").Split('.')[0], out size)) size = slot.Width;
+                        bool visual;
+                        if (!bool.TryParse(GetClearField(element, "visual"), out visual)) visual = false;
+                        string ImageName = GetClearField(element, "bitmap");
+                        if (ImageName == "") ImageName = slot.ImageName;
+                        string Clicker = GetField(element, "clicker");
+                        slot.Apply(name, x, y, size, visual, ImageName, Clicker);
+                        Global.panelWorkspace.Controls.Add(slot);
+                        break;
+                    }
 
+                case "invSlot":
+                    {
+                        InvSlot slot = new InvSlot();
+                        int x;
+                        if (!int.TryParse(GetClearField(element, "x").Split('.')[0], out x)) x = Global.X / 2;
+                        int y;
+                        if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out y)) y = Global.Y / 2;
+                        int size;
+                        if (!int.TryParse(GetClearField(element, "size").Split('.')[0], out size)) size = slot.Width;
+                        string ImageName = GetClearField(element, "bitmap");
+                        if (ImageName == "") ImageName = slot.ImageName.Split('.')[0];
+                        string Clicker = GetField(element, "clicker");
+                        int index;
+                        if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out index)) index = 0;
+                        slot.Apply(name, x, y, size, ImageName,index);
+                        Global.panelWorkspace.Controls.Add(slot);
+                        break;
+                    }
+
+                case "button":
+                    {
+                        InnerButton slot = new InnerButton();
+                        int x;
+                        if (!int.TryParse(GetClearField(element, "x").Split('.')[0], out x)) x = Global.X / 2;
+                        int y;
+                        if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out y)) y = Global.Y / 2;
+                        float scale;
+                        if (!float.TryParse(GetClearField(element, "size"), out scale)) scale = 1;
+                        string unpressedImageName = GetClearField(element, "bitmap");
+                        if (unpressedImageName == "") unpressedImageName = slot.UnpressedImageName.Split('.')[0];
+                        string pressedImageName = GetClearField(element, "bitmap2");
+                        if (pressedImageName == "") pressedImageName = unpressedImageName;
+                        string Clicker = GetField(element, "clicker");
+                        slot.Apply(name, x, y, scale, pressedImageName, unpressedImageName, Clicker);
+                        Global.panelWorkspace.Controls.Add(slot);
+                        break;
+                    }
                 default:
 
                     break;

@@ -69,6 +69,12 @@
     <Compile Include="InnerControlAdder.Designer.cs">
       <DependentUpon>InnerControlAdder.cs</DependentUpon>
     </Compile>
+    <Compile Include="ButtonAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ButtonAdder.Designer.cs">
+      <DependentUpon>ButtonAdder.cs</DependentUpon>
+    </Compile>
     <Compile Include="JSONParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,6 +83,12 @@
     </Compile>
     <Compile Include="InvSlot.Designer.cs">
       <DependentUpon>InvSlot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InnerButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerButton.Designer.cs">
+      <DependentUpon>InnerButton.cs</DependentUpon>
     </Compile>
     <Compile Include="Slot.cs">
       <SubType>UserControl</SubType>
@@ -102,6 +114,9 @@
     <EmbeddedResource Include="InnerControlAdder.resx">
       <DependentUpon>InnerControlAdder.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ButtonAdder.resx">
+      <DependentUpon>ButtonAdder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -114,6 +129,9 @@
     </Compile>
     <EmbeddedResource Include="InvSlot.resx">
       <DependentUpon>InvSlot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InnerButton.resx">
+      <DependentUpon>InnerButton.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Slot.resx">
       <DependentUpon>Slot.cs</DependentUpon>

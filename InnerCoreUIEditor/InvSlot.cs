@@ -18,6 +18,10 @@ namespace InnerCoreUIEditor
         public Image ActiveImage { get; set; }
         public string ImageName { get; set; }
 
+        private bool sizeTextChanged;
+        private bool XTextChanged;
+        private bool YTextChanged;
+
         public InvSlot()
         {
             InitializeComponent();
@@ -67,6 +71,7 @@ namespace InnerCoreUIEditor
             _sizeValue.Text = Size.Height.ToString();
             _sizeValue.LostFocus += _sizeValue_LostFocus;
             _sizeValue.KeyDown += _sizeValue_KeyDown;
+            _sizeValue.TextChanged += (sender, e) => { sizeTextChanged = true; };
             propPanel.Controls.Add(_sizeValue);
 
             Label _coords = new Label();
@@ -87,6 +92,7 @@ namespace InnerCoreUIEditor
             _coordsXValue.Text = (Location.X - Global.panelWorkspace.AutoScrollPosition.X).ToString();
             _coordsXValue.LostFocus += new EventHandler(_coordsXValue_LostFocus);
             _coordsXValue.KeyDown += _coordsXValue_KeyDown;
+            _coordsXValue.TextChanged += (sender, e) => { XTextChanged = true; };
             propPanel.Controls.Add(_coordsXValue);
 
             Label _coordsY = new Label();
@@ -101,6 +107,7 @@ namespace InnerCoreUIEditor
             _coordsYValue.Text = (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y).ToString();
             _coordsYValue.LostFocus += new EventHandler(_coordsYValue_LostFocus);
             _coordsYValue.KeyDown += _coordsYValue_KeyDown;
+            _coordsYValue.TextChanged += (sender, e) => { YTextChanged = true; };
             propPanel.Controls.Add(_coordsYValue);
 
             Label _image = new Label();
@@ -192,6 +199,30 @@ namespace InnerCoreUIEditor
             return (float)Height;
         }
 
+        public override void CountScale(char axis, int distance)
+        {
+            switch (axis)
+            {
+                case 'x':
+                    {
+                        float scale = (float)distance / GetWidth();
+                        Point oldLocation = Location;
+                        this.Scale(new SizeF(scale, scale));
+                        Location = oldLocation;
+                        break;
+                    }
+
+                case 'y':
+                    {
+                        float scale = (float)distance / GetHeight();
+                        Point oldLocation = Location;
+                        this.Scale(new SizeF(scale, scale));
+                        Location = oldLocation;
+                        break;
+                    }
+            }
+        }
+
         private void PictureBoxSlot_Click(object sender, EventArgs e)
         {
             SelectControl();
@@ -264,6 +295,8 @@ namespace InnerCoreUIEditor
 
         private void _sizeValue_LostFocus(object sender, EventArgs e)
         {
+            if (!sizeTextChanged) return;
+            sizeTextChanged = false;
             TextBox textBox = (TextBox)sender;
             int size;
             if (!int.TryParse(textBox.Text, out size))
@@ -309,6 +342,8 @@ namespace InnerCoreUIEditor
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)
         {
+            if (!XTextChanged) return;
+            XTextChanged = false;
             TextBox textBox = (TextBox)sender;
             int x;
             if (!int.TryParse(textBox.Text, out x))
@@ -316,8 +351,8 @@ namespace InnerCoreUIEditor
                 textBox.Text = Left.ToString();
                 return;
             }
-            x -= Global.panelWorkspace.AutoScrollPosition.X;
-            if (x < 0 || x > Global.X - Size.Width)
+            x += Global.panelWorkspace.AutoScrollPosition.X;
+            if (x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
             {
                 textBox.Text = Left.ToString();
                 return;
@@ -331,6 +366,8 @@ namespace InnerCoreUIEditor
 
         private void _coordsYValue_LostFocus(object sender, EventArgs e)
         {
+            if (!YTextChanged) return;
+            YTextChanged = false;
             TextBox textBox = (TextBox)sender;
             int y;
             if (!int.TryParse(textBox.Text, out y))
@@ -338,8 +375,8 @@ namespace InnerCoreUIEditor
                 textBox.Text = Top.ToString();
                 return;
             }
-            y -= Global.panelWorkspace.AutoScrollPosition.Y;
-            if (y < 0 || y > Global.Y - Size.Width)
+            y += Global.panelWorkspace.AutoScrollPosition.Y;
+            if (y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
             {
                 textBox.Text = Top.ToString();
                 return;
