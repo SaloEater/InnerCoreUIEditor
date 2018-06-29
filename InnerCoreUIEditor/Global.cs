@@ -74,8 +74,7 @@ namespace InnerCoreUIEditor
             {
                 if (c.elementName == textBox.Text)
                 {
-                    Global.activeElement = c;
-                    c.FillPropPanel(panelProperties);
+                    c.SelectControl();
                 }
             }
         }

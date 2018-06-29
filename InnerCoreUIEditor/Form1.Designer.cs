@@ -39,6 +39,7 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.invSlotAdder1 = new InnerCoreUIEditor.InvSlotAdder();
             this.panelElements.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -75,6 +76,7 @@
             this.panelElements.AutoScroll = true;
             this.panelElements.BackColor = System.Drawing.SystemColors.ControlDark;
             this.panelElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelElements.Controls.Add(this.invSlotAdder1);
             this.panelElements.Controls.Add(this.slotAdder1);
             this.panelElements.Location = new System.Drawing.Point(0, 34);
             this.panelElements.Name = "panelElements";
@@ -121,6 +123,13 @@
             this.toolStripMenuItem2.Text = "Загрузить";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
+            // invSlotAdder1
+            // 
+            this.invSlotAdder1.Location = new System.Drawing.Point(78, 4);
+            this.invSlotAdder1.Name = "invSlotAdder1";
+            this.invSlotAdder1.Size = new System.Drawing.Size(60, 99);
+            this.invSlotAdder1.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -155,6 +164,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private InvSlotAdder invSlotAdder1;
     }
 }
 

@@ -31,6 +31,7 @@ namespace InnerCoreUIEditor
             InnerControl innerControl = Global.activeElement;
             if (e.KeyData == Keys.Delete && innerControl != null)
             {
+                innerControl.DeselectControl();
                 panelWorkspace.Controls.Remove(innerControl);
                 innerControl.Dispose();
                 Global.ReloadExporer();
@@ -42,7 +43,7 @@ namespace InnerCoreUIEditor
         {
             if (e.Control == null) return;
             Global.ReloadExporer();
-            ((InnerControl)e.Control).FillPropPanel(panelProperties);
+            ((InnerControl)e.Control).SelectControl();
         }
 
         private void PanelWorkspace_Click(object sender, EventArgs e)
@@ -50,8 +51,7 @@ namespace InnerCoreUIEditor
             InnerControl innerControl = Global.activeElement;
             if (innerControl != null)
             {
-                innerControl.ClearPropPanel(panelProperties);
-                Global.activeElement = null;
+                innerControl.DeselectControl();
             }
         }
 

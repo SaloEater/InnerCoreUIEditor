@@ -12,15 +12,13 @@ using System.IO;
 
 namespace InnerCoreUIEditor
 {
-    public partial class Slot : InnerControl
+    public partial class InvSlot : InnerControl
     {
-        public bool Visual { get; set; }
-        public bool TransparentBg { get; set; }
+        private int index { get; set; }
         public Image ActiveImage { get; set; }
-        public string Clicker { get; set; }
         public string ImageName { get; set; }
 
-        public Slot()
+        public InvSlot()
         {
             InitializeComponent();
             Initialization();
@@ -33,31 +31,30 @@ namespace InnerCoreUIEditor
             pictureBoxSlot.Image = ActiveImage;
             pictureBoxSlot.Click += PictureBoxSlot_Click;
             ImageName = "_default_slot_light.png";
-            Visual = false;
-        }
-
-        private void PictureBoxSlot_Click(object sender, EventArgs e)
-        {
-            SelectControl();
-        }
-
-        private Image ResizeImage(Image image, Size size)
-        {
-            Image newImage = new Bitmap(size.Width, size.Height);
-            using (Graphics gfx = Graphics.FromImage(newImage))
-            {
-                gfx.DrawImage(image, new Rectangle(Point.Empty, size));
-            }            
-            return newImage;
+            index = 0;
         }
 
         public override void FillPropPanel(Panel propPanel)
         {
-            if(!propPanelCleared)
-            {
-                ClearPropPanel(propPanel);
-                FillName(propPanel);
-            }
+            ClearPropPanel(propPanel);
+
+            FillName(propPanel);
+
+            Label _index = new Label();
+            _index.Location = new Point(0, elementY);
+            _index.Size = new Size(51, elementSpacing);
+            _index.Text = "Номер слота";
+            propPanel.Controls.Add(_index);
+
+            TextBox _indexValue = new TextBox();
+            _indexValue.Location = new Point(52, elementY);
+            _indexValue.Size = new Size(151, elementSpacing);
+            _indexValue.Text = index.ToString();
+            _indexValue.LostFocus += _indexValue_LostFocus;
+            _indexValue.KeyDown += _indexValue_KeyDown;
+            propPanel.Controls.Add(_indexValue);
+            elementY += elementSpacing;
+
             Label _size = new Label();
             _size.Location = new Point(0, elementY);
             _size.Size = new Size(51, elementSpacing);
@@ -104,7 +101,7 @@ namespace InnerCoreUIEditor
             _coordsYValue.Text = (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y).ToString();
             _coordsYValue.LostFocus += new EventHandler(_coordsYValue_LostFocus);
             _coordsYValue.KeyDown += _coordsYValue_KeyDown;
-            propPanel.Controls.Add(_coordsYValue);      
+            propPanel.Controls.Add(_coordsYValue);
 
             Label _image = new Label();
             _image.Location = new Point(0, elementY += elementSpacing);
@@ -127,62 +124,87 @@ namespace InnerCoreUIEditor
 
             propPanel.Controls.Add(_imagePicPath);
 
-            Label _visual = new Label();
-            _visual.Location = new Point(0, elementY += elementSpacing);
-            _visual.Size = new Size(102, elementSpacing);
-            _visual.Text = "Визуальный элемент";
-            propPanel.Controls.Add(_visual);
-
-            CheckBox _visualCheck = new CheckBox();
-            _visualCheck.Location = new Point(103, elementY);
-            _visualCheck.Size = new Size(101, elementSpacing);
-            _visualCheck.Checked = Visual;
-            _visualCheck.CheckedChanged += (sender, e) => { Visual = ((CheckBox)sender).Checked; };
-            propPanel.Controls.Add(_visualCheck);
-
-            Label _transpBg = new Label();
-            _transpBg.Location = new Point(0, elementY += elementSpacing);
-            _transpBg.Size = new Size(102, elementSpacing);
-            _transpBg.Text = "Прозрачный фон";
-            propPanel.Controls.Add(_transpBg);
-
-            CheckBox _transpBgCheck = new CheckBox();
-            _transpBgCheck.Location = new Point(103, elementY);
-            _transpBgCheck.Size = new Size(101, elementSpacing);
-            _transpBgCheck.Checked = TransparentBg;
-            _transpBgCheck.CheckedChanged += (sender, e) => { TransparentBg = ((CheckBox)sender).Checked; };
-            propPanel.Controls.Add(_transpBgCheck);
-
-            /* Придумать как сделать окно для вставки функции кликера
-            Label _clicker = new Label();
-            _clicker.Location = new Point(0, elementY += elementSpacing);
-            _clicker.Size = new Size(102, elementSpacing);
-            _clicker.Text = "Кликер";
-            propPanel.Controls.Add(_clicker);
-
-            TextBox _imagePicPath = new TextBox();
-            _imagePicPath.Location = new Point(103, elementY += elementSpacing);
-            _imagePicPath.Size = new Size(102, elementSpacing);
-            _imagePicPath.Text = ImageName;
-            _imagePicPath.GotFocus += new EventHandler(_imagePicPath_GotFocus);
-            _imagePicPath.ReadOnly = true;
-            propPanel.Controls.Add(_imagePicPath);*/
             base.FillPropPanel(propPanel);
         }
 
-        internal void Apply(string name, int x, int y, int size, bool visual, string imageName, string clicker)
+        private void _indexValue_KeyDown(object sender, KeyEventArgs e)
         {
-            if(name!="")elementName = name;
+            if (e.KeyCode == Keys.Enter)
+            {
+                _indexValue_LostFocus(sender, null);
+            }
+        }
+
+        private void _indexValue_LostFocus(object sender, EventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            int index;
+            if (!int.TryParse(textBox.Text, out index))
+            {
+                textBox.Text = this.index.ToString();
+                return;
+            }
+
+            if (index < 0 || index > 35)
+            {
+                textBox.Text = index.ToString();
+                return;
+            }
+
+            this.index = index;
+        }
+
+        internal void Apply(string name, int x, int y, int size, string imageName, int index)
+        {
+            if (name != "") elementName = name;
             Location = new Point(x, y);
             Size = new Size(size, size);
-            Visual = visual;
-            if(ImageName != imageName)
+            if (ImageName != imageName)
             {
                 ImageName = imageName;
                 string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
-                ApplyImage(path);                
+                ApplyImage(path);
             }
-            Clicker = clicker;
+            if (index > 0 && index < 36) this.index = index;
+        }
+
+        internal override string MakeOutput()
+        {
+            string element = "\n\t";
+            element += '\"' + elementName + "\": {";
+            element += "type: \"invSlot\",";
+            element += "x: " + Location.X + ',';
+            element += "y: " + Location.Y + ',';
+            element += "size: " + Width + ',';
+            element += "index: " + index + ',';
+            if (ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
+            element += "}";
+            return element;
+        }
+
+        public override float GetWidth()
+        {
+            return (float)Width;
+        }
+
+        public override float GetHeight()
+        {
+            return (float)Height;
+        }
+
+        private void PictureBoxSlot_Click(object sender, EventArgs e)
+        {
+            SelectControl();
+        }
+
+        private Image ResizeImage(Image image, Size size)
+        {
+            Image newImage = new Bitmap(size.Width, size.Height);
+            using (Graphics gfx = Graphics.FromImage(newImage))
+            {
+                gfx.DrawImage(image, new Rectangle(Point.Empty, size));
+            }
+            return newImage;
         }
 
         private void ApplyImage(string path)
@@ -198,7 +220,8 @@ namespace InnerCoreUIEditor
             try
             {
                 bitmap = new Bitmap(path);
-            }catch(ArgumentException)
+            }
+            catch (ArgumentException)
             {
                 MessageBox.Show("Отсутствует файл " + path + ". Добавьте его и загрузите заново");
                 return Resources._default_slot_light;
@@ -257,7 +280,7 @@ namespace InnerCoreUIEditor
 
             if (textBox.Text == Size.Height.ToString()) return;
 
-            SizeF sizeF = new SizeF((float)size/GetWidth(), (float)size / GetWidth());
+            SizeF sizeF = new SizeF((float)size / this.GetWidth(), (float)size / GetWidth());
             Point oldLocation = Location;
             this.Scale(sizeF);
             Location = oldLocation;
@@ -266,7 +289,7 @@ namespace InnerCoreUIEditor
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            if(textBox.Controls.Count!=0)textBox.Controls[0].Dispose();
+            if (textBox.Controls.Count != 0) textBox.Controls[0].Dispose();
             textBox.Controls.Clear();
         }
 
@@ -294,7 +317,7 @@ namespace InnerCoreUIEditor
                 return;
             }
             x -= Global.panelWorkspace.AutoScrollPosition.X;
-            if(x < 0 || x > Global.X - Size.Width)
+            if (x < 0 || x > Global.X - Size.Width)
             {
                 textBox.Text = Left.ToString();
                 return;
@@ -316,7 +339,7 @@ namespace InnerCoreUIEditor
                 return;
             }
             y -= Global.panelWorkspace.AutoScrollPosition.Y;
-            if( y < 0 || y > Global.Y - Size.Width)
+            if (y < 0 || y > Global.Y - Size.Width)
             {
                 textBox.Text = Top.ToString();
                 return;
@@ -326,31 +349,6 @@ namespace InnerCoreUIEditor
                 Location = new Point(Location.X, y);
                 Global.panelWorkspace.Refresh();
             }
-        }
-
-        internal override string MakeOutput()
-        {
-            string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"slot\",";
-            element += "x: " + Location.X + ',';
-            element += "y: " + Location.Y + ',';
-            element += "size: " + Width + ',';
-            if(ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
-            if(Visual) element += "visual: true,";
-            if (TransparentBg) element += "isTransparentBackground: true,";
-            element += "}";
-            return element;
-        }
-
-        public override float GetWidth()
-        {
-            return (float)Width;
-        }
-
-        public override float GetHeight()
-        {
-            return (float)Height;
         }
     }
 }

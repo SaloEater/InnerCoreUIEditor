@@ -14,10 +14,16 @@ namespace InnerCoreUIEditor
     {
         public string elementName { get; set; }
 
+        public int elementY, elementSpacing = 20;
+
+        public bool propPanelCleared;
+
         public InnerControl()
         {
             InitializeComponent();
             elementName = this.GetType().ToString() + "_" + Global.counter;
+            elementY = 0;
+            propPanelCleared = false;
             Disposed += InnerControl_Disposed;
         }
 
@@ -30,23 +36,46 @@ namespace InnerCoreUIEditor
             Global.panelProperties.Controls.Clear();
         }
 
+        public void ClearPropPanel(Panel propPanel)
+        {
+            if(!propPanelCleared)
+            {
+                foreach (Control c in propPanel.Controls)
+                {
+                    c.Dispose();
+                }
+                propPanel.Controls.Clear();
+                propPanel.Refresh();
+                propPanelCleared = true;
+            }
+        }
+
         public virtual void FillPropPanel(Panel propPanel)
         {
-            int elementY = -20;
+            if (!propPanelCleared)
+            {
+                ClearPropPanel(propPanel);
+                FillName(propPanel);
+            }
+            AddRemoveButton(propPanel);
+        }
 
+        public void FillName(Panel propPanel)
+        {
             Label _name = new Label();
-            _name.Location = new Point(0, elementY += 20);
-            _name.Size = new Size(60, 20);
+            _name.Location = new Point(0, elementY);
+            _name.Size = new Size(60, elementSpacing);
             _name.Text = "Название";
             propPanel.Controls.Add(_name);
 
             TextBox _nameValue = new TextBox();
             _nameValue.Location = new Point(61, elementY);
-            _nameValue.Size = new Size(142, 20);
+            _nameValue.Size = new Size(142, elementSpacing);
             _nameValue.Text = elementName;
             _nameValue.LostFocus += _nameValue_LostFocus;
             _nameValue.KeyDown += _nameValue_KeyDown;
             propPanel.Controls.Add(_nameValue);
+            elementY += elementSpacing;
         }
 
         private void _nameValue_KeyDown(object sender, KeyEventArgs e)
@@ -55,6 +84,24 @@ namespace InnerCoreUIEditor
             {
                 _nameValue_LostFocus(sender, null);
             }
+        }
+
+        internal void SelectControl()
+        {
+            if (Global.activeElement != null) Global.activeElement.DeselectControl();
+            Global.activeElement = this;
+            propPanelCleared = false;
+            elementY = 0;
+            Global.activeElement.FillPropPanel(Global.panelProperties);
+            ExplorerPainter.Color(elementName);
+        }
+
+        internal void DeselectControl()
+        {
+            Global.activeElement = null;
+            propPanelCleared = false;
+            ClearPropPanel(Global.panelProperties);
+            ExplorerPainter.Uncolor(elementName);
         }
 
         private void _nameValue_LostFocus(object sender, EventArgs e)
@@ -71,15 +118,6 @@ namespace InnerCoreUIEditor
             }
             elementName = newName;
             Global.ReloadExporer();
-        }
-
-        public virtual void ClearPropPanel(Panel propPanel)
-        {
-            foreach(Control c in propPanel.Controls)
-            {
-                c.Dispose();
-            }
-            propPanel.Controls.Clear();
         }
 
         public virtual void ResizeControl(char longestSide, int distance)
@@ -118,11 +156,11 @@ namespace InnerCoreUIEditor
             throw new NotImplementedException();
         }
 
-        public void AddRemoveButton(int elementY, Panel propPanel)
+        public void AddRemoveButton(Panel propPanel)
         {
             Button removeButton = new Button();
-            removeButton.Location = new Point(0, elementY+=20);
-            removeButton.Size = new Size(102, 20);
+            removeButton.Location = new Point(0, elementY+=elementSpacing);
+            removeButton.Size = new Size(102, elementSpacing);
             removeButton.Text = "Удалить";
             removeButton.TextAlign = ContentAlignment.MiddleCenter;
             removeButton.Click += RemoveButton_Click;
