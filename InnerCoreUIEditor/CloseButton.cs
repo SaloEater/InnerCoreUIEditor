@@ -12,7 +12,7 @@ using System.IO;
 
 namespace InnerCoreUIEditor
 {
-    public partial class InnerButton : InnerControl
+    public partial class CloseButton : InnerControl
     {
         public Image UnpressedImage { get; set; }
         public Image PressedImage { get; set; }
@@ -22,6 +22,7 @@ namespace InnerCoreUIEditor
         public float scale { get; set; }
         public Size originSize { get; set; }
         public Point oldLocation { get; set; }
+        private bool global { get; set; }
 
         private int TimerSec;
 
@@ -29,7 +30,7 @@ namespace InnerCoreUIEditor
         private bool XTextChanged;
         private bool YTextChanged;
 
-        public InnerButton()
+        public CloseButton()
         {
             InitializeComponent();
             Initialization();           
@@ -39,12 +40,12 @@ namespace InnerCoreUIEditor
         {
             scale = 1;
             ControlEditor.Init(pictureBox1, this);
-            UnpressedImage = Resources._button_next_48x24;
-            UnpressedImageName = "_button_next_48x24.png";
+            UnpressedImage = Resources.close_button_up;
+            UnpressedImageName = "close_button_up.png";
             ApplyImage(UnpressedImage);
             pictureBox1.Click += button_Click;
-            PressedImage = Resources._button_next_48x24p;
-            PressedImageName = "_button_next_48x24p.png";
+            PressedImage = Resources.close_button_down;
+            PressedImageName = "close_button_down.png";
         }
 
         private void ApplyImage(Image unpressedImage)
@@ -203,6 +204,19 @@ namespace InnerCoreUIEditor
 
             propPanel.Controls.Add(_imagePicPath);
 
+            Label _global = new Label();
+            _global.Location = new Point(0, elementY += elementSpacing);
+            _global.Size = new Size(102, elementSpacing);
+            _global.Text = "Глобальная";
+            propPanel.Controls.Add(_global);
+
+            CheckBox _globalCheck = new CheckBox();
+            _globalCheck.Location = new Point(103, elementY);
+            _globalCheck.Size = new Size(101, elementSpacing);
+            _globalCheck.Checked = global;
+            _globalCheck.CheckedChanged += (sender, e) => { global = ((CheckBox)sender).Checked; };
+            propPanel.Controls.Add(_globalCheck);
+
             /* Придумать как сделать окно для вставки функции кликера
             Label _clicker = new Label();
             _clicker.Location = new Point(0, elementY += elementSpacing);
@@ -235,8 +249,8 @@ namespace InnerCoreUIEditor
             PressedImage = CreateBitmap(path, out bool success);
             if (!success)
             {
-                PressedImage = Resources._button_next_48x24p;
-                PressedImageName = "_button_next_48x24p.png";
+                PressedImage = Resources.close_button_down;
+                PressedImageName = "close_button_down.png";
             }
 
             Clicker = clicker;
@@ -247,8 +261,8 @@ namespace InnerCoreUIEditor
             UnpressedImage = CreateBitmap(path, out bool success);
             if(!success)
             {
-                UnpressedImage = Resources._button_next_48x24;
-                UnpressedImageName = "_button_next_48x24.png";
+                UnpressedImage = Resources.close_button_up;
+                UnpressedImageName = "close_button_up.png";
             }
             ApplyImage(UnpressedImage);
         }
@@ -415,8 +429,9 @@ namespace InnerCoreUIEditor
             element += "x: " + Location.X + ',';
             element += "y: " + Location.Y + ',';
             element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            if(UnpressedImageName.Split('.')[0] != "_button_next_48x24") element += "bitmap: \"" + UnpressedImageName.Split('.')[0] + "\",";
-            if (PressedImageName.Split('.')[0] != "_button_next_48x24p") element += "bitmap2: \"" + PressedImageName.Split('.')[0] + "\",";
+            if(UnpressedImageName.Split('.')[0]!= "close_button_up") element += "bitmap: \"" + UnpressedImageName.Split('.')[0] + "\",";
+            if (PressedImageName.Split('.')[0] != "close_button_down") element += "bitmap2: \"" + PressedImageName.Split('.')[0] + "\",";
+            element += "global: " + global + ',';
             element += "}";
             return element;
         }

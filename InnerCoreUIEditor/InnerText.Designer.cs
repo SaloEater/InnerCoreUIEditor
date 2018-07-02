@@ -1,6 +1,6 @@
 ﻿namespace InnerCoreUIEditor
 {
-    partial class InnerControlAdder
+    partial class InnerText
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -33,20 +33,22 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(0, 101);
+            this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(135, 31);
+            this.richTextBox1.Size = new System.Drawing.Size(60, 60);
             this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "Элемент";
+            this.richTextBox1.Text = "";
             // 
-            // InnerControlAdder
+            // InnerText
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.Controls.Add(this.richTextBox1);
-            this.Name = "InnerControlAdder";
-            this.Size = new System.Drawing.Size(135, 132);
+            this.Name = "InnerText";
+            this.Size = new System.Drawing.Size(63, 63);
             this.ResumeLayout(false);
 
         }

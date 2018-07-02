@@ -150,7 +150,26 @@ namespace InnerCoreUIEditor
                         Global.panelWorkspace.Controls.Add(slot);
                         break;
                     }
+
+                case "text":
+                    {
+                        InnerText text = new InnerText();
+                        int x;
+                        if (!int.TryParse(GetClearField(element, "x").Split('.')[0], out x)) x = Global.X / 2;
+                        int y;
+                        if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out y)) y = Global.Y / 2;
+                        int width;
+                        if (!int.TryParse(GetClearField(element, "width").Split('.')[0], out width)) width = text.Width;
+                        int height;
+                        if (!int.TryParse(GetClearField(element, "height").Split('.')[0], out height)) height = text.Height;
+                        string _text = GetField(element, "text");
+                        text.Apply(name, x, y, width, height, _text);
+                        Global.panelWorkspace.Controls.Add(text);
+                        break;
+                    }
+
                 default:
+
 
                     break;
             }

@@ -48,6 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CloseButtonAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CloseButtonAdder.Designer.cs">
+      <DependentUpon>CloseButtonAdder.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlEditor.cs" />
     <Compile Include="ExplorerPainter.cs" />
     <Compile Include="Form1.cs">
@@ -57,17 +63,17 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Global.cs" />
+    <Compile Include="CloseButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CloseButton.Designer.cs">
+      <DependentUpon>CloseButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="InnerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="InnerControl.Designer.cs">
       <DependentUpon>InnerControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InnerControlAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="InnerControlAdder.Designer.cs">
-      <DependentUpon>InnerControlAdder.cs</DependentUpon>
     </Compile>
     <Compile Include="ButtonAdder.cs">
       <SubType>UserControl</SubType>
@@ -90,6 +96,12 @@
     <Compile Include="InnerButton.Designer.cs">
       <DependentUpon>InnerButton.cs</DependentUpon>
     </Compile>
+    <Compile Include="InnerText.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerText.Designer.cs">
+      <DependentUpon>InnerText.cs</DependentUpon>
+    </Compile>
     <Compile Include="Slot.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -102,17 +114,26 @@
     <Compile Include="InvSlotAdder.Designer.cs">
       <DependentUpon>InvSlotAdder.cs</DependentUpon>
     </Compile>
+    <Compile Include="InnerTextAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerTextAdder.Designer.cs">
+      <DependentUpon>InnerTextAdder.cs</DependentUpon>
+    </Compile>
     <Compile Include="SlotAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SlotAdder.Designer.cs">
       <DependentUpon>SlotAdder.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CloseButtonAdder.resx">
+      <DependentUpon>CloseButtonAdder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerControlAdder.resx">
-      <DependentUpon>InnerControlAdder.cs</DependentUpon>
+    <EmbeddedResource Include="CloseButton.resx">
+      <DependentUpon>CloseButton.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ButtonAdder.resx">
       <DependentUpon>ButtonAdder.cs</DependentUpon>
@@ -133,11 +154,17 @@
     <EmbeddedResource Include="InnerButton.resx">
       <DependentUpon>InnerButton.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="InnerText.resx">
+      <DependentUpon>InnerText.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Slot.resx">
       <DependentUpon>Slot.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InvSlotAdder.resx">
       <DependentUpon>InvSlotAdder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InnerTextAdder.resx">
+      <DependentUpon>InnerTextAdder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SlotAdder.resx">
       <DependentUpon>SlotAdder.cs</DependentUpon>
