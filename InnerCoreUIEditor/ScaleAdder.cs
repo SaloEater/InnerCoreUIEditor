@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace InnerCoreUIEditor
 {
-    public partial class CloseButtonAdder : UserControl
+    public partial class ScaleAdder : UserControl
     {
-        public CloseButtonAdder()
+        public ScaleAdder()
         {
             InitializeComponent();
             foreach (Control c in Controls)
@@ -24,8 +24,8 @@ namespace InnerCoreUIEditor
         private void C_Click(object sender, EventArgs e)
         {
             Control innerControl = (Control)sender;
-            CloseButton element = new CloseButton();
-            element.Location = new Point(Global.X + Global.panelWorkspace.AutoScrollPosition.X - element.Width, Global.panelWorkspace.AutoScrollPosition.Y);
+            Scale element = new Scale();
+            element.Location = new Point(Global.X / 2 + Global.panelWorkspace.AutoScrollPosition.X, Global.Y / 2 + Global.panelWorkspace.AutoScrollPosition.Y);
             Global.panelWorkspace.Controls.Add(element);
             Global.panelWorkspace.Refresh();
         }

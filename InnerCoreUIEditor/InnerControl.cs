@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using InnerCoreUIEditor.Properties;
 
 namespace InnerCoreUIEditor
 {
@@ -18,13 +19,27 @@ namespace InnerCoreUIEditor
 
         public bool propPanelCleared;
 
+        public bool constant;
+        public bool hidden;
+
         public InnerControl()
         {
             InitializeComponent();
             elementName = this.GetType().ToString() + "_" + Global.counter;
             elementY = 0;
+            constant = false;
+            hidden = false;
             propPanelCleared = false;
             Disposed += InnerControl_Disposed;
+        }
+
+        public void ResizeAll(Size size)
+        {
+            foreach (Control c in Controls)
+            {
+                c.Size = size;
+            }
+            Size = size;
         }
 
         private void InnerControl_Disposed(object sender, EventArgs e)
@@ -91,7 +106,7 @@ namespace InnerCoreUIEditor
             RemoveButton_Click(null, null);
         }
 
-        internal void SelectControl()
+        internal virtual void SelectControl()
         {
             if (Global.activeElement != null) Global.activeElement.DeselectControl();
             Global.activeElement = this;
@@ -172,11 +187,35 @@ namespace InnerCoreUIEditor
             removeButton.TextAlign = ContentAlignment.MiddleCenter;
             removeButton.Click += RemoveButton_Click;
             propPanel.Controls.Add(removeButton);
+
+            Button toFrontButton = new Button();
+            toFrontButton.BackgroundImageLayout = ImageLayout.Stretch;
+            toFrontButton.Image = Resources.button_to_front;
+            toFrontButton.Size = toFrontButton.Image.Size;
+            toFrontButton.Location = new Point(103, elementY);
+            toFrontButton.Click += ToFrontButton_Click;
+            propPanel.Controls.Add(toFrontButton);
+           
+        }
+
+        private void ToFrontButton_Click(object sender, EventArgs e)
+        {
+            BringToFront();
+            Global.panelWorkspace.Refresh();
         }
 
         private void RemoveButton_Click(object sender, EventArgs e)
         {
-            Global.panelWorkspace.Controls.Remove(this);
+            foreach(Control _c in Global.panelWorkspace.Controls)
+            {
+                if (_c.GetType() == typeof(Label)) continue;
+                InnerControl c = (InnerControl)_c;
+                if (c.elementName == elementName)
+                {   
+                    Global.panelWorkspace.Controls.Remove(_c);
+                    break;
+                }
+            }
             Global.ReloadExporer();
             this.Dispose();
         }

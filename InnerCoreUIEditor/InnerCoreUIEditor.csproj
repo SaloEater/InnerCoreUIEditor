@@ -35,6 +35,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
+      <HintPath>..\packages\ncalc.1.3.8\lib\NCalc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +51,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InnerBitmap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerBitmap.Designer.cs">
+      <DependentUpon>InnerBitmap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InnerBitmapAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerBitmapAdder.Designer.cs">
+      <DependentUpon>InnerBitmapAdder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Scale.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Scale.Designer.cs">
+      <DependentUpon>Scale.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InnerImageAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerImageAdder.Designer.cs">
+      <DependentUpon>InnerImageAdder.cs</DependentUpon>
+    </Compile>
     <Compile Include="CloseButtonAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -68,6 +95,13 @@
     </Compile>
     <Compile Include="CloseButton.Designer.cs">
       <DependentUpon>CloseButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageBlend.cs" />
+    <Compile Include="InnerImage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InnerImage.Designer.cs">
+      <DependentUpon>InnerImage.cs</DependentUpon>
     </Compile>
     <Compile Include="InnerControl.cs">
       <SubType>UserControl</SubType>
@@ -120,12 +154,30 @@
     <Compile Include="InnerTextAdder.Designer.cs">
       <DependentUpon>InnerTextAdder.cs</DependentUpon>
     </Compile>
+    <Compile Include="ScaleAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ScaleAdder.Designer.cs">
+      <DependentUpon>ScaleAdder.cs</DependentUpon>
+    </Compile>
     <Compile Include="SlotAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SlotAdder.Designer.cs">
       <DependentUpon>SlotAdder.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="InnerBitmap.resx">
+      <DependentUpon>InnerBitmap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InnerBitmapAdder.resx">
+      <DependentUpon>InnerBitmapAdder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scale.resx">
+      <DependentUpon>Scale.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InnerImageAdder.resx">
+      <DependentUpon>InnerImageAdder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CloseButtonAdder.resx">
       <DependentUpon>CloseButtonAdder.cs</DependentUpon>
     </EmbeddedResource>
@@ -137,6 +189,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ButtonAdder.resx">
       <DependentUpon>ButtonAdder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InnerImage.resx">
+      <DependentUpon>InnerImage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -166,9 +221,13 @@
     <EmbeddedResource Include="InnerTextAdder.resx">
       <DependentUpon>InnerTextAdder.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ScaleAdder.resx">
+      <DependentUpon>ScaleAdder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SlotAdder.resx">
       <DependentUpon>SlotAdder.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -183,6 +242,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\button_fly_off.png" />
     <Content Include="testParse.txt" />
     <Content Include="ui\close_button_down.png" />
     <Content Include="ui\close_button_up.png" />

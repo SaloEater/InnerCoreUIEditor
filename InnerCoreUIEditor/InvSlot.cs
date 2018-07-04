@@ -14,7 +14,7 @@ namespace InnerCoreUIEditor
 {
     public partial class InvSlot : InnerControl
     {
-        private int index { get; set; }
+        public int index { get; set; }
         public Image ActiveImage { get; set; }
         public string ImageName { get; set; }
 
@@ -139,6 +139,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _indexValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -165,7 +166,7 @@ namespace InnerCoreUIEditor
         {
             if (name != "") elementName = name;
             Location = new Point(x, y);
-            Size = new Size(size, size);
+            ResizeAll(new Size(size, size));
             if (ImageName != imageName)
             {
                 ImageName = imageName;
@@ -180,8 +181,8 @@ namespace InnerCoreUIEditor
             string element = "\n\t";
             element += '\"' + elementName + "\": {";
             element += "type: \"invSlot\",";
-            element += "x: " + Location.X + ',';
-            element += "y: " + Location.Y + ',';
+            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
             element += "size: " + Width + ',';
             element += "index: " + index + ',';
             if (ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
@@ -274,6 +275,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _coordsXValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -282,6 +284,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _coordsYValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -290,6 +293,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _sizeValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -321,9 +325,9 @@ namespace InnerCoreUIEditor
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
-            if (textBox.Controls.Count != 0) textBox.Controls[0].Dispose();
-            textBox.Controls.Clear();
+            /*TextBox textBox = (TextBox)sender;
+            if(textBox.Controls.Count!=0)textBox.Controls[0].Dispose();
+            textBox.Controls.Clear();*/
         }
 
         private void openFileDialog_Click(object sender, EventArgs e)
@@ -338,6 +342,7 @@ namespace InnerCoreUIEditor
 
             ImageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
+            FillPropPanel(Global.panelProperties);
         }
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)

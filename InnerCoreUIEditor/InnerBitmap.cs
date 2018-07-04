@@ -12,47 +12,82 @@ using System.IO;
 
 namespace InnerCoreUIEditor
 {
-    public partial class Slot : InnerControl
+    public partial class InnerBitmap : InnerControl
     {
-        public bool Visual { get; set; }
-        public bool TransparentBg { get; set; }
-        public Image ActiveImage { get; set; }
-        public string Clicker { get; set; }
-        public string ImageName { get; set; }
+        public Image activeImage { get; set; }
+        public string imageName { get; set; }
+        public float scale { get; set; }
+        public Size originSize { get; set; }
+        public Point oldLocation { get; set; }
 
-        private bool sizeTextChanged;
+        private bool scaleTextChanged;
         private bool XTextChanged;
         private bool YTextChanged;
 
-        public Slot()
+        public InnerBitmap()
         {
             InitializeComponent();
-            Initialization();
+            Initialization();           
         }
 
         public void Initialization()
         {
-            ControlEditor.Init(pictureBoxSlot, this);
-            ActiveImage = ResizeImage(Resources._default_slot_light, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
-            pictureBoxSlot.Click += PictureBoxSlot_Click;
-            ImageName = "_default_slot_light.png";
-            Visual = false;
+            pictureBox1.Click += PictureBox_Click;
+            ControlEditor.Init(pictureBox1, this);
+
+            scale = 1;
+            activeImage = Resources._selection;
+            imageName = "_selection.png";
+            ApplyImage(activeImage);
         }
 
-        private void PictureBoxSlot_Click(object sender, EventArgs e)
+        private void PictureBox_Click(object sender, EventArgs e)
         {
             SelectControl();
         }
 
-        private Image ResizeImage(Image image, Size size)
+        private void ApplyImage(Image activeImage)
         {
-            Image newImage = new Bitmap(size.Width, size.Height);
-            using (Graphics gfx = Graphics.FromImage(newImage))
+            originSize = activeImage.Size;
+            ChangeControlSize(originSize);
+            pictureBox1.Image = ImageBlend.ToPanelColor(activeImage);
+            ChangeScale(scale);
+            Console.Write(Size);
+        }
+
+        private void ChangeControlSize(Size originSize)
+        {
+            pictureBox1.Size = originSize;
+            Size = originSize;
+        }
+
+        private void ChangeScale(float scale)
+        {
+            this.scale = scale;
+            oldLocation = Location;
+            ChangeControlSize(originSize);
+            Scale(new SizeF(scale, scale));
+            Location = oldLocation;
+        }
+
+        public override void CountScale(char axis, int distance)
+        {
+            switch (axis)
             {
-                gfx.DrawImage(image, new Rectangle(Point.Empty, size));
-            }            
-            return newImage;
+                case 'x':
+                    {
+                        scale = (float)distance / (float)originSize.Width;
+                        ChangeScale(scale);
+                        break;
+                    }
+
+                case 'y':
+                    {
+                        scale = (float)distance / (float)originSize.Height;
+                        ChangeScale(scale);
+                        break;
+                    }
+            }
         }
 
         public override void FillPropPanel(Panel propPanel)
@@ -71,10 +106,10 @@ namespace InnerCoreUIEditor
             TextBox _sizeValue = new TextBox();
             _sizeValue.Location = new Point(52, elementY);
             _sizeValue.Size = new Size(151, elementSpacing);
-            _sizeValue.Text = Size.Height.ToString();
+            _sizeValue.Text = scale.ToString();
             _sizeValue.LostFocus += _sizeValue_LostFocus;
             _sizeValue.KeyDown += _sizeValue_KeyDown;
-            _sizeValue.TextChanged += (sender, e) => { sizeTextChanged = true; };
+            _sizeValue.TextChanged += (sender, e) => { scaleTextChanged = true; };
             propPanel.Controls.Add(_sizeValue);
 
             Label _coords = new Label();
@@ -113,52 +148,26 @@ namespace InnerCoreUIEditor
             _coordsYValue.TextChanged += (sender, e) => { YTextChanged = true; };
             propPanel.Controls.Add(_coordsYValue);      
 
-            Label _image = new Label();
-            _image.Location = new Point(0, elementY += elementSpacing);
-            _image.Size = new Size(102, elementSpacing);
-            _image.Text = "Изображение";
-            propPanel.Controls.Add(_image);
+            Label _activeImage = new Label();
+            _activeImage.Location = new Point(0, elementY += elementSpacing);
+            _activeImage.Size = new Size(102, elementSpacing);
+            _activeImage.Text = "Изображение";
+            propPanel.Controls.Add(_activeImage);
 
-            TextBox _imagePicPath = new TextBox();
-            _imagePicPath.Location = new Point(103, elementY);
-            _imagePicPath.Size = new Size(100, elementSpacing);
-            _imagePicPath.Text = ImageName;
-            _imagePicPath.LostFocus += new EventHandler(_imagePicPath_LostFocus);
-            _imagePicPath.ReadOnly = true;
+            TextBox _activeImagePath = new TextBox();
+            _activeImagePath.Location = new Point(103, elementY);
+            _activeImagePath.Size = new Size(100, elementSpacing);
+            _activeImagePath.Text = imageName;
+            _activeImagePath.LostFocus += new EventHandler(_imagePicPath_LostFocus);
+            _activeImagePath.ReadOnly = true;
 
             Button openFileDialog = new Button();
-            openFileDialog.Size = new Size(_imagePicPath.Size.Height / 5 * 4, _imagePicPath.Size.Height / 5 * 4);
-            openFileDialog.Location = new Point(_imagePicPath.Size.Width - _imagePicPath.Size.Height, 0);
+            openFileDialog.Size = new Size(_activeImagePath.Size.Height / 5 * 4, _activeImagePath.Size.Height / 5 * 4);
+            openFileDialog.Location = new Point(_activeImagePath.Size.Width - _activeImagePath.Size.Height, 0);
             openFileDialog.Click += new EventHandler(openFileDialog_Click);
-            _imagePicPath.Controls.Add(openFileDialog);
+            _activeImagePath.Controls.Add(openFileDialog);
 
-            propPanel.Controls.Add(_imagePicPath);
-
-            Label _visual = new Label();
-            _visual.Location = new Point(0, elementY += elementSpacing);
-            _visual.Size = new Size(102, elementSpacing);
-            _visual.Text = "Визуальный элемент";
-            propPanel.Controls.Add(_visual);
-
-            CheckBox _visualCheck = new CheckBox();
-            _visualCheck.Location = new Point(103, elementY);
-            _visualCheck.Size = new Size(101, elementSpacing);
-            _visualCheck.Checked = Visual;
-            _visualCheck.CheckedChanged += (sender, e) => { Visual = ((CheckBox)sender).Checked; };
-            propPanel.Controls.Add(_visualCheck);
-
-            Label _transpBg = new Label();
-            _transpBg.Location = new Point(0, elementY += elementSpacing);
-            _transpBg.Size = new Size(102, elementSpacing);
-            _transpBg.Text = "Прозрачный фон";
-            propPanel.Controls.Add(_transpBg);
-
-            CheckBox _transpBgCheck = new CheckBox();
-            _transpBgCheck.Location = new Point(103, elementY);
-            _transpBgCheck.Size = new Size(101, elementSpacing);
-            _transpBgCheck.Checked = TransparentBg;
-            _transpBgCheck.CheckedChanged += (sender, e) => { TransparentBg = ((CheckBox)sender).Checked; };
-            propPanel.Controls.Add(_transpBgCheck);
+            propPanel.Controls.Add(_activeImagePath);            
 
             /* Придумать как сделать окно для вставки функции кликера
             Label _clicker = new Label();
@@ -177,72 +186,45 @@ namespace InnerCoreUIEditor
             base.FillPropPanel(propPanel);
         }
 
-        internal void Apply(string name, int x, int y, int size, bool visual, string imageName, string clicker)
+        internal override void SelectControl()
         {
-            if(name!="")elementName = name;
+            base.SelectControl();
+        }  
+        
+        internal void Apply(int x, int y, float scale, string imageName)
+        {
             Location = new Point(x, y);
-            ResizeAll(new Size(size, size));
-            Visual = visual;
-            if(ImageName != imageName)
-            {
-                ImageName = imageName;
-                string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
-                ApplyImage(path);                
-            }
-            Clicker = clicker;
-        }
+            ChangeScale(scale);
 
-        public override void CountScale(char axis, int distance)
-        {
-            switch (axis)
-            {
-                case 'x':
-                    {
-                        float scale = (float)distance / GetWidth();
-                        Point oldLocation = Location;
-                        this.Scale(new SizeF(scale, scale));
-                        Location = oldLocation;
-                        break;
-                    }
-
-                case 'y':
-                    {
-                        float scale = (float)distance / GetHeight();
-                        Point oldLocation = Location;
-                        this.Scale(new SizeF(scale, scale));
-                        Location = oldLocation;
-                        break;
-                    }
-            }
+            this.imageName = imageName;
+            string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
+            ApplyImage(path);
         }
 
         private void ApplyImage(string path)
         {
-            Bitmap bitmap = CreateBitmap(path);
-            ActiveImage = ResizeImage(bitmap, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
+            activeImage = CreateBitmap(path, out bool success);
+            if(!success)
+            {
+                activeImage = Resources._selection;
+                imageName = "_selection.png";
+            }
+            ApplyImage(activeImage);
         }
 
-        private Bitmap CreateBitmap(string path)
+        private Bitmap CreateBitmap(string path, out  bool success)
         {
             Bitmap bitmap;
             try
             {
-                bitmap = new Bitmap(path);
+                bitmap = (Bitmap) Bitmap.FromFile(path);
             }catch(ArgumentException)
             {
                 MessageBox.Show("Отсутствует файл " + path + ". Добавьте его и загрузите заново");
-                return Resources._default_slot_light;
-            }
-            for (int _x = 0; _x < bitmap.Width; _x++)
-            {
-                for (int _y = 0; _y < bitmap.Height; _y++)
-                {
-                    Color pixelColor = bitmap.GetPixel(_x, _y);
-                    Color newColor = Color.FromArgb(pixelColor.R, pixelColor.G, pixelColor.B);
-                    bitmap.SetPixel(_x, _y, newColor);
-                }
-            }
+                success = false;
+                return Resources._selection;
+            }            
+            success = true;
             return bitmap;
         }
 
@@ -275,28 +257,24 @@ namespace InnerCoreUIEditor
 
         private void _sizeValue_LostFocus(object sender, EventArgs e)
         {
-            if (!sizeTextChanged) return;
-            sizeTextChanged = false;
+            if (!scaleTextChanged) return;
+            scaleTextChanged = false;
             TextBox textBox = (TextBox)sender;
-            int size;
-            if (!int.TryParse(textBox.Text, out size))
+            float scale;
+            if (!float.TryParse(textBox.Text, out scale))
             {
-                textBox.Text = Width.ToString();
+                textBox.Text = scale.ToString();
                 return;
             }
 
-            if (size + Left < 0 || size + Left > Global.X || size + Top > Global.Y)
+            if (scale*originSize.Height > Global.X || scale*originSize.Width > Global.Y)
             {
-                textBox.Text = Width.ToString();
+                textBox.Text = scale.ToString();
                 return;
             }
 
-            if (textBox.Text == Size.Height.ToString()) return;
-
-            SizeF sizeF = new SizeF((float)size/GetWidth(), (float)size / GetWidth());
-            Point oldLocation = Location;
-            this.Scale(sizeF);
-            Location = oldLocation;
+            if (scale == this.scale) return;
+            ChangeScale(scale);  
         }
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
@@ -316,7 +294,7 @@ namespace InnerCoreUIEditor
                 return;
             }
 
-            ImageName = openFileDialog1.SafeFileName;
+            imageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
             FillPropPanel(Global.panelProperties);
         }
@@ -333,7 +311,7 @@ namespace InnerCoreUIEditor
                 return;
             }
             x += Global.panelWorkspace.AutoScrollPosition.X;
-            if(x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
+            if (x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
             {
                 textBox.Text = Left.ToString();
                 return;
@@ -357,7 +335,7 @@ namespace InnerCoreUIEditor
                 return;
             }
             y += Global.panelWorkspace.AutoScrollPosition.Y;
-            if( y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
+            if (y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
             {
                 textBox.Text = Top.ToString();
                 return;
@@ -372,15 +350,13 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"slot\",";
+            element += '{';
+            element += "type: \"bitmap\",";
             element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
             element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "size: " + Width + ',';
-            if(ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
-            if(Visual) element += "visual: true,";
-            if (TransparentBg) element += "isTransparentBackground: true,";
-            element += "}";
+            element += "scale: " + scale.ToString().Replace(',', '.') + ',';
+            element += "bitmap: \"" + imageName.Split('.')[0] + "\",";
+            element += '}';
             return element;
         }
 

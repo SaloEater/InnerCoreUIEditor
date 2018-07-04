@@ -26,6 +26,7 @@ namespace InnerCoreUIEditor
         public void Initialization()
         {
             ControlEditor.Init(richTextBox1, this);
+            richTextBox1.Click += (sender, e) => SelectControl();
         }
 
         public override void FillPropPanel(Panel propPanel)
@@ -106,7 +107,7 @@ namespace InnerCoreUIEditor
             _heightValue.KeyDown += _heightValue_KeyDown;
             propPanel.Controls.Add(_heightValue);
 
-            Label _text = new Label();
+            /*Label _text = new Label();
             _text.Location = new Point(0, elementY += elementSpacing);
             _text.Size = new Size(51, elementSpacing);
             _text.Text = "Текст";
@@ -118,7 +119,7 @@ namespace InnerCoreUIEditor
             _textValue.Text = richTextBox1.Text;
             _textValue.LostFocus += _textValue_LostFocus;
             _textValue.KeyDown += _textValue_KeyDown;
-            propPanel.Controls.Add(_heightValue);
+            propPanel.Controls.Add(_textValue);*/
 
             /* Придумать как сделать окно для вставки функции кликера
             Label _clicker = new Label();
@@ -148,6 +149,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _textValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -156,6 +158,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _heightValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -173,7 +176,7 @@ namespace InnerCoreUIEditor
                 textBox.Text = Height.ToString();
                 return;
             }
-            Size = new Size(Size.Width, height);
+            ResizeAll(new Size(Size.Width, height));
         }
 
         private void _widthValue_LostFocus(object sender, EventArgs e)
@@ -190,7 +193,7 @@ namespace InnerCoreUIEditor
                 textBox.Text = Width.ToString();
                 return;
             }
-            Size = new Size(width, Size.Height);
+            ResizeAll(new Size(width, Size.Height));
         }
 
         private void _widthValue_KeyDown(object sender, KeyEventArgs e)
@@ -198,6 +201,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _widthValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -205,7 +209,7 @@ namespace InnerCoreUIEditor
         {
             if(name!="")elementName = name;
             Location = new Point(x, y);
-            Size = new Size(width, height);
+            ResizeAll(new Size(width, height));
             richTextBox1.Text = text;
         }
 
@@ -214,6 +218,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _coordsXValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -222,6 +227,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _coordsYValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -277,9 +283,9 @@ namespace InnerCoreUIEditor
         {
             string element = "\n\t";
             element += '\"' + elementName + "\": {";
-            element += "type: \"slot\",";
-            element += "x: " + Location.X + ',';
-            element += "y: " + Location.Y + ',';
+            element += "type: \"text\",";
+            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
             element += "width: " + Width + ',';
             element += "height: " + Height + ',';
             element += "text: " + richTextBox1.Text + ',';

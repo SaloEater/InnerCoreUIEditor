@@ -243,6 +243,16 @@ namespace InnerCoreUIEditor.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap button_to_front {
+            get {
+                object obj = ResourceManager.GetObject("button_to_front", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap close_button_down {
             get {
                 object obj = ResourceManager.GetObject("close_button_down", resourceCulture);

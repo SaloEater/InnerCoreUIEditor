@@ -11,7 +11,7 @@ namespace InnerCoreUIEditor
     static class Global
     {
         public static int X = 1000,
-                        Y = 700;
+                        Y = 540;
 
         private static Panel _panelProperties;
         public static Panel panelProperties
@@ -55,8 +55,11 @@ namespace InnerCoreUIEditor
                 c.Dispose();
             }
             _panelExplorer.Controls.Clear();
-            foreach(InnerControl c in _panelWorkspace.Controls)
+            foreach(Control _c in _panelWorkspace.Controls)
             {
+                if (_c.GetType() == typeof(Label)) continue;
+                InnerControl c = (InnerControl)_c;
+                if (c.constant || c.hidden) continue;
                 TextBox textBox = new TextBox();
                 textBox.Location = new Point(0, panelExplorer.Controls.Count * 20);
                 textBox.Size = new Size(panelExplorer.Width, 20);
@@ -70,11 +73,41 @@ namespace InnerCoreUIEditor
         private static void TextBox_Click(object sender, EventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            foreach (InnerControl c in panelWorkspace.Controls)
+            foreach (Control _c in panelWorkspace.Controls)
             {
+                if (_c.GetType() == typeof(Label)) continue;
+                InnerControl c = (InnerControl)_c;
                 if (c.elementName == textBox.Text)
                 {
                     c.SelectControl();
+                }
+            }
+        }
+
+        internal static void DrawInventorySlots()
+        {
+            for (int i = 0; i < 27; i++)
+            {
+                InvSlot invSlot = new InvSlot();
+                invSlot.index = i + 9;
+                invSlot.Location = new Point((i % 3) * invSlot.Width, ((int)i/3) * invSlot.Width);
+                invSlot.constant = true;
+                invSlot.elementName = "__invslot" + i;
+                panelWorkspace.Controls.Add(invSlot);
+            }
+        }
+
+        internal static void RemoveInventorySlots()
+        {
+            for (int i = 0; i < panelWorkspace.Controls.Count; i++)
+            {
+                Control c = panelWorkspace.Controls[i];
+                if (c.GetType() == typeof(Label)) continue;
+                InnerControl _c = (InnerControl)c;
+                if (_c.elementName.Contains("__invslot"))
+                {
+                    panelWorkspace.Controls.RemoveAt(i);
+                    i--;
                 }
             }
         }

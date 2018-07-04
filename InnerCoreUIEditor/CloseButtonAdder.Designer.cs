@@ -39,24 +39,25 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(60, 31);
             this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = "Кнопка";
+            this.richTextBox1.Text = "Кнопка закрытия";
             // 
             // button1
             // 
+            this.button1.BackgroundImage = global::InnerCoreUIEditor.Properties.Resources.close_button_up;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button1.Location = new System.Drawing.Point(0, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(60, 60);
             this.button1.TabIndex = 2;
-            this.button1.Text = "Вот эта кнопка";
             this.button1.UseVisualStyleBackColor = true;
             // 
-            // ButtonAdder
+            // CloseButtonAdder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.button1);
             this.Controls.Add(this.richTextBox1);
-            this.Name = "ButtonAdder";
+            this.Name = "CloseButtonAdder";
             this.Size = new System.Drawing.Size(60, 99);
             this.ResumeLayout(false);
 

@@ -1,6 +1,6 @@
 ﻿namespace InnerCoreUIEditor
 {
-    partial class InnerTextAdder
+    partial class InnerBitmapAdder
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -39,25 +40,27 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(60, 31);
             this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = "Текст";
+            this.richTextBox1.Text = "Задний фон";
             // 
-            // richTextBox2
+            // pictureBox1
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(0, 0);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(60, 60);
-            this.richTextBox2.TabIndex = 2;
-            this.richTextBox2.Text = "Какой-то текст";
+            this.pictureBox1.BackgroundImage = global::InnerCoreUIEditor.Properties.Resources._selection;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pictureBox1.Location = new System.Drawing.Point(4, 4);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(53, 56);
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
             // 
-            // InnerTextAdder
+            // InnerBitmapAdder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.richTextBox2);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBox1);
-            this.Name = "InnerTextAdder";
+            this.Name = "InnerBitmapAdder";
             this.Size = new System.Drawing.Size(60, 99);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -65,6 +68,6 @@
         #endregion
 
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

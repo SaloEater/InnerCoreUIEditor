@@ -35,6 +35,7 @@
             // 
             // pictureBoxSlot
             // 
+            this.pictureBoxSlot.BackColor = System.Drawing.Color.Transparent;
             this.pictureBoxSlot.Location = new System.Drawing.Point(0, 0);
             this.pictureBoxSlot.Name = "pictureBoxSlot";
             this.pictureBoxSlot.Size = new System.Drawing.Size(60, 60);
@@ -46,7 +47,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.pictureBoxSlot);
             this.Name = "Slot";
             this.Size = new System.Drawing.Size(60, 60);

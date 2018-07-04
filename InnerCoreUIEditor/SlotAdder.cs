@@ -15,7 +15,7 @@ namespace InnerCoreUIEditor
         public SlotAdder()
         {
             InitializeComponent();
-            foreach(Control c in Controls)
+            foreach (Control c in Controls)
             {
                 c.Click += C_Click;
             }
@@ -25,7 +25,7 @@ namespace InnerCoreUIEditor
         {
             Control innerControl = (Control)sender;
             Slot element = new Slot();
-            element.Location = new Point(Global.X / 2, Global.Y / 2);
+            element.Location = new Point(Global.X / 2 + Global.panelWorkspace.AutoScrollPosition.X, Global.Y / 2 + Global.panelWorkspace.AutoScrollPosition.Y);
             Global.panelWorkspace.Controls.Add(element);
             Global.panelWorkspace.Refresh();
         }

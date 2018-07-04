@@ -40,9 +40,18 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.стандартныеВозможностиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.инвентарьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label1 = new System.Windows.Forms.Label();
+            this.innerBitmapAdder1 = new InnerCoreUIEditor.InnerBitmapAdder();
+            this.scaleAdder1 = new InnerCoreUIEditor.ScaleAdder();
+            this.innerImageAdder1 = new InnerCoreUIEditor.InnerImageAdder();
+            this.innerTextAdder1 = new InnerCoreUIEditor.InnerTextAdder();
+            this.closeButtonAdder1 = new InnerCoreUIEditor.CloseButtonAdder();
+            this.buttonAdder1 = new InnerCoreUIEditor.ButtonAdder();
             this.invSlotAdder1 = new InnerCoreUIEditor.InvSlotAdder();
             this.slotAdder1 = new InnerCoreUIEditor.SlotAdder();
-            this.buttonAdder1 = new InnerCoreUIEditor.ButtonAdder();
+            this.panelWorkspace.SuspendLayout();
             this.panelElements.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -51,6 +60,7 @@
             // 
             this.panelWorkspace.AutoScroll = true;
             this.panelWorkspace.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panelWorkspace.Controls.Add(this.label1);
             this.panelWorkspace.Location = new System.Drawing.Point(0, 142);
             this.panelWorkspace.Name = "panelWorkspace";
             this.panelWorkspace.Size = new System.Drawing.Size(646, 446);
@@ -79,6 +89,11 @@
             this.panelElements.AutoScroll = true;
             this.panelElements.BackColor = System.Drawing.SystemColors.ControlDark;
             this.panelElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelElements.Controls.Add(this.innerBitmapAdder1);
+            this.panelElements.Controls.Add(this.scaleAdder1);
+            this.panelElements.Controls.Add(this.innerImageAdder1);
+            this.panelElements.Controls.Add(this.innerTextAdder1);
+            this.panelElements.Controls.Add(this.closeButtonAdder1);
             this.panelElements.Controls.Add(this.buttonAdder1);
             this.panelElements.Controls.Add(this.invSlotAdder1);
             this.panelElements.Controls.Add(this.slotAdder1);
@@ -90,7 +105,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.сохранитьToolStripMenuItem});
+            this.сохранитьToolStripMenuItem,
+            this.стандартныеВозможностиToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(849, 24);
@@ -103,26 +119,90 @@
             this.toolStripMenuItem1,
             this.toolStripMenuItem2});
             this.сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
-            this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-            this.сохранитьToolStripMenuItem.Text = "Тест";
+            this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.сохранитьToolStripMenuItem.Text = "Файл";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(132, 22);
-            this.toolStripMenuItem1.Text = "Сохранить";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
+            this.toolStripMenuItem1.Text = "Сохранить гпи";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(132, 22);
-            this.toolStripMenuItem2.Text = "Загрузить";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(154, 22);
+            this.toolStripMenuItem2.Text = "Загрузить гпи";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // стандартныеВозможностиToolStripMenuItem
+            // 
+            this.стандартныеВозможностиToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.инвентарьToolStripMenuItem});
+            this.стандартныеВозможностиToolStripMenuItem.Name = "стандартныеВозможностиToolStripMenuItem";
+            this.стандартныеВозможностиToolStripMenuItem.Size = new System.Drawing.Size(169, 20);
+            this.стандартныеВозможностиToolStripMenuItem.Text = "Стандартные возможности";
+            // 
+            // инвентарьToolStripMenuItem
+            // 
+            this.инвентарьToolStripMenuItem.Name = "инвентарьToolStripMenuItem";
+            this.инвентарьToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
+            this.инвентарьToolStripMenuItem.Text = "Инвентарь";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(1368, 984);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(0, 13);
+            this.label1.TabIndex = 0;
+            // 
+            // innerBitmapAdder1
+            // 
+            this.innerBitmapAdder1.Location = new System.Drawing.Point(480, 4);
+            this.innerBitmapAdder1.Name = "innerBitmapAdder1";
+            this.innerBitmapAdder1.Size = new System.Drawing.Size(60, 99);
+            this.innerBitmapAdder1.TabIndex = 7;
+            // 
+            // scaleAdder1
+            // 
+            this.scaleAdder1.Location = new System.Drawing.Point(413, 4);
+            this.scaleAdder1.Name = "scaleAdder1";
+            this.scaleAdder1.Size = new System.Drawing.Size(60, 99);
+            this.scaleAdder1.TabIndex = 6;
+            // 
+            // innerImageAdder1
+            // 
+            this.innerImageAdder1.Location = new System.Drawing.Point(346, 4);
+            this.innerImageAdder1.Name = "innerImageAdder1";
+            this.innerImageAdder1.Size = new System.Drawing.Size(60, 99);
+            this.innerImageAdder1.TabIndex = 5;
+            // 
+            // innerTextAdder1
+            // 
+            this.innerTextAdder1.Location = new System.Drawing.Point(279, 4);
+            this.innerTextAdder1.Name = "innerTextAdder1";
+            this.innerTextAdder1.Size = new System.Drawing.Size(60, 99);
+            this.innerTextAdder1.TabIndex = 4;
+            // 
+            // closeButtonAdder1
+            // 
+            this.closeButtonAdder1.Location = new System.Drawing.Point(212, 4);
+            this.closeButtonAdder1.Name = "closeButtonAdder1";
+            this.closeButtonAdder1.Size = new System.Drawing.Size(60, 99);
+            this.closeButtonAdder1.TabIndex = 3;
+            // 
+            // buttonAdder1
+            // 
+            this.buttonAdder1.Location = new System.Drawing.Point(145, 4);
+            this.buttonAdder1.Name = "buttonAdder1";
+            this.buttonAdder1.Size = new System.Drawing.Size(60, 99);
+            this.buttonAdder1.TabIndex = 2;
             // 
             // invSlotAdder1
             // 
@@ -138,13 +218,6 @@
             this.slotAdder1.Size = new System.Drawing.Size(60, 99);
             this.slotAdder1.TabIndex = 0;
             // 
-            // buttonAdder1
-            // 
-            this.buttonAdder1.Location = new System.Drawing.Point(145, 4);
-            this.buttonAdder1.Name = "buttonAdder1";
-            this.buttonAdder1.Size = new System.Drawing.Size(60, 99);
-            this.buttonAdder1.TabIndex = 2;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -158,6 +231,8 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.panelWorkspace.ResumeLayout(false);
+            this.panelWorkspace.PerformLayout();
             this.panelElements.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -182,6 +257,14 @@
         private InvSlotAdder invSlotAdder1;
         private System.Windows.Forms.Timer timer1;
         private ButtonAdder buttonAdder1;
+        private CloseButtonAdder closeButtonAdder1;
+        private InnerTextAdder innerTextAdder1;
+        private InnerImageAdder innerImageAdder1;
+        private ScaleAdder scaleAdder1;
+        private InnerBitmapAdder innerBitmapAdder1;
+        private System.Windows.Forms.ToolStripMenuItem стандартныеВозможностиToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem инвентарьToolStripMenuItem;
+        private System.Windows.Forms.Label label1;
     }
 }
 

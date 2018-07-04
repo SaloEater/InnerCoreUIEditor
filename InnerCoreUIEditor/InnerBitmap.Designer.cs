@@ -1,6 +1,6 @@
 ﻿namespace InnerCoreUIEditor
 {
-    partial class InvSlot
+    partial class InnerBitmap
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -29,34 +29,37 @@
         private void InitializeComponent()
         {
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.pictureBoxSlot = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSlot)).BeginInit();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBoxSlot
+            // pictureBox1
             // 
-            this.pictureBoxSlot.Location = new System.Drawing.Point(0, 0);
-            this.pictureBoxSlot.Name = "pictureBoxSlot";
-            this.pictureBoxSlot.Size = new System.Drawing.Size(60, 60);
-            this.pictureBoxSlot.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxSlot.TabIndex = 1;
-            this.pictureBoxSlot.TabStop = false;
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(60, 60);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
             // 
-            // InvSlot
+            // InnerBitmap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.Controls.Add(this.pictureBoxSlot);
-            this.Name = "InvSlot";
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.Controls.Add(this.pictureBox1);
+            this.Name = "InnerBitmap";
             this.Size = new System.Drawing.Size(60, 60);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSlot)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.PictureBox pictureBoxSlot;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

@@ -70,7 +70,7 @@ namespace InnerCoreUIEditor
             this.scale = scale;
             oldLocation = Location;
             ChangeControlSize(originSize);
-            Scale(new SizeF(scale, scale));
+            Scale(new SizeF(this.scale, this.scale));
             Location = oldLocation;
         }
 
@@ -283,6 +283,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _coordsXValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -291,6 +292,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _coordsYValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -299,6 +301,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _sizeValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -326,9 +329,9 @@ namespace InnerCoreUIEditor
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
+            /*TextBox textBox = (TextBox)sender;
             if(textBox.Controls.Count!=0)textBox.Controls[0].Dispose();
-            textBox.Controls.Clear();
+            textBox.Controls.Clear();*/
         }
 
         private void openFileDialog_Click(object sender, EventArgs e)
@@ -343,6 +346,7 @@ namespace InnerCoreUIEditor
 
             UnpressedImageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
+            FillPropPanel(Global.panelProperties);
         }
 
         private void OpenFileDialog2_Click(object sender, EventArgs e)
@@ -357,6 +361,7 @@ namespace InnerCoreUIEditor
 
             PressedImageName = openFileDialog1.SafeFileName;
             PressedImage = Image.FromFile(openFileDialog1.FileName);
+            FillPropPanel(Global.panelProperties);
         }
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)
@@ -412,11 +417,11 @@ namespace InnerCoreUIEditor
             string element = "\n\t";
             element += '\"' + elementName + "\": {";
             element += "type: \"button\",";
-            element += "x: " + Location.X + ',';
-            element += "y: " + Location.Y + ',';
+            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
             element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            if(UnpressedImageName.Split('.')[0] != "_button_next_48x24") element += "bitmap: \"" + UnpressedImageName.Split('.')[0] + "\",";
-            if (PressedImageName.Split('.')[0] != "_button_next_48x24p") element += "bitmap2: \"" + PressedImageName.Split('.')[0] + "\",";
+            element += "bitmap: \"" + UnpressedImageName.Split('.')[0] + "\",";
+            if(PressedImageName.Split('.')[0]!= "_button_next_48x24p")element += "bitmap2: \"" + PressedImageName.Split('.')[0] + "\",";
             element += "}";
             return element;
         }

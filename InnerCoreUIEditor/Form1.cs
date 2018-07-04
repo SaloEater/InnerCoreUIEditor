@@ -13,11 +13,16 @@ namespace InnerCoreUIEditor
 {
     public partial class Form1 : Form
     {
+
+        private bool inventoryDrawed;
+
         public Form1()
         {
             InitializeComponent();
+            inventoryDrawed = false;
             panelWorkspace.Click += PanelWorkspace_Click;
             panelWorkspace.ControlAdded += PanelWorkspace_ControlAdded;
+            panelWorkspace.Size = new Size(Global.X, Global.Y);
             Global.counter = 0;
             Global.panelProperties = panelProperties;
             Global.panelWorkspace = panelWorkspace;
@@ -41,7 +46,7 @@ namespace InnerCoreUIEditor
 
         private void PanelWorkspace_ControlAdded(object sender, ControlEventArgs e)
         {
-            if (e.Control == null) return;
+            if (e.Control == null || e.Control.GetType() == typeof(Label)) return;
             Global.ReloadExporer();
             ((InnerControl)e.Control).SelectControl();
         }
@@ -68,16 +73,28 @@ namespace InnerCoreUIEditor
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
             string gui = File.ReadAllText(openFileDialog1.FileName);
-            foreach(InnerControl c in panelWorkspace.Controls)
+            for(int i = 0; i < panelWorkspace.Controls.Count; i++)
             {
+                Control _c = panelWorkspace.Controls[i];
+                if (_c.GetType() == typeof(Label)) continue;
+                InnerControl c = (InnerControl)_c;
+                if (c.constant) continue;
                 c.Remove();
+                i--;
             }
+            panelWorkspace.Refresh();
+            Global.ReloadExporer();
             JSONParser.Parse(gui);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (Global.activeElement != null) Global.activeElement.Select();
+        }
+
+        private void инвентарьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
