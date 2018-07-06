@@ -551,6 +551,7 @@ namespace InnerCoreUIEditor
                 overlayImage = Bitmap.FromFile(path);
             } catch(ArgumentException)
             {
+                MessageBox.Show("Отсутствует файл " + path + ". Добавьте его и загрузите заново");
                 overlayImage = Resources._default_slot_empty;
                 overlayImageName = "_default_slot_empty.png";
             }
@@ -598,7 +599,7 @@ namespace InnerCoreUIEditor
             try
             {
                 bitmap = (Bitmap) Bitmap.FromFile(path);
-            }catch(ArgumentException)
+            }catch(Exception)
             {
                 MessageBox.Show("Отсутствует файл " + path + ". Добавьте его и загрузите заново");
                 success = false;

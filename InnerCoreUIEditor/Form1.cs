@@ -150,6 +150,7 @@ namespace InnerCoreUIEditor
 
         private void изображениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            openFileDialog1.FileName = "";
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
