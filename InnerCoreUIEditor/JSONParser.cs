@@ -1,4 +1,5 @@
-﻿using NCalc;
+﻿using InnerCoreUIEditor.Controls;
+using NCalc;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,25 +19,50 @@ namespace InnerCoreUIEditor
             //int standartPosition = FindEntrance(gui, "standart:");
             //ParseStandart(gui);
             gui = Clear(gui);
-            string elements = GetBigField(gui, "elements", '{', '}');            
-            ParseElements(elements);
+            string standart = GetBigField(gui, "standart");
+            ParseStandart(standart);
             string drawing = GetBigField(gui, "drawing", '[', ']');
             ParseDrawing(drawing);
+            string elements = GetBigField(gui, "elements");            
+            ParseElements(elements);
             CombineDrawingsWithElements();
+        }
+
+        private static void ParseStandart(string standart)
+        {
+            standart = Clear(standart);
+            string header = GetBigField(standart, "header");
+            header = GetField(GetField(header, "text"), "text").Replace("\"", "");
+            if (header != "") Global.SetHeaderText(header);
+
+            string inventory = GetBigField(standart, "inventory");
+            inventory = GetField(inventory, "standart");
+            if (inventory == "true") Global.DrawInventorySlots();
+            else if(Global.inventoryDrawed)Global.RemoveInventorySlots();
+
+            string background = GetBigField(standart, "background");
+            string bg_standart = GetField(background, "standart");
+            if (bg_standart != "true")
+            {
+                string bg_color = GetField(background, "color");
+                if (bg_color != "") Global.SetGlobalColor(bg_color);
+                string bg_bitmap = GetField(background, "bitmap");
+                if (bg_bitmap != "") Global.SetGlobalBackground(bg_bitmap.Replace("\"", ""));
+            }
         }
 
         private static void CombineDrawingsWithElements()
         {
             foreach(Control c in Global.panelWorkspace.Controls)
             {
-                if (c.GetType() == typeof(Label)) continue;
+                if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
                 if (c.GetType() == typeof(InnerBitmap))
                 {
                     InnerBitmap innerBitmap = (InnerBitmap)c;
                     ImageBlend.ToPanelColor(((PictureBox)innerBitmap.Controls[0]).Image);
                     foreach (Control c2 in Global.panelWorkspace.Controls)
                     {
-                        if (c2.GetType() == typeof(Label) || c2.GetType() != typeof(Scale)) continue;                        
+                        if (c2.GetType() != typeof(Scale)) continue;                        
                         Scale innerControl = (Scale)c2;
                         if (innerBitmap.elementName == innerControl.elementName) continue;
                         if(innerControl.Location == innerBitmap.Location)
@@ -114,6 +140,11 @@ namespace InnerCoreUIEditor
                     break;
             }
         }
+        
+        private static string GetBigField(string gui, string obj)
+        {
+            return GetBigField(gui, obj, '{', '}');
+        }
 
         private static string GetBigField(string gui, string v, char opener, char closer)
         {
@@ -147,6 +178,7 @@ namespace InnerCoreUIEditor
         private static string Clear(string answer)
         {
             answer = answer.Replace("\n", "");
+            answer = answer.Replace("\r", "");
             answer = answer.Replace("\t", "");
             answer = answer.Replace(" ", "");
             return answer;
@@ -412,11 +444,14 @@ namespace InnerCoreUIEditor
                 {
                     if (element[i + j++] != ':') continue;
                     int counter = 1;
+                    int bracketsCounter = 0;
                     for (int k = i + j; k < element.Length; k++)
                     {
                         if (element[k] == ':') counter++;
-                        if (element[k] == ',' || element[k] == '}') counter--;
-                        if (counter == 0) break;
+                        else if (element[k] == ',' || element[k] == '}') counter--;
+                        else if (element[k] == '(') bracketsCounter++;
+                        else if (element[k] == ')') bracketsCounter--;
+                        if (counter == 0 && bracketsCounter == 0) break;
                         else answer += element[k];
                     }
                     break;
@@ -428,10 +463,37 @@ namespace InnerCoreUIEditor
         internal static void Save(string filename)
         {
 
+            string standart = "standart: \n{";
+            string headerText = Global.innerHeader.GetText();
+            if(headerText != "")
+            {
+                standart += "header: { text: { text: \"" + headerText + "\"} },\n";
+            }
+            if(Global.inventoryDrawed)
+            {
+                standart += "inventory: { standart: true},\n";
+            }
+            standart += "background: ";
+            if(Global.panelWorkspace.BackgroundImage!=null)
+            {
+                standart += "{bitmap: \"" + Global.BackgroundImageName +"\"}";
+            } else
+            {
+                Color bg_color = Global.panelWorkspace.BackColor;
+                if (bg_color == Color.FromArgb(114, 106, 112))
+                {
+                    standart += "{standart: true}";
+                } else
+                {
+                    standart += "{android.graphics.Color.rgb(" + bg_color.R + ',' + bg_color.G + ',' + bg_color.B + ")}";
+                }
+            }
+            standart += "\n},\n";
+
             string drawing = "drawing: \n[";
             foreach (Control _c in Global.panelWorkspace.Controls)
             {
-                if (_c.GetType() == typeof(Label) || _c.GetType() != typeof(InnerBitmap)) continue;
+                if (_c.GetType() != typeof(InnerBitmap)) continue;
                 InnerBitmap c = (InnerBitmap)_c;
                 drawing += c.MakeOutput() + ',';
             }
@@ -439,16 +501,17 @@ namespace InnerCoreUIEditor
 
             string elements = "elements: \n{";
 
-            foreach(Control _c in Global.panelWorkspace.Controls)
+            foreach (Control _c in Global.panelWorkspace.Controls)
             {
-                if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerBitmap)) continue;
+                if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader) || _c.GetType() == typeof(InnerBitmap)) continue;
                 InnerControl c = (InnerControl)_c;
+                if (c.hidden) continue;
                 elements += c.MakeOutput() + ',';
             }
 
             elements += "\n}";
 
-            File.WriteAllText(filename, drawing + elements);
+            File.WriteAllText(filename, standart + drawing + elements);
         }
     }
 }

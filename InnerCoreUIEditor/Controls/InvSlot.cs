@@ -32,7 +32,7 @@ namespace InnerCoreUIEditor
         {
             ControlEditor.Init(pictureBoxSlot, this);
             ActiveImage = ResizeImage(Resources._default_slot_light, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
+            pictureBoxSlot.Image = new Bitmap(ActiveImage);
             pictureBoxSlot.Click += PictureBoxSlot_Click;
             ImageName = "_default_slot_light.png";
             index = 0;
@@ -145,6 +145,7 @@ namespace InnerCoreUIEditor
 
         private void _indexValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             TextBox textBox = (TextBox)sender;
             int index;
             if (!int.TryParse(textBox.Text, out index))
@@ -243,7 +244,7 @@ namespace InnerCoreUIEditor
         {
             Bitmap bitmap = CreateBitmap(path);
             ActiveImage = ResizeImage(bitmap, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
+            pictureBoxSlot.Image = new Bitmap(ActiveImage);
         }
 
         private Bitmap CreateBitmap(string path)
@@ -299,6 +300,7 @@ namespace InnerCoreUIEditor
 
         private void _sizeValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!sizeTextChanged) return;
             sizeTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -325,6 +327,7 @@ namespace InnerCoreUIEditor
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             /*TextBox textBox = (TextBox)sender;
             if(textBox.Controls.Count!=0)textBox.Controls[0].Dispose();
             textBox.Controls.Clear();*/
@@ -332,6 +335,7 @@ namespace InnerCoreUIEditor
 
         private void openFileDialog_Click(object sender, EventArgs e)
         {
+            if (constant) return;
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
@@ -347,6 +351,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!XTextChanged) return;
             XTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -371,6 +376,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsYValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!YTextChanged) return;
             YTextChanged = false;
             TextBox textBox = (TextBox)sender;

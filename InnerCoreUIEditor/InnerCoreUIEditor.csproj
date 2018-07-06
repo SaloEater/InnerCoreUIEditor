@@ -51,34 +51,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InnerBitmap.cs">
+    <Compile Include="Controls\InnerBitmap.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerBitmap.Designer.cs">
+    <Compile Include="Controls\InnerBitmap.Designer.cs">
       <DependentUpon>InnerBitmap.cs</DependentUpon>
     </Compile>
-    <Compile Include="InnerBitmapAdder.cs">
+    <Compile Include="Adders\InnerBitmapAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerBitmapAdder.Designer.cs">
+    <Compile Include="Adders\InnerBitmapAdder.Designer.cs">
       <DependentUpon>InnerBitmapAdder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Scale.cs">
+    <Compile Include="Controls\InnerHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Scale.Designer.cs">
+    <Compile Include="Controls\InnerHeader.Designer.cs">
+      <DependentUpon>InnerHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Scale.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Scale.Designer.cs">
       <DependentUpon>Scale.cs</DependentUpon>
     </Compile>
-    <Compile Include="InnerImageAdder.cs">
+    <Compile Include="Adders\InnerImageAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerImageAdder.Designer.cs">
+    <Compile Include="Adders\InnerImageAdder.Designer.cs">
       <DependentUpon>InnerImageAdder.cs</DependentUpon>
     </Compile>
-    <Compile Include="CloseButtonAdder.cs">
+    <Compile Include="Adders\CloseButtonAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CloseButtonAdder.Designer.cs">
+    <Compile Include="Adders\CloseButtonAdder.Designer.cs">
       <DependentUpon>CloseButtonAdder.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlEditor.cs" />
@@ -90,107 +96,110 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Global.cs" />
-    <Compile Include="CloseButton.cs">
+    <Compile Include="Controls\CloseButton.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CloseButton.Designer.cs">
+    <Compile Include="Controls\CloseButton.Designer.cs">
       <DependentUpon>CloseButton.cs</DependentUpon>
     </Compile>
     <Compile Include="ImageBlend.cs" />
-    <Compile Include="InnerImage.cs">
+    <Compile Include="Controls\InnerImage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerImage.Designer.cs">
+    <Compile Include="Controls\InnerImage.Designer.cs">
       <DependentUpon>InnerImage.cs</DependentUpon>
     </Compile>
-    <Compile Include="InnerControl.cs">
+    <Compile Include="Controls\InnerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerControl.Designer.cs">
+    <Compile Include="Controls\InnerControl.Designer.cs">
       <DependentUpon>InnerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ButtonAdder.cs">
+    <Compile Include="Adders\ButtonAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ButtonAdder.Designer.cs">
+    <Compile Include="Adders\ButtonAdder.Designer.cs">
       <DependentUpon>ButtonAdder.cs</DependentUpon>
     </Compile>
     <Compile Include="JSONParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="InvSlot.cs">
+    <Compile Include="Controls\InvSlot.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InvSlot.Designer.cs">
+    <Compile Include="Controls\InvSlot.Designer.cs">
       <DependentUpon>InvSlot.cs</DependentUpon>
     </Compile>
-    <Compile Include="InnerButton.cs">
+    <Compile Include="Controls\InnerButton.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerButton.Designer.cs">
+    <Compile Include="Controls\InnerButton.Designer.cs">
       <DependentUpon>InnerButton.cs</DependentUpon>
     </Compile>
-    <Compile Include="InnerText.cs">
+    <Compile Include="Controls\InnerText.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerText.Designer.cs">
+    <Compile Include="Controls\InnerText.Designer.cs">
       <DependentUpon>InnerText.cs</DependentUpon>
     </Compile>
-    <Compile Include="Slot.cs">
+    <Compile Include="Controls\Slot.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Slot.Designer.cs">
+    <Compile Include="Controls\Slot.Designer.cs">
       <DependentUpon>Slot.cs</DependentUpon>
     </Compile>
-    <Compile Include="InvSlotAdder.cs">
+    <Compile Include="Adders\InvSlotAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InvSlotAdder.Designer.cs">
+    <Compile Include="Adders\InvSlotAdder.Designer.cs">
       <DependentUpon>InvSlotAdder.cs</DependentUpon>
     </Compile>
-    <Compile Include="InnerTextAdder.cs">
+    <Compile Include="Adders\InnerTextAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InnerTextAdder.Designer.cs">
+    <Compile Include="Adders\InnerTextAdder.Designer.cs">
       <DependentUpon>InnerTextAdder.cs</DependentUpon>
     </Compile>
-    <Compile Include="ScaleAdder.cs">
+    <Compile Include="Adders\ScaleAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ScaleAdder.Designer.cs">
+    <Compile Include="Adders\ScaleAdder.Designer.cs">
       <DependentUpon>ScaleAdder.cs</DependentUpon>
     </Compile>
-    <Compile Include="SlotAdder.cs">
+    <Compile Include="Adders\SlotAdder.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SlotAdder.Designer.cs">
+    <Compile Include="Adders\SlotAdder.Designer.cs">
       <DependentUpon>SlotAdder.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="InnerBitmap.resx">
+    <EmbeddedResource Include="Controls\InnerBitmap.resx">
       <DependentUpon>InnerBitmap.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerBitmapAdder.resx">
+    <EmbeddedResource Include="Adders\InnerBitmapAdder.resx">
       <DependentUpon>InnerBitmapAdder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Scale.resx">
+    <EmbeddedResource Include="Controls\InnerHeader.resx">
+      <DependentUpon>InnerHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Scale.resx">
       <DependentUpon>Scale.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerImageAdder.resx">
+    <EmbeddedResource Include="Adders\InnerImageAdder.resx">
       <DependentUpon>InnerImageAdder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CloseButtonAdder.resx">
+    <EmbeddedResource Include="Adders\CloseButtonAdder.resx">
       <DependentUpon>CloseButtonAdder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CloseButton.resx">
+    <EmbeddedResource Include="Controls\CloseButton.resx">
       <DependentUpon>CloseButton.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ButtonAdder.resx">
+    <EmbeddedResource Include="Adders\ButtonAdder.resx">
       <DependentUpon>ButtonAdder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerImage.resx">
+    <EmbeddedResource Include="Controls\InnerImage.resx">
       <DependentUpon>InnerImage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -203,28 +212,28 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="InvSlot.resx">
+    <EmbeddedResource Include="Controls\InvSlot.resx">
       <DependentUpon>InvSlot.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerButton.resx">
+    <EmbeddedResource Include="Controls\InnerButton.resx">
       <DependentUpon>InnerButton.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerText.resx">
+    <EmbeddedResource Include="Controls\InnerText.resx">
       <DependentUpon>InnerText.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Slot.resx">
+    <EmbeddedResource Include="Controls\Slot.resx">
       <DependentUpon>Slot.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InvSlotAdder.resx">
+    <EmbeddedResource Include="Adders\InvSlotAdder.resx">
       <DependentUpon>InvSlotAdder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InnerTextAdder.resx">
+    <EmbeddedResource Include="Adders\InnerTextAdder.resx">
       <DependentUpon>InnerTextAdder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ScaleAdder.resx">
+    <EmbeddedResource Include="Adders\ScaleAdder.resx">
       <DependentUpon>ScaleAdder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SlotAdder.resx">
+    <EmbeddedResource Include="Adders\SlotAdder.resx">
       <DependentUpon>SlotAdder.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -243,6 +252,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\button_fly_off.png" />
+    <None Include="bin\Debug\default_header.png" />
     <Content Include="testParse.txt" />
     <Content Include="ui\close_button_down.png" />
     <Content Include="ui\close_button_up.png" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InnerCoreUIEditor.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -22,11 +23,14 @@ namespace InnerCoreUIEditor
             inventoryDrawed = false;
             panelWorkspace.Click += PanelWorkspace_Click;
             panelWorkspace.ControlAdded += PanelWorkspace_ControlAdded;
-            panelWorkspace.Size = new Size(Global.X, Global.Y);
+            panelWorkspace.BackColor = Color.FromArgb(114, 106, 112);
+            label1.Location = new Point(Global.X, Global.Y);
+            //panelWorkspace.Size = new Size(Global.X, Global.Y);
             Global.counter = 0;
             Global.panelProperties = panelProperties;
             Global.panelWorkspace = panelWorkspace;
             Global.panelExplorer = panelExplorer;
+            Global.innerHeader = innerHeader1;
             KeyDown += Form1_KeyDown;
         }
 
@@ -46,7 +50,7 @@ namespace InnerCoreUIEditor
 
         private void PanelWorkspace_ControlAdded(object sender, ControlEventArgs e)
         {
-            if (e.Control == null || e.Control.GetType() == typeof(Label)) return;
+            if (e.Control == null || e.Control.GetType() == typeof(Label) || e.Control.GetType() == typeof(InnerHeader)) return;
             Global.ReloadExporer();
             ((InnerControl)e.Control).SelectControl();
         }
@@ -76,7 +80,7 @@ namespace InnerCoreUIEditor
             for(int i = 0; i < panelWorkspace.Controls.Count; i++)
             {
                 Control _c = panelWorkspace.Controls[i];
-                if (_c.GetType() == typeof(Label)) continue;
+                if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;
                 if (c.constant) continue;
                 c.Remove();
@@ -85,6 +89,40 @@ namespace InnerCoreUIEditor
             panelWorkspace.Refresh();
             Global.ReloadExporer();
             JSONParser.Parse(gui);
+            TryToGuessDrawOrder();
+        }
+
+        private void TryToGuessDrawOrder()
+        {
+            foreach (Control c in panelWorkspace.Controls)
+            {
+                if (c.GetType() != typeof(InnerBitmap) ) continue;
+                c.BringToFront();
+            }
+
+            foreach (Control c in panelWorkspace.Controls)
+            {
+                if (c.GetType() != typeof(InnerImage) && c.GetType() != typeof(Scale)) continue;
+                c.BringToFront();
+            }
+
+            foreach (Control c in panelWorkspace.Controls)
+            {
+                if (c.GetType() != typeof(Button) && c.GetType() != typeof(CloseButton)) continue;
+                c.BringToFront();
+            }
+
+            foreach (Control c in panelWorkspace.Controls)
+            {
+                if (c.GetType() != typeof(Slot) && c.GetType() != typeof(InvSlot)) continue;
+                c.BringToFront();
+            }
+
+            foreach (Control c in panelWorkspace.Controls)
+            {
+                if (c.GetType() != typeof(InnerText)) continue;
+                c.BringToFront();
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -92,9 +130,37 @@ namespace InnerCoreUIEditor
             if (Global.activeElement != null) Global.activeElement.Select();
         }
 
-        private void инвентарьToolStripMenuItem_Click(object sender, EventArgs e)
+        private void инвентарьToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
+            Global.SwitchInventorySlots();
+        }
 
+        private void заголовокToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Global.SwitchHeader();
+        }
+
+        private void цветToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            panelWorkspace.BackgroundImage = null;
+            colorDialog1.ShowDialog();
+            panelWorkspace.BackColor = colorDialog1.Color;
+            Global.ColorAllToPanelColor();
+        }
+
+        private void изображениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.ShowDialog();
+            if (openFileDialog1.SafeFileName == "") return;
+            if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
+            {
+                MessageBox.Show("Нужно выбрать *.png файл");
+                return;
+            }
+
+            Image image = Bitmap.FromFile(openFileDialog1.FileName);
+            Global.BackgroundImageName = openFileDialog1.SafeFileName;
+            panelWorkspace.BackgroundImage = image;           
         }
     }
 }

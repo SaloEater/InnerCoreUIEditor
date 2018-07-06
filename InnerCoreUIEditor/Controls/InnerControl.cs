@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnerCoreUIEditor.Properties;
+using InnerCoreUIEditor.Controls;
 
 namespace InnerCoreUIEditor
 {
@@ -31,6 +32,7 @@ namespace InnerCoreUIEditor
             hidden = false;
             propPanelCleared = false;
             Disposed += InnerControl_Disposed;
+
         }
 
         public void ResizeAll(Size size)
@@ -91,6 +93,8 @@ namespace InnerCoreUIEditor
             _nameValue.KeyDown += _nameValue_KeyDown;
             propPanel.Controls.Add(_nameValue);
             elementY += elementSpacing;
+
+
         }
 
         private void _nameValue_KeyDown(object sender, KeyEventArgs e)
@@ -98,6 +102,7 @@ namespace InnerCoreUIEditor
             if (e.KeyCode == Keys.Enter)
             {
                 _nameValue_LostFocus(sender, null);
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -112,6 +117,7 @@ namespace InnerCoreUIEditor
             Global.activeElement = this;
             propPanelCleared = false;
             elementY = 0;
+            //Global.panelWorkspace.ScrollControlIntoView(this);
             //Сделать фокусировку панели на элементе
             Global.activeElement.FillPropPanel(Global.panelProperties);
             ExplorerPainter.Color(elementName);
@@ -127,6 +133,7 @@ namespace InnerCoreUIEditor
 
         private void _nameValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             TextBox textBox = (TextBox)sender;
             string newName = textBox.Text;
             foreach(TextBox c in Global.panelExplorer.Controls)
@@ -147,7 +154,6 @@ namespace InnerCoreUIEditor
             {
                 case 'x':
                     {
-                        Console.WriteLine('x');
                         if (distance < 0) distance = (int)GetWidth() + distance;
                         CountScale('x', distance);
                         break;
@@ -155,7 +161,6 @@ namespace InnerCoreUIEditor
 
                 case 'y':
                     {
-                        Console.WriteLine('y');
                         if (distance < 0) distance = (int)GetHeight() + distance;
                         CountScale('y', distance);
                         break;
@@ -198,6 +203,11 @@ namespace InnerCoreUIEditor
            
         }
 
+        public virtual void ColorImagesToPanelColor()
+        {
+            //throw new NotImplementedException();
+        }
+
         private void ToFrontButton_Click(object sender, EventArgs e)
         {
             BringToFront();
@@ -208,7 +218,7 @@ namespace InnerCoreUIEditor
         {
             foreach(Control _c in Global.panelWorkspace.Controls)
             {
-                if (_c.GetType() == typeof(Label)) continue;
+                if (_c.GetType()== typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;
                 if (c.elementName == elementName)
                 {   

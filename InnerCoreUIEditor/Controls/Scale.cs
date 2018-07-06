@@ -85,7 +85,7 @@ namespace InnerCoreUIEditor
         {
             originSize = activeImage.Size;
             ChangeControlSize(originSize);
-            pictureBox1.Image = activeImage;
+            ColorImagesToPanelColor();
             ChangeScale(scale);
             Console.Write(Size);
         }
@@ -128,6 +128,16 @@ namespace InnerCoreUIEditor
                         ChangeScale(scale);
                         break;
                     }
+            }
+        }
+
+        public override void ColorImagesToPanelColor()
+        {
+            pictureBox1.Image = ImageBlend.ToPanelColor(new Bitmap(activeImage));
+            if (overlayEnabled)
+            {
+                pictureBox2.Image = new Bitmap(overlayImage);
+                ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
             }
         }
 
@@ -411,6 +421,7 @@ namespace InnerCoreUIEditor
 
         private void _overlaySizeValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!overlayEnabled) return;
             if (!overlayScaleTextChanged) return;
             overlayScaleTextChanged = false;
@@ -448,6 +459,7 @@ namespace InnerCoreUIEditor
 
         private void _offsetYValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!overlayEnabled) return;
             if (!offsetYTextChanged) return;
             offsetYTextChanged = false;
@@ -473,6 +485,7 @@ namespace InnerCoreUIEditor
 
         private void _offsetXValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!overlayEnabled) return;
             if (!offsetXTextChanged) return;
             offsetXTextChanged = false;
@@ -488,12 +501,14 @@ namespace InnerCoreUIEditor
 
         private void __overlayImagePath_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!overlayEnabled) return;
 
         }
 
         private void openFileDialog2_Click(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!overlayEnabled) return;
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
@@ -511,7 +526,7 @@ namespace InnerCoreUIEditor
         private void ApplyOverlayImage()
         {
             pictureBox2.Size = overlayImage.Size;
-            pictureBox2.Image = overlayImage;
+            pictureBox2.Image = new Bitmap(overlayImage);
             pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
             ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
             this.Refresh();
@@ -542,10 +557,10 @@ namespace InnerCoreUIEditor
             overlayEnabled = true;
             pictureBox2.Visible = true;
             pictureBox2.Size = overlayImage.Size;
-            pictureBox2.Image = overlayImage;
+            pictureBox2.Image = new Bitmap(overlayImage);
             pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
             pictureBox2.Location = overlayOffset;
-            ImageBlend.Blend(pictureBox1.Image, overlayImage);
+            ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
             this.side = side;
             this.invert = invert;
             Clicker = clicker;
@@ -622,6 +637,7 @@ namespace InnerCoreUIEditor
 
         private void _sizeValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!scaleTextChanged) return;
             scaleTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -644,6 +660,7 @@ namespace InnerCoreUIEditor
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             /*TextBox textBox = (TextBox)sender;
             if(textBox.Controls.Count!=0)textBox.Controls[0].Dispose();
             textBox.Controls.Clear();*/
@@ -651,6 +668,7 @@ namespace InnerCoreUIEditor
 
         private void openFileDialog_Click(object sender, EventArgs e)
         {
+            if (constant) return;
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
@@ -662,10 +680,12 @@ namespace InnerCoreUIEditor
             imageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
             FillPropPanel(Global.panelProperties);
+            ImageBlend.ToPanelColor(pictureBox1.Image);
         }
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!XTextChanged) return;
             XTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -690,6 +710,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsYValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!YTextChanged) return;
             YTextChanged = false;
             TextBox textBox = (TextBox)sender;

@@ -205,4 +205,7 @@
   <data name="button_to_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\button_fly_off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="default_header" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\bin\Debug\default_header.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

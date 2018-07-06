@@ -140,6 +140,7 @@ namespace InnerCoreUIEditor
 
         private void _textValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             TextBox textBox = (TextBox)sender;
             richTextBox1.Text = textBox.Text;
         }
@@ -164,6 +165,7 @@ namespace InnerCoreUIEditor
 
         private void _heightValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             TextBox textBox = (TextBox)sender;
             int height;
             if (!int.TryParse(textBox.Text, out height))
@@ -181,6 +183,7 @@ namespace InnerCoreUIEditor
 
         private void _widthValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             TextBox textBox = (TextBox)sender;
             int width;
             if (!int.TryParse(textBox.Text, out width))
@@ -233,6 +236,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!XTextChanged) return;
             XTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -257,6 +261,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsYValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!YTextChanged) return;
             YTextChanged = false;
             TextBox textBox = (TextBox)sender;

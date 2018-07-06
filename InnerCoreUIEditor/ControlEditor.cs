@@ -77,6 +77,7 @@ namespace InnerCoreUIEditor
         private static void MoveControl(object container, MouseEventArgs e)
         {
             InnerControl obj = (InnerControl)container;
+            if (obj.hidden || obj.constant) return;
             if (!moving && !scaling)
             {
                 UpdateMousePosition(obj, e.Location);
@@ -86,8 +87,8 @@ namespace InnerCoreUIEditor
             {
                 int x = (e.X - cursorOrigin.X) + obj.Left;
                 int y = (e.Y - cursorOrigin.Y) + obj.Top;
-                if (x - Global.panelWorkspace.AutoScrollPosition.X > Global.X || x - Global.panelWorkspace.AutoScrollPosition.X < 0) x = obj.Left;
-                if (y - Global.panelWorkspace.AutoScrollPosition.Y > Global.Y || y - Global.panelWorkspace.AutoScrollPosition.Y < 0) y = obj.Top;
+                if (x + obj.Width - Global.panelWorkspace.AutoScrollPosition.X > Global.X || x - Global.panelWorkspace.AutoScrollPosition.X < 0) return;
+                if (y + obj.Height - Global.panelWorkspace.AutoScrollPosition.Y > Global.Y || y - Global.panelWorkspace.AutoScrollPosition.Y < 0) return;
                 obj.Location = new Point(x, y);
             }
             else if (scaling)
@@ -163,7 +164,7 @@ namespace InnerCoreUIEditor
 
         private static void UpdateCursor(Control sender)
         {
-            if(leftEdge)
+            if (leftEdge)
             {
                 if(upperEdge)
                 {

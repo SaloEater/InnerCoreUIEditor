@@ -34,7 +34,7 @@ namespace InnerCoreUIEditor
         {
             ControlEditor.Init(pictureBoxSlot, this);
             ActiveImage = ResizeImage(Resources._default_slot_light, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
+            pictureBoxSlot.Image = new Bitmap(ActiveImage);
             pictureBoxSlot.Click += PictureBoxSlot_Click;
             ImageName = "_default_slot_light.png";
             Visual = false;
@@ -194,33 +194,18 @@ namespace InnerCoreUIEditor
 
         public override void CountScale(char axis, int distance)
         {
-            switch (axis)
-            {
-                case 'x':
-                    {
-                        float scale = (float)distance / GetWidth();
-                        Point oldLocation = Location;
-                        this.Scale(new SizeF(scale, scale));
-                        Location = oldLocation;
-                        break;
-                    }
-
-                case 'y':
-                    {
-                        float scale = (float)distance / GetHeight();
-                        Point oldLocation = Location;
-                        this.Scale(new SizeF(scale, scale));
-                        Location = oldLocation;
-                        break;
-                    }
-            }
+            float scale = (float)distance / GetHeight();
+            if (Location.X + scale + Global.panelWorkspace.AutoScrollPosition.X > Global.X || Location.Y + scale + Global.panelWorkspace.AutoScrollPosition.Y > Global.Y) return;
+            Point oldLocation = Location;
+            this.Scale(new SizeF(scale, scale));
+            Location = oldLocation;
         }
 
         private void ApplyImage(string path)
         {
             Bitmap bitmap = CreateBitmap(path);
             ActiveImage = ResizeImage(bitmap, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = ActiveImage;
+            pictureBoxSlot.Image = new Bitmap(ActiveImage);
         }
 
         private Bitmap CreateBitmap(string path)
@@ -275,6 +260,7 @@ namespace InnerCoreUIEditor
 
         private void _sizeValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!sizeTextChanged) return;
             sizeTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -301,6 +287,7 @@ namespace InnerCoreUIEditor
 
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             /*TextBox textBox = (TextBox)sender;
             if(textBox.Controls.Count!=0)textBox.Controls[0].Dispose();
             textBox.Controls.Clear();*/
@@ -308,6 +295,7 @@ namespace InnerCoreUIEditor
 
         private void openFileDialog_Click(object sender, EventArgs e)
         {
+            if (constant) return;
             openFileDialog1.ShowDialog();
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
@@ -323,6 +311,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!XTextChanged) return;
             XTextChanged = false;
             TextBox textBox = (TextBox)sender;
@@ -347,6 +336,7 @@ namespace InnerCoreUIEditor
 
         private void _coordsYValue_LostFocus(object sender, EventArgs e)
         {
+            if (constant) return;
             if (!YTextChanged) return;
             YTextChanged = false;
             TextBox textBox = (TextBox)sender;
