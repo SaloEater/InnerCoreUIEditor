@@ -75,6 +75,7 @@ namespace InnerCoreUIEditor
 
         private static void CombineDrawingsWithElements()
         {
+            //save
             foreach(Control c in Global.panelWorkspace.Controls)
             {
                 if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
