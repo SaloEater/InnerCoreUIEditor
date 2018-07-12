@@ -40,6 +40,7 @@ namespace InnerCoreUIEditor
             rightEdge = false;
             cursorOrigin = Point.Empty;
 
+            origin.Click += (sender, e) => { ((InnerControl)target).FillPropPanel(Global.panelProperties); };
             origin.MouseDown += Control_MouseDown; // Активировать изменение объекта
             origin.MouseUp += Control_MouseUp; // Прекратить изменение объекта
             origin.MouseMove += (sender, e) => MoveControl(target, e); // Само изменение рассчитывается здесь

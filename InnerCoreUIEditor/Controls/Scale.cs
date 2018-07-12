@@ -21,6 +21,8 @@ namespace InnerCoreUIEditor
         public Size originSize { get; set; }
         public Point oldLocation { get; set; }
 
+        private Image scaledActiveImage;
+
         private bool scaleTextChanged;
         private bool XTextChanged;
         private bool YTextChanged;
@@ -49,6 +51,7 @@ namespace InnerCoreUIEditor
         public void Initialization()
         {
             pictureBox1.Click += PictureBox_Click;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
             pictureBox2.Click += PictureBox_Click;
             pictureBox2.VisibleChanged += PictureBox2_VisibleChanged;
             ControlEditor.Init(pictureBox1, this);
@@ -84,7 +87,7 @@ namespace InnerCoreUIEditor
         private void ApplyImage(Image activeImage)
         {
             originSize = activeImage.Size;
-            ChangeControlSize(originSize);
+            //ChangeControlSize(originSize);
             ColorImagesToPanelColor();
             ChangeScale(scale);
             Console.Write(Size);
@@ -102,6 +105,8 @@ namespace InnerCoreUIEditor
             oldLocation = Location;
             ChangeControlSize(originSize);
             Scale(new SizeF(scale, scale));
+            scaledActiveImage = ImageBlend.ResizeImage(pictureBox1.Image, (int)(originSize.Width * scale), (int)(originSize.Height * scale));
+            pictureBox1.Image = scaledActiveImage;
             pictureBox2.Size = overlayImage.Size;
             if (overlayEnabled)
             {
@@ -133,7 +138,8 @@ namespace InnerCoreUIEditor
 
         public override void ColorImagesToPanelColor()
         {
-            pictureBox1.Image = ImageBlend.ToPanelColor(new Bitmap(activeImage));
+            //pictureBox1.Image = new Bitmap(activeImage);
+            pictureBox1.Image = ImageBlend.MergeWithPanel(new Bitmap(activeImage), new Point(Location.X + Global.panelWorkspace.AutoScrollPosition.X, Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
             if (overlayEnabled)
             {
                 pictureBox2.Image = new Bitmap(overlayImage);
@@ -143,11 +149,8 @@ namespace InnerCoreUIEditor
 
         public override void FillPropPanel(Panel propPanel)
         {
-            if(!propPanelCleared)
-            {
-                ClearPropPanel(propPanel);
-                FillName(propPanel);
-            }
+            ClearPropPanel(propPanel);
+            FillName(propPanel);
             Label _size = new Label();
             _size.Location = new Point(0, elementY);
             _size.Size = new Size(51, elementSpacing);
@@ -258,7 +261,7 @@ namespace InnerCoreUIEditor
             comboBox.Items.Add("Вверх");
             comboBox.Items.Add("Налево");
             comboBox.Items.Add("Вниз");
-            comboBox.Text = comboBox.Items[side].ToString();
+            comboBox.Text = comboBox.Items[chosenItem].ToString();
             comboBox.TextChanged += ComboBox_TextChanged;
             comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             propPanel.Controls.Add(comboBox);
@@ -273,9 +276,10 @@ namespace InnerCoreUIEditor
             trackBar.Location = new Point(0, elementY+= elementSpacing);
             trackBar.Size = new Size(203, 2*elementSpacing);
             trackBar.Maximum = 100;
-            trackBar.Minimum = 0;
+            trackBar.Minimum = 1;
             trackBar.Value = 100;
             trackBar.ValueChanged += TrackBar_ValueChanged;
+            trackBar.LostFocus += (sender, e) => { ((TrackBar)sender).Value = 100; };
             propPanel.Controls.Add(trackBar);
 
             Label _overlayEnabled = new Label();
@@ -382,7 +386,8 @@ namespace InnerCoreUIEditor
 
         private void OpenFileDialogOriginImage_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {
@@ -390,20 +395,51 @@ namespace InnerCoreUIEditor
                 return;
             }
             Bitmap image = (Bitmap)Bitmap.FromFile(openFileDialog1.FileName);
-            ImageBlend.ToPanelColor(image);
-            ImageBlend.Blend(image, pictureBox1.Image);
+            ApplyMask(image);
             Refresh();
+        }
+
+        public void ApplyMask(Bitmap image)
+        {
+            ImageBlend.MergeWithPanel(image, new Point(Location.X + Global.panelWorkspace.AutoScrollPosition.X, Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
+            //ImageBlend.Blend(image, pictureBox1.Image);
+            BackgroundImage = image;
         }
 
         private void TrackBar_ValueChanged(object sender, EventArgs e)
         {
-            //Реализовать сдвиг
+            TrackBar trackBar = (TrackBar)sender;
+            int value = trackBar.Value;
+            switch(chosenItem)
+            {
+                case 0:
+                    pictureBox1.Width = pictureBox1.Image.Size.Width * value / 100;
+                    break;
+
+                case 1:
+                    if (value == 100) break;
+                    pictureBox1.Top = Height - Height * value / 100;
+                    pictureBox1.Image = ImageBlend.CropVertical(scaledActiveImage, value);
+                    break;
+
+                case 2:
+                    if (value == 100) break;
+                    //pictureBox1.Left = Width - Width * value / 100;
+                    pictureBox1.Image = ImageBlend.CropHorizontal(scaledActiveImage, value);
+
+                    break;
+
+                case 3:
+                    pictureBox1.Height = pictureBox1.Image.Size.Height * value / 100;
+                    break;
+            }
         }
 
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
             comboBox.Text = (string)comboBox.Items[chosenItem];
+            
         }
 
         private void ComboBox_TextChanged(object sender, EventArgs e)
@@ -412,6 +448,7 @@ namespace InnerCoreUIEditor
             if(comboBox.SelectedIndex!=-1)
                 chosenItem = comboBox.SelectedIndex;
             comboBox.Text = (string)comboBox.Items[chosenItem];
+            
         }
 
         internal override void SelectControl()
@@ -510,7 +547,8 @@ namespace InnerCoreUIEditor
         {
             if (constant) return;
             if (!overlayEnabled) return;
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {
@@ -541,7 +579,7 @@ namespace InnerCoreUIEditor
             this.imageName = imageName;
             string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
             ApplyImage(path);
-            ImageBlend.ToPanelColor(pictureBox1.Image);
+            pictureBox1.Image = ImageBlend.MergeWithPanel(new Bitmap(pictureBox1.Image), new Point(Location.X + Global.panelWorkspace.AutoScrollPosition.X, Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
 
             this.overlayImageName = overlayImageName;
             path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + overlayImageName + ".png";
@@ -562,7 +600,7 @@ namespace InnerCoreUIEditor
             pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
             pictureBox2.Location = overlayOffset;
             ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
-            this.side = side;
+            chosenItem = side;
             this.invert = invert;
             Clicker = clicker;
         }
@@ -576,7 +614,7 @@ namespace InnerCoreUIEditor
             this.imageName = imageName;
             string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
             ApplyImage(path);
-            this.side = side;
+            chosenItem = side;
             this.invert = invert;
 
             Clicker = clicker;
@@ -670,7 +708,8 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {
@@ -681,7 +720,7 @@ namespace InnerCoreUIEditor
             imageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
             FillPropPanel(Global.panelProperties);
-            ImageBlend.ToPanelColor(pictureBox1.Image);
+            pictureBox1.Image = ImageBlend.MergeWithPanel(new Bitmap(pictureBox1.Image), new Point(Location.X + Global.panelWorkspace.AutoScrollPosition.X, Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
         }
 
         private void _coordsXValue_LostFocus(object sender, EventArgs e)

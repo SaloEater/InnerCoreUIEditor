@@ -11,8 +11,11 @@ namespace InnerCoreUIEditor
 {
     static class Global
     {
+        public const int defaultHeight = 700;
+
         public static int X = 1000,
-                        Y = 700;
+                        Y = defaultHeight;
+
 
         private static Panel _panelProperties;
         public static Panel panelProperties
@@ -45,6 +48,7 @@ namespace InnerCoreUIEditor
         internal static void SetHeaderText(string text)
         {
             _innerHeader.SetText(text);
+            _innerHeader.Visible = true;
         }
 
         private static int _counter;
@@ -69,10 +73,65 @@ namespace InnerCoreUIEditor
         }
 
         private static string _BackgroundImageName;
+
         public static string BackgroundImageName
         {
             get { return _BackgroundImageName; }
             set { _BackgroundImageName = value; }
+        }
+
+        internal static void TurnToDefault(Type type, Image slotDefaultImage, string slotImageName)
+        {
+            //1
+            foreach(Control c in _panelWorkspace.Controls)
+            {
+                if (c.GetType() == type)
+                {
+                    if(type == typeof(Slot))
+                    {
+                        Slot _c = (Slot)c;
+                        _c.ToDefault();
+                    } else
+                    if(type == typeof(InvSlot))
+                    {
+                        InvSlot _c = (InvSlot)c;
+                        _c.ToDefault();
+                    }
+                }
+            }
+        }
+
+        internal static void TurnSlotsSelectionToDefault(Image selectionDefaultImage)
+        {
+            //2
+            foreach (Control c in _panelWorkspace.Controls)
+            {
+                if (c.GetType() == typeof(Slot))
+                {
+                    Slot _c = (Slot)c;
+                    _c.SetSelection(selectionDefaultImage);
+                }
+                else
+                if (c.GetType() == typeof(InvSlot))
+                {
+                    InvSlot _c = (InvSlot)c;
+                    _c.ToDefault();
+                    _c.SetSelection(selectionDefaultImage);
+                }
+            }
+        }
+
+        internal static void TurnCloseButtonsToDefault(Image closeButtonDefaultImage, string closeButtonImageName, Image closeButton2DefaultImage, string closeButton2ImageName)
+        {
+            //3
+            foreach (Control c in _panelWorkspace.Controls)
+            {
+                if (c.GetType() == typeof(CloseButton))
+                {
+                    CloseButton b = (CloseButton)c;
+                    b.SetImage(closeButtonDefaultImage, closeButtonImageName, closeButton2DefaultImage, closeButton2ImageName);
+                }
+            }
         }
 
         internal static void SetGlobalColor(string bg_color)
@@ -90,7 +149,7 @@ namespace InnerCoreUIEditor
             try
             {
                 panelWorkspace.BackgroundImage = Bitmap.FromFile(path);
-            } catch(ArgumentException)
+            } catch(Exception)
             {
                 MessageBox.Show("Отсутствует файл " + path, "Изображение заднего фона");
             }
@@ -132,6 +191,16 @@ namespace InnerCoreUIEditor
             }
         }
 
+        internal static void AllMergeToBackground()
+        {
+            /*foreach(Control c in _panelWorkspace.Controls)
+            {
+                if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
+                InnerControl _c = (InnerControl)c;
+                c.ToBackground();
+            }*/
+        }
+
         internal static void ColorAllToPanelColor()
         {
             foreach (Control c in panelWorkspace.Controls)
@@ -150,7 +219,7 @@ namespace InnerCoreUIEditor
                 InvSlot invSlot = new InvSlot();
                 invSlot.index = i + 9;
                 invSlot.Location = new Point(i % 3 * invSlot.Width + _panelWorkspace.AutoScrollPosition.X, i/3 * invSlot.Width + _panelWorkspace.AutoScrollPosition.Y + (_innerHeader.Visible?40:0));
-                invSlot.constant = true;
+                invSlot.hidden = true;
                 invSlot.elementName = "__invslot" + (i+9);
                 _panelWorkspace.Controls.Add(invSlot);
             }
@@ -228,6 +297,21 @@ namespace InnerCoreUIEditor
                     }
                     break;
             }
+        }
+
+        internal static void ChangeHeight(int height)
+        {
+            Y = height;
+            foreach(Control c in _panelWorkspace.Controls)
+            {
+                if(c.GetType() == typeof(Label))
+                {
+                    c.Location = new Point(c.Location.X, height);
+                    break;
+                }
+            }
+            //_panelWorkspace.Height = height;
+            _panelWorkspace.Refresh();
         }
 
         internal static void RemoveInventorySlots()

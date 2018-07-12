@@ -18,14 +18,31 @@ namespace InnerCoreUIEditor
         {
             //int standartPosition = FindEntrance(gui, "standart:");
             //ParseStandart(gui);
-            gui = Clear(gui);
+            string _params = GetBigField(gui, "params");
+            ParseParams(_params);
             string standart = GetBigField(gui, "standart");
             ParseStandart(standart);
+            gui = Clear(gui);
             string drawing = GetBigField(gui, "drawing", '[', ']');
             ParseDrawing(drawing);
             string elements = GetBigField(gui, "elements");            
             ParseElements(elements);
             CombineDrawingsWithElements();
+        }
+
+        private static void ParseParams(string _params)
+        {
+            _params = Clear(_params);
+            string type = GetField(_params, "slot").Replace("\"", "");
+            if (type != "") Params.LoadSlotImage(type);
+            type = GetField(_params, "invSlot").Replace("\"", "");
+            if (type != "") Params.LoadInvSlotImage(type);
+            type = GetField(_params, "selection").Replace("\"", "");
+            if (type != "") Params.LoadSelectionImage(type);
+            type = GetField(_params, "closeButton").Replace("\"", "");
+            if (type != "") Params.LoadCloseButtonImage(type);
+            type = GetField(_params, "closeButton2").Replace("\"", "");
+            if (type != "") Params.LoadCloseButton2Image(type);
         }
 
         private static void ParseStandart(string standart)
@@ -34,6 +51,7 @@ namespace InnerCoreUIEditor
             string header = GetBigField(standart, "header");
             header = GetField(GetField(header, "text"), "text").Replace("\"", "");
             if (header != "") Global.SetHeaderText(header);
+            if (GetField(GetField(header, "text"), "hideButton") == "true") Global.innerHeader.SetButtonVisibilty(true);
 
             string inventory = GetBigField(standart, "inventory");
             inventory = GetField(inventory, "standart");
@@ -49,6 +67,10 @@ namespace InnerCoreUIEditor
                 string bg_bitmap = GetField(background, "bitmap");
                 if (bg_bitmap != "") Global.SetGlobalBackground(bg_bitmap.Replace("\"", ""));
             }
+
+            string minHeight = GetField(standart, "minHeight");
+            if (int.TryParse(minHeight, out int height)) Global.ChangeHeight(height);
+            else Global.ChangeHeight(Global.defaultHeight);
         }
 
         private static void CombineDrawingsWithElements()
@@ -59,22 +81,24 @@ namespace InnerCoreUIEditor
                 if (c.GetType() == typeof(InnerBitmap))
                 {
                     InnerBitmap innerBitmap = (InnerBitmap)c;
-                    ImageBlend.ToPanelColor(((PictureBox)innerBitmap.Controls[0]).Image);
+                    ((PictureBox)innerBitmap.Controls[0]).Image = ImageBlend.MergeWithPanel(new Bitmap(((PictureBox)innerBitmap.Controls[0]).Image), new Point(c.Location.X + Global.panelWorkspace.AutoScrollPosition.X, c.Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
                     foreach (Control c2 in Global.panelWorkspace.Controls)
                     {
                         if (c2.GetType() != typeof(Scale)) continue;                        
-                        Scale innerControl = (Scale)c2;
-                        if (innerBitmap.elementName == innerControl.elementName) continue;
-                        if(innerControl.Location == innerBitmap.Location)
+                        Scale scale = (Scale)c2;
+                        if (innerBitmap.elementName == scale.elementName) continue;
+                        if(scale.Location == innerBitmap.Location)
                         {
                             Image front = null;
-                            foreach(Control c3 in innerControl.Controls)
+                            foreach(Control c3 in scale.Controls)
                             {
                                 if (c3.GetType() != typeof(PictureBox)) continue;
                                 if (c3.Name == "pictureBox1") front = ((PictureBox)c3).Image;
                             }
                             Image back = ((PictureBox)innerBitmap.Controls[0]).Image;
-                            ImageBlend.Blend(back, front);
+                            back = ImageBlend.ResizeImage(back, (int)(back.Width * scale.scale), (int)(back.Height * scale.scale));
+                            //ImageBlend.Blend(back, front);
+                            scale.ApplyMask(new Bitmap(back));
                         }
                     }
                 }
@@ -296,12 +320,12 @@ namespace InnerCoreUIEditor
                         y += Global.panelWorkspace.AutoScrollPosition.Y;
                         float scale;
                         if (!float.TryParse(GetClearField(element, "scale"), NumberStyles.Any, CultureInfo.InvariantCulture, out scale)) scale = 1;
-                        string unpressedImageName = GetClearField(element, "bitmap");
-                        if (unpressedImageName == "") unpressedImageName = slot.UnpressedImageName.Split('.')[0];
-                        string pressedImageName = GetClearField(element, "bitmap2");
-                        if (pressedImageName == "") pressedImageName = unpressedImageName;
+                        string activeImageName = GetClearField(element, "bitmap");
+                        if (activeImageName == "") activeImageName = slot.activeImageName.Split('.')[0];
+                        string activeImage2 = GetClearField(element, "bitmap2");
+                        if (activeImage2 == "") activeImage2 = activeImageName;
                         string Clicker = GetField(element, "clicker");
-                        slot.Apply(name, x, y, scale, pressedImageName, unpressedImageName, Clicker);
+                        slot.Apply(name, x, y, scale, activeImage2, activeImageName, Clicker);
                         Global.panelWorkspace.Controls.Add(slot);
                         break;
                     }
@@ -462,18 +486,20 @@ namespace InnerCoreUIEditor
 
         internal static void Save(string filename)
         {
-
             string standart = "standart: \n{";
             string headerText = Global.innerHeader.GetText();
             if(headerText != "")
             {
-                standart += "header: { text: { text: \"" + headerText + "\"} },\n";
+                standart += "\n\theader: { text: { text: \"" + headerText + "\"},";
+                if (Global.innerHeader.GetButtonVisibility())
+                    standart += "\nhideButton: true,";
+                standart += "},";
             }
             if(Global.inventoryDrawed)
             {
-                standart += "inventory: { standart: true},\n";
+                standart += "\n\tinventory: { standart: true},";
             }
-            standart += "background: ";
+            standart += "\n\tbackground: ";
             if(Global.panelWorkspace.BackgroundImage!=null)
             {
                 standart += "{bitmap: \"" + Global.BackgroundImageName +"\"}";
@@ -488,7 +514,39 @@ namespace InnerCoreUIEditor
                     standart += "{android.graphics.Color.rgb(" + bg_color.R + ',' + bg_color.G + ',' + bg_color.B + ")}";
                 }
             }
+
+            standart += "\n\t\tminHeight: " + Global.Y + ",";
+
             standart += "\n},\n";
+
+            string _params = "params: \n{";
+
+            if(Params.slotImageName != Params.Default_SlotImage)
+            {
+                _params += "\n\tslot: \"" + Params.slotImageName.Replace(".png", "") + "\",";
+            }
+
+            if (Params.invSlotImageName != Params.Default_InvSlotImage)
+            {
+                _params += "\n\tinvSlot: \"" + Params.invSlotImageName.Replace(".png", "") + "\",";
+            }
+
+            if (Params.selectionImageName != Params.Default_SelectionImage)
+            {
+                _params += "\n\tselection: \"" + Params.selectionImageName.Replace(".png", "") + "\",";
+            }
+
+            if (Params.closeButtonImageName != Params.Default_CloseButtonImage)
+            {
+                _params += "\n\tcloseButton: \"" + Params.closeButtonImageName.Replace(".png", "") + "\",";
+            }
+
+            if (Params.closeButton2ImageName != Params.Default_CloseButton2Image)
+            {
+                _params += "\n\tcloseButton: \"" + Params.closeButton2ImageName.Replace(".png", "") + "\",";
+            }
+
+            _params += "\n},\n";
 
             string drawing = "drawing: \n[";
             foreach (Control _c in Global.panelWorkspace.Controls)
@@ -511,7 +569,7 @@ namespace InnerCoreUIEditor
 
             elements += "\n}";
 
-            File.WriteAllText(filename, standart + drawing + elements);
+            File.WriteAllText(filename, standart + _params + drawing + elements);
         }
     }
 }

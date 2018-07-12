@@ -18,7 +18,7 @@ namespace InnerCoreUIEditor
 
         public int elementY, elementSpacing = 20;
 
-        public bool propPanelCleared;
+        //public bool propPanelCleared;
 
         public bool constant;
         public bool hidden;
@@ -30,9 +30,13 @@ namespace InnerCoreUIEditor
             elementY = 0;
             constant = false;
             hidden = false;
-            propPanelCleared = false;
-            Disposed += InnerControl_Disposed;
+            //propPanelCleared = false;
+            Disposed += InnerControl_Disposed;            
+        }
 
+        public virtual void ToDefault()
+        {
+            throw new NotImplementedException();
         }
 
         public void ResizeAll(Size size)
@@ -55,26 +59,31 @@ namespace InnerCoreUIEditor
 
         public void ClearPropPanel(Panel propPanel)
         {
-            if(!propPanelCleared)
+            foreach (Control c in propPanel.Controls)
             {
-                foreach (Control c in propPanel.Controls)
-                {
-                    c.Dispose();
-                }
-                propPanel.Controls.Clear();
-                propPanel.Refresh();
-                propPanelCleared = true;
+                c.Dispose();
             }
+            propPanel.Controls.Clear();
+            propPanel.Refresh();
+            //propPanelCleared = true;
+            elementY = 0;
+        }
+
+        public virtual void ToBackground()
+        {
+            throw new NotImplementedException();
         }
 
         public virtual void FillPropPanel(Panel propPanel)
         {
-            if (!propPanelCleared)
+            /*if (!propPanelCleared)
             {
                 ClearPropPanel(propPanel);
                 FillName(propPanel);
-            }
-            AddRemoveButton(propPanel);
+            }*/
+            if(!constant)AddRemoveButton(propPanel);
+            propPanel.Refresh();
+            Console.WriteLine("Drawed");
         }
 
         public void FillName(Panel propPanel)
@@ -92,9 +101,21 @@ namespace InnerCoreUIEditor
             _nameValue.LostFocus += _nameValue_LostFocus;
             _nameValue.KeyDown += _nameValue_KeyDown;
             propPanel.Controls.Add(_nameValue);
+
+            Label _visible = new Label();
+            _visible.Location = new Point(0, elementY += elementSpacing);
+            _visible.Size = new Size(102, elementSpacing);
+            _visible.Text = "Видимость";
+            propPanel.Controls.Add(_visible);
+
+            CheckBox _globalCheck = new CheckBox();
+            _globalCheck.Location = new Point(103, elementY);
+            _globalCheck.Size = new Size(101, elementSpacing);
+            _globalCheck.Checked = Visible;
+            _globalCheck.CheckedChanged += (sender, e) => { Visible = ((CheckBox)sender).Checked; };
+            propPanel.Controls.Add(_globalCheck);
+
             elementY += elementSpacing;
-
-
         }
 
         private void _nameValue_KeyDown(object sender, KeyEventArgs e)
@@ -115,18 +136,18 @@ namespace InnerCoreUIEditor
         {
             if (Global.activeElement != null) Global.activeElement.DeselectControl();
             Global.activeElement = this;
-            propPanelCleared = false;
+            //propPanelCleared = false;
             elementY = 0;
             //Global.panelWorkspace.ScrollControlIntoView(this);
             //Сделать фокусировку панели на элементе
-            Global.activeElement.FillPropPanel(Global.panelProperties);
             ExplorerPainter.Color(elementName);
+            Global.activeElement.FillPropPanel(Global.panelProperties);
         }
 
-        internal void DeselectControl()
+        internal virtual void DeselectControl()
         {
             Global.activeElement = null;
-            propPanelCleared = false;
+            //propPanelCleared = false;
             ClearPropPanel(Global.panelProperties);
             ExplorerPainter.Uncolor(elementName);
         }

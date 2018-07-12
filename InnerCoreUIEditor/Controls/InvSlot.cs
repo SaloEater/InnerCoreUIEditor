@@ -31,11 +31,21 @@ namespace InnerCoreUIEditor
         public void Initialization()
         {
             ControlEditor.Init(pictureBoxSlot, this);
-            ActiveImage = ResizeImage(Resources._default_slot_light, new Size(Size.Width, Size.Height));
-            pictureBoxSlot.Image = new Bitmap(ActiveImage);
+            ControlEditor.Init(pictureBoxSelection, this);
+            pictureBoxSelection.SizeMode = PictureBoxSizeMode.StretchImage;
+            ToDefault();
             pictureBoxSlot.Click += PictureBoxSlot_Click;
-            ImageName = "_default_slot_light.png";
             index = 0;
+        }
+
+        public override void ToDefault()
+        {
+            ActiveImage = Params.GetInvSlotImage(out string imageName);
+            pictureBoxSlot.Image = new Bitmap(ActiveImage);
+            ImageName = imageName;
+            pictureBoxSelection.Image = new Bitmap(Params.GetSelectionImage(out imageName));
+            ImageBlend.Blend(pictureBoxSlot.Image, pictureBoxSelection.Image);
+            Refresh();
         }
 
         public override void FillPropPanel(Panel propPanel)
@@ -134,6 +144,13 @@ namespace InnerCoreUIEditor
             base.FillPropPanel(propPanel);
         }
 
+        internal void SetSelection(Image selectionDefaultImage)
+        {
+            pictureBoxSelection.Image = new Bitmap(selectionDefaultImage);
+            ImageBlend.Blend(pictureBoxSlot.Image, pictureBoxSelection.Image);
+            Refresh();
+        }
+
         private void _indexValue_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -230,20 +247,22 @@ namespace InnerCoreUIEditor
             SelectControl();
         }
 
-        private Image ResizeImage(Image image, Size size)
+        internal override void SelectControl()
         {
-            Image newImage = new Bitmap(size.Width, size.Height);
-            using (Graphics gfx = Graphics.FromImage(newImage))
-            {
-                gfx.DrawImage(image, new Rectangle(Point.Empty, size));
-            }
-            return newImage;
+            base.SelectControl();
+            pictureBoxSelection.Visible = true;
+        }
+
+        internal override void DeselectControl()
+        {
+            base.DeselectControl();
+            pictureBoxSelection.Visible = false;
         }
 
         private void ApplyImage(string path)
         {
             Bitmap bitmap = CreateBitmap(path);
-            ActiveImage = ResizeImage(bitmap, new Size(Size.Width, Size.Height));
+            ActiveImage = bitmap;
             pictureBoxSlot.Image = new Bitmap(ActiveImage);
         }
 
@@ -253,11 +272,11 @@ namespace InnerCoreUIEditor
             try
             {
                 bitmap = new Bitmap(path);
-            }
-            catch (ArgumentException)
+            }catch(ArgumentException)
             {
                 MessageBox.Show("Отсутствует файл " + path + ". Добавьте его и загрузите заново");
-                return Resources._default_slot_light;
+                ToDefault();
+                return (Bitmap)ActiveImage;
             }
             for (int _x = 0; _x < bitmap.Width; _x++)
             {
@@ -336,7 +355,8 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {
@@ -346,6 +366,7 @@ namespace InnerCoreUIEditor
 
             ImageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
+            SetSelection(Params.GetSelectionImage(out string a));
             FillPropPanel(Global.panelProperties);
         }
 

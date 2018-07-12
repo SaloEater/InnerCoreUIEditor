@@ -31,11 +31,8 @@ namespace InnerCoreUIEditor
 
         public override void FillPropPanel(Panel propPanel)
         {
-            if(!propPanelCleared)
-            {
-                ClearPropPanel(propPanel);
-                FillName(propPanel);
-            }
+            ClearPropPanel(propPanel);
+            FillName(propPanel);
 
             Label _coords = new Label();
             _coords.Location = new Point(0, elementY += elementSpacing);

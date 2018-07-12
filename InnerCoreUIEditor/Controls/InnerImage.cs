@@ -80,7 +80,6 @@ namespace InnerCoreUIEditor
             originSize = activeImage.Size;
             ChangeControlSize(originSize);
             ColorImagesToPanelColor();
-            ColorImagesToPanelColor();
             ChangeScale(scale);
             Console.Write(Size);
         }
@@ -128,7 +127,7 @@ namespace InnerCoreUIEditor
 
         public override void ColorImagesToPanelColor()
         {
-            pictureBox1.Image = ImageBlend.ToPanelColor(new Bitmap(activeImage));
+            pictureBox1.Image = ImageBlend.MergeWithPanel(new Bitmap(activeImage), new Point(Location.X + Global.panelWorkspace.AutoScrollPosition.X, Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
             if (overlayEnabled)
             {
                 pictureBox2.Image = new Bitmap(overlayImage);
@@ -138,11 +137,8 @@ namespace InnerCoreUIEditor
 
         public override void FillPropPanel(Panel propPanel)
         {
-            if(!propPanelCleared)
-            {
-                ClearPropPanel(propPanel);
-                FillName(propPanel);
-            }
+            ClearPropPanel(propPanel);
+            FillName(propPanel);
             Label _size = new Label();
             _size.Location = new Point(0, elementY);
             _size.Size = new Size(51, elementSpacing);
@@ -413,7 +409,8 @@ namespace InnerCoreUIEditor
         {
             if (constant) return;
             if (!overlayEnabled) return;
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {
@@ -567,7 +564,8 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {

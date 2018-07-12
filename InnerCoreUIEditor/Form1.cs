@@ -14,13 +14,10 @@ namespace InnerCoreUIEditor
 {
     public partial class Form1 : Form
     {
-
-        private bool inventoryDrawed;
-
         public Form1()
         {
+            Params.Initialization();
             InitializeComponent();
-            inventoryDrawed = false;
             panelWorkspace.Click += PanelWorkspace_Click;
             panelWorkspace.ControlAdded += PanelWorkspace_ControlAdded;
             panelWorkspace.BackColor = Color.FromArgb(114, 106, 112);
@@ -32,6 +29,11 @@ namespace InnerCoreUIEditor
             Global.panelExplorer = panelExplorer;
             Global.innerHeader = innerHeader1;
             KeyDown += Form1_KeyDown;
+        }
+
+        private void SetupParams()
+        {
+            Params.AllToDefault();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -66,7 +68,8 @@ namespace InnerCoreUIEditor
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.ShowDialog();
+            DialogResult res = saveFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (saveFileDialog1.FileName == "") return;
             string filename = saveFileDialog1.FileName;
             JSONParser.Save(filename);
@@ -74,10 +77,21 @@ namespace InnerCoreUIEditor
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             string gui = File.ReadAllText(openFileDialog1.FileName);
-            for(int i = 0; i < panelWorkspace.Controls.Count; i++)
+            ClearWorkscreen();
+            panelWorkspace.Refresh();
+            Global.ReloadExporer();
+            Params.AllToDefault();
+            JSONParser.Parse(gui);
+            TryToGuessDrawOrder();
+        }
+
+        private void ClearWorkscreen()
+        {
+            for (int i = 0; i < panelWorkspace.Controls.Count; i++)
             {
                 Control _c = panelWorkspace.Controls[i];
                 if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
@@ -86,10 +100,6 @@ namespace InnerCoreUIEditor
                 c.Remove();
                 i--;
             }
-            panelWorkspace.Refresh();
-            Global.ReloadExporer();
-            JSONParser.Parse(gui);
-            TryToGuessDrawOrder();
         }
 
         private void TryToGuessDrawOrder()
@@ -148,20 +158,101 @@ namespace InnerCoreUIEditor
             Global.ColorAllToPanelColor();
         }
 
-        private void изображениеToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenDefaultFileDialog()
         {
             openFileDialog1.FileName = "";
-            openFileDialog1.ShowDialog();
+            DialogResult res = openFileDialog1.ShowDialog();
+            if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
             {
                 MessageBox.Show("Нужно выбрать *.png файл");
                 return;
             }
+        }
 
+        private void изображениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenDefaultFileDialog();
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
             Global.BackgroundImageName = openFileDialog1.SafeFileName;
-            panelWorkspace.BackgroundImage = image;           
+            panelWorkspace.BackgroundImage = image;
+            Global.AllMergeToBackground();
+        }
+
+        private void слотToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenDefaultFileDialog();
+            Image image = Bitmap.FromFile(openFileDialog1.FileName);
+            Params.SetSlotImage(image, openFileDialog1.SafeFileName);
+        }
+
+        private void слотИнвентаряToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenDefaultFileDialog();
+            Image image = Bitmap.FromFile(openFileDialog1.FileName);
+            Params.SetInvSlotImage(image, openFileDialog1.SafeFileName);
+        }
+
+        private void рамкаСлотаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenDefaultFileDialog();
+            Image image = Bitmap.FromFile(openFileDialog1.FileName);
+            Params.SetSelectionImage(image, openFileDialog1.SafeFileName);
+        }
+
+        private void кнопкаЗакрытияВыклToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenDefaultFileDialog();
+            Image image = Bitmap.FromFile(openFileDialog1.FileName);
+            Params.SetCloseButtonImage(image, openFileDialog1.SafeFileName);
+        }
+
+        private void кнопкаЗакрытияВклToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenDefaultFileDialog();
+            Image image = Bitmap.FromFile(openFileDialog1.FileName);
+            Params.SetCloseButton2Image(image, openFileDialog1.SafeFileName);
+        }
+
+        private void очиститьЭкранToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearWorkscreen();
+            panelWorkspace.BackgroundImage = null;
+            panelWorkspace.BackColor = Color.FromArgb(114, 106, 112);
+            innerHeader1.SetText("");
+            innerHeader1.Visible = false;
+            Global.ChangeHeight(Global.defaultHeight);
+        }
+
+        private void поУмолчаниюСлотToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Params.SlotToDefault();
+        }
+
+        private void поУмолчаниюСлотИнвентаряToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Params.InvSlotToDefault();
+        }
+
+        private void поУмолчаниюВыделениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Params.SelectionToDefault();
+        }
+
+        private void поУмолчаниюЗакрытьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Params.CloseButtonToDefault();
+        }
+
+        private void поУмолчаниюЗакрыть2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Params.CloseButton2ToDefault();
+        }
+
+        private void cброситьВсеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Params.AllToDefault();
         }
     }
 }
