@@ -68,7 +68,6 @@
             this.buttonAdder1 = new InnerCoreUIEditor.ButtonAdder();
             this.invSlotAdder1 = new InnerCoreUIEditor.InvSlotAdder();
             this.slotAdder1 = new InnerCoreUIEditor.SlotAdder();
-            this.innerHeader1 = new InnerCoreUIEditor.Controls.InnerHeader();
             this.cброситьВсеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelWorkspace.SuspendLayout();
             this.panelElements.SuspendLayout();
@@ -80,7 +79,6 @@
             this.panelWorkspace.AutoScroll = true;
             this.panelWorkspace.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.panelWorkspace.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panelWorkspace.Controls.Add(this.innerHeader1);
             this.panelWorkspace.Controls.Add(this.label1);
             this.panelWorkspace.Location = new System.Drawing.Point(0, 142);
             this.panelWorkspace.Name = "panelWorkspace";
@@ -374,16 +372,6 @@
             this.slotAdder1.Size = new System.Drawing.Size(60, 99);
             this.slotAdder1.TabIndex = 0;
             // 
-            // innerHeader1
-            // 
-            this.innerHeader1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            this.innerHeader1.BackColor = System.Drawing.Color.Transparent;
-            this.innerHeader1.Location = new System.Drawing.Point(0, 0);
-            this.innerHeader1.Name = "innerHeader1";
-            this.innerHeader1.Size = new System.Drawing.Size(1000, 40);
-            this.innerHeader1.TabIndex = 1;
-            this.innerHeader1.Visible = false;
-            // 
             // cброситьВсеToolStripMenuItem
             // 
             this.cброситьВсеToolStripMenuItem.Name = "cброситьВсеToolStripMenuItem";
@@ -446,7 +434,6 @@
         private System.Windows.Forms.ToolStripMenuItem цветToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem изображениеToolStripMenuItem;
         private System.Windows.Forms.ColorDialog colorDialog1;
-        private Controls.InnerHeader innerHeader1;
         private System.Windows.Forms.ToolStripMenuItem параметрыToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem слотToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem слотИнвентаряToolStripMenuItem;

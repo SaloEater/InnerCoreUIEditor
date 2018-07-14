@@ -27,7 +27,10 @@ namespace InnerCoreUIEditor
             Global.panelProperties = panelProperties;
             Global.panelWorkspace = panelWorkspace;
             Global.panelExplorer = panelExplorer;
-            Global.innerHeader = innerHeader1;
+            InnerHeader innerHeader = new InnerHeader();
+            innerHeader.Location = new Point(0, 0);
+            Controls.Add(innerHeader);
+            Global.innerHeader = innerHeader;
             KeyDown += Form1_KeyDown;
         }
 
