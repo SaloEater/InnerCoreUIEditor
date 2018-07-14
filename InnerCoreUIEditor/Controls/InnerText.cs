@@ -284,14 +284,14 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"text\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "width: " + Width + ',';
-            element += "height: " + Height + ',';
-            element += "text: " + richTextBox1.Text + ',';
-            element += "}";
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"text\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\twidth: " + Width + ',';
+            element += "\n\t\theight: " + Height + ',';
+            element += "\n\t\ttext: " + richTextBox1.Text + ',';
+            element += "\n\t}";
             return element;
         }
 

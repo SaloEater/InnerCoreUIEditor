@@ -167,19 +167,18 @@ namespace InnerCoreUIEditor
                 if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;
                 if (c.constant || c.hidden) continue;
-                TextBox textBox = new TextBox();
+                Label textBox = new Label();
                 textBox.Location = new Point(0, panelExplorer.Controls.Count * 20);
                 textBox.Size = new Size(panelExplorer.Width, 20);
                 textBox.Text = c.elementName;
-                textBox.Click += TextBox_Click; //Выбор объекта на рабочем столе
-                textBox.ReadOnly = true;
+                textBox.Click += TextBox_Click; //Выбор объекта на рабочем столе4
                 _panelExplorer.Controls.Add(textBox);
             }
         }
 
         private static void TextBox_Click(object sender, EventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
+            Label textBox = (Label)sender;
             foreach (Control _c in panelWorkspace.Controls)
             {
                 if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;

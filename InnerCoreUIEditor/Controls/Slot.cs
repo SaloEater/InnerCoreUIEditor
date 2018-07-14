@@ -17,7 +17,6 @@ namespace InnerCoreUIEditor
         public bool Visual { get; set; }
         public bool TransparentBg { get; set; }
         public Image ActiveImage { get; set; }
-        public string Clicker { get; set; }
         public string ImageName { get; set; }
 
         private bool sizeTextChanged;
@@ -158,21 +157,27 @@ namespace InnerCoreUIEditor
             _transpBgCheck.CheckedChanged += (sender, e) => { TransparentBg = ((CheckBox)sender).Checked; };
             propPanel.Controls.Add(_transpBgCheck);
 
-            /* Придумать как сделать окно для вставки функции кликера
+
+
             Label _clicker = new Label();
             _clicker.Location = new Point(0, elementY += elementSpacing);
             _clicker.Size = new Size(102, elementSpacing);
-            _clicker.Text = "Кликер";
+            _clicker.Text = "Клик по объекту";
             propPanel.Controls.Add(_clicker);
 
-            TextBox _imagePicPath = new TextBox();
-            _imagePicPath.Location = new Point(103, elementY += elementSpacing);
-            _imagePicPath.Size = new Size(102, elementSpacing);
-            _imagePicPath.Text = ImageName;
-            _imagePicPath.GotFocus += new EventHandler(_imagePicPath_GotFocus);
-            _imagePicPath.ReadOnly = true;
-            propPanel.Controls.Add(_imagePicPath);*/
+            Button clickerForm = new Button();
+            clickerForm.Location = new Point(103, elementY);
+            clickerForm.Size = new Size(elementSpacing, elementSpacing);
+            clickerForm.Click += ClickerForm_Click;
+            propPanel.Controls.Add(clickerForm);
             base.FillPropPanel(propPanel);
+        }
+
+        private void ClickerForm_Click(object sender, EventArgs e)
+        {
+            ClickerInput clickerInput = new ClickerInput();
+            clickerInput.Location = MousePosition;
+            clickerInput.Show();
         }
 
         internal void SetSelection(Image selectionDefaultImage)
@@ -194,7 +199,7 @@ namespace InnerCoreUIEditor
                 string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
                 ApplyImage(path);                
             }
-            Clicker = clicker;
+            this.clicker = clicker;
         }
 
         public override void CountScale(char axis, int distance)
@@ -302,6 +307,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName.Split('.')[1] != "png")
@@ -369,15 +375,16 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"slot\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "size: " + Width + ',';
-            if(ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
-            if(Visual) element += "visual: true,";
-            if (TransparentBg) element += "isTransparentBackground: true,";
-            element += "}";
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"slot\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tsize: " + Width + ',';
+            if(ImageName != Params.slotImageName) element += "\n\t\tbitmap: \"" + ImageName.Split('.')[0] + "\",";
+            if(Visual) element += "\n\t\tvisual: true,";
+            if (TransparentBg) element += "\n\t\tisTransparentBackground: true,";
+            if (clicker != "") element += "\n\t\tclicker: " + clicker + ',';
+            element += "\n\t}";
             return element;
         }
 

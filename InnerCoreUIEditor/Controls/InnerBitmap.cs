@@ -291,6 +291,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -357,14 +358,13 @@ namespace InnerCoreUIEditor
 
         internal override string MakeOutput()
         {
-            string element = "\n\t";
-            element += '{';
-            element += "type: \"bitmap\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            element += "bitmap: \"" + imageName.Split('.')[0] + "\",";
-            element += '}';
+            string element = "\n\t{";
+            element += "\n\t\ttype: \"bitmap\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
+            element += "\n\t\tbitmap: \"" + imageName.Split('.')[0] + "\",";
+            element += "\n\t}";
             return element;
         }
 

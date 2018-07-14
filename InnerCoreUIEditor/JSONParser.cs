@@ -18,11 +18,11 @@ namespace InnerCoreUIEditor
         {
             //int standartPosition = FindEntrance(gui, "standart:");
             //ParseStandart(gui);
+            gui = Clear(gui);
             string _params = GetBigField(gui, "params");
             ParseParams(_params);
             string standart = GetBigField(gui, "standart");
             ParseStandart(standart);
-            gui = Clear(gui);
             string drawing = GetBigField(gui, "drawing", '[', ']');
             ParseDrawing(drawing);
             string elements = GetBigField(gui, "elements");            
@@ -32,79 +32,44 @@ namespace InnerCoreUIEditor
 
         private static void ParseParams(string _params)
         {
-            _params = Clear(_params);
-            string type = GetField(_params, "slot").Replace("\"", "");
+            string type = GetClearField(_params, "slot");
             if (type != "") Params.LoadSlotImage(type);
-            type = GetField(_params, "invSlot").Replace("\"", "");
+            type = GetClearField(_params, "invSlot");
             if (type != "") Params.LoadInvSlotImage(type);
-            type = GetField(_params, "selection").Replace("\"", "");
+            type = GetClearField(_params, "selection");
             if (type != "") Params.LoadSelectionImage(type);
-            type = GetField(_params, "closeButton").Replace("\"", "");
+            type = GetClearField(_params, "closeButton");
             if (type != "") Params.LoadCloseButtonImage(type);
-            type = GetField(_params, "closeButton2").Replace("\"", "");
+            type = GetClearField(_params, "closeButton2");
             if (type != "") Params.LoadCloseButton2Image(type);
         }
 
         private static void ParseStandart(string standart)
         {
-            standart = Clear(standart);
             string header = GetBigField(standart, "header");
-            header = GetField(GetField(header, "text"), "text").Replace("\"", "");
+            string str1 = GetField(header, "text");
+            header = GetClearField(str1, "text", false);
             if (header != "") Global.SetHeaderText(header);
-            if (GetField(GetField(header, "text"), "hideButton") == "true") Global.innerHeader.SetButtonVisibilty(true);
+            if (bool.TryParse(GetField(GetField(header, "text"), "hideButton"), out bool b) && b) Global.innerHeader.SetButtonVisibilty(true);
 
             string inventory = GetBigField(standart, "inventory");
-            inventory = GetField(inventory, "standart");
-            if (inventory == "true") Global.DrawInventorySlots();
+            inventory = GetClearField(inventory, "standart", true);
+            if (bool.TryParse(inventory, out b) && b)Global.DrawInventorySlots();
             else if(Global.inventoryDrawed)Global.RemoveInventorySlots();
 
             string background = GetBigField(standart, "background");
-            string bg_standart = GetField(background, "standart");
-            if (bg_standart != "true")
+            string bg_standart = GetClearField(background, "standart");
+            if (!bool.TryParse("bg_standart", out b) || !b)
             {
                 string bg_color = GetField(background, "color");
                 if (bg_color != "") Global.SetGlobalColor(bg_color);
-                string bg_bitmap = GetField(background, "bitmap");
+                string bg_bitmap = GetClearField(background, "bitmap");
                 if (bg_bitmap != "") Global.SetGlobalBackground(bg_bitmap.Replace("\"", ""));
             }
 
-            string minHeight = GetField(standart, "minHeight");
+            string minHeight = GetClearField(standart, "minHeight");
             if (int.TryParse(minHeight, out int height)) Global.ChangeHeight(height);
             else Global.ChangeHeight(Global.defaultHeight);
-        }
-
-        private static void CombineDrawingsWithElements()
-        {
-            //save
-            foreach(Control c in Global.panelWorkspace.Controls)
-            {
-                if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
-                if (c.GetType() == typeof(InnerBitmap))
-                {
-                    InnerBitmap innerBitmap = (InnerBitmap)c;
-                    ((PictureBox)innerBitmap.Controls[0]).Image = ImageBlend.MergeWithPanel(new Bitmap(((PictureBox)innerBitmap.Controls[0]).Image), new Point(c.Location.X + Global.panelWorkspace.AutoScrollPosition.X, c.Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
-                    foreach (Control c2 in Global.panelWorkspace.Controls)
-                    {
-                        if (c2.GetType() != typeof(Scale)) continue;                        
-                        Scale scale = (Scale)c2;
-                        if (innerBitmap.elementName == scale.elementName) continue;
-                        if(scale.Location == innerBitmap.Location)
-                        {
-                            Image front = null;
-                            foreach(Control c3 in scale.Controls)
-                            {
-                                if (c3.GetType() != typeof(PictureBox)) continue;
-                                if (c3.Name == "pictureBox1") front = ((PictureBox)c3).Image;
-                            }
-                            Image back = ((PictureBox)innerBitmap.Controls[0]).Image;
-                            back = ImageBlend.ResizeImage(back, (int)(back.Width * scale.scale), (int)(back.Height * scale.scale));
-                            //ImageBlend.Blend(back, front);
-                            scale.ApplyMask(new Bitmap(back));
-                        }
-                    }
-                }
-            }
-            Global.panelWorkspace.Refresh();
         }
 
         private static void ParseDrawing(string drawing)
@@ -202,11 +167,15 @@ namespace InnerCoreUIEditor
 
         private static string Clear(string answer)
         {
-            answer = answer.Replace("\n", "");
+            //answer = answer.Replace("\n", "");
             answer = answer.Replace("\r", "");
-            answer = answer.Replace("\t", "");
-            answer = answer.Replace(" ", "");
+            //answer = answer.Replace("\t", "");
             return answer;
+        }
+
+        private static string ClearSpacing(string str)
+        {
+            return str.Replace(" ", "");
         }
 
         private static void ParseElements(string elements)
@@ -254,6 +223,8 @@ namespace InnerCoreUIEditor
             name = name.Replace("\"", "");
             name = name.Replace(",", "");
             name = name.Replace(":", "");
+            name = name.Replace("\n", "");
+            name = name.Replace("\t", "");
             return name;
         }
 
@@ -303,7 +274,7 @@ namespace InnerCoreUIEditor
                         string Clicker = GetField(element, "clicker");
                         int index;
                         if (!int.TryParse(GetClearField(element, "y").Split('.')[0], out index)) index = 0;
-                        slot.Apply(name, x, y, size, ImageName,index);
+                        slot.Apply(name, x, y, size, ImageName, index);
                         Global.panelWorkspace.Controls.Add(slot);
                         break;
                     }
@@ -347,7 +318,6 @@ namespace InnerCoreUIEditor
                         int height;
                         if (!int.TryParse(GetClearField(element, "height").Split('.')[0], out height)) height = text.Height;
                         string _text = GetField(element, "text");
-                        string Clicker = GetField(element, "clicker");
                         text.Apply(name, x, y, width, height, _text);
                         Global.panelWorkspace.Controls.Add(text);
                         break;
@@ -451,7 +421,14 @@ namespace InnerCoreUIEditor
 
         private static string GetClearField(string element, string v)
         {
-            return GetField(element, v).Replace("\"", "").Replace(" ", "");
+            return GetClearField(element, v, true);
+        }
+
+        private static string GetClearField(string element, string v, bool spacing)
+        {
+            string answer = GetField(element, v).Replace("\"", "");
+            if (spacing) answer = answer.Replace(" ", "").Replace("\n", "").Replace("\t", "");
+            return answer;
         }
 
         private static string GetField(string element, string v)
@@ -468,21 +445,62 @@ namespace InnerCoreUIEditor
                 if (j == v.Length)
                 {
                     if (element[i + j++] != ':') continue;
-                    int counter = 1;
+                    int entrance = 1;
+                    int counter = 0;
                     int bracketsCounter = 0;
                     for (int k = i + j; k < element.Length; k++)
                     {
-                        if (element[k] == ':') counter++;
-                        else if (element[k] == ',' || element[k] == '}') counter--;
-                        else if (element[k] == '(') bracketsCounter++;
-                        else if (element[k] == ')') bracketsCounter--;
-                        if (counter == 0 && bracketsCounter == 0) break;
-                        else answer += element[k];
+                        char _k = element[k];
+                        if (_k == ':' || _k == '{') counter++;
+                        else if (element[k] == '}')
+                        {
+                            counter--;
+                            if (counter <= 0) entrance = 0;
+                        }
+                        else if (_k == '(') bracketsCounter++;
+                        else if (_k == ')') bracketsCounter--;
+                        else if (_k == ',' && counter <= 0 && bracketsCounter <= 0) entrance = 0;
+                        if (counter <= 0 && bracketsCounter <= 0 && entrance == 0) break;
+                        else answer += _k;
                     }
                     break;
                 }
             }
             return answer;
+        }
+
+        private static void CombineDrawingsWithElements()
+        {
+            //save
+            foreach (Control c in Global.panelWorkspace.Controls)
+            {
+                if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
+                if (c.GetType() == typeof(InnerBitmap))
+                {
+                    InnerBitmap innerBitmap = (InnerBitmap)c;
+                    ((PictureBox)innerBitmap.Controls[0]).Image = ImageBlend.MergeWithPanel(new Bitmap(((PictureBox)innerBitmap.Controls[0]).Image), new Point(c.Location.X + Global.panelWorkspace.AutoScrollPosition.X, c.Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
+                    foreach (Control c2 in Global.panelWorkspace.Controls)
+                    {
+                        if (c2.GetType() != typeof(Scale)) continue;
+                        Scale scale = (Scale)c2;
+                        if (innerBitmap.elementName == scale.elementName) continue;
+                        if (scale.Location == innerBitmap.Location)
+                        {
+                            Image front = null;
+                            foreach (Control c3 in scale.Controls)
+                            {
+                                if (c3.GetType() != typeof(PictureBox)) continue;
+                                if (c3.Name == "pictureBox1") front = ((PictureBox)c3).Image;
+                            }
+                            Image back = ((PictureBox)innerBitmap.Controls[0]).Image;
+                            back = ImageBlend.ResizeImage(back, (int)(back.Width * scale.scale), (int)(back.Height * scale.scale));
+                            //ImageBlend.Blend(back, front);
+                            scale.ApplyMask(new Bitmap(back));
+                        }
+                    }
+                }
+            }
+            Global.panelWorkspace.Refresh();
         }
 
         internal static void Save(string filename)
@@ -491,16 +509,16 @@ namespace InnerCoreUIEditor
             string headerText = Global.innerHeader.GetText();
             if(headerText != "")
             {
-                standart += "\n\theader: { text: { text: \"" + headerText + "\"},";
-                if (Global.innerHeader.GetButtonVisibility())
-                    standart += "\nhideButton: true,";
-                standart += "},";
+                standart += "\n\t\theader: \n\t\t{ \n\t\t\ttext: { text: \"" + headerText.Replace("\t", "").Replace("\n", "") + "\"},";
+                if (!Global.innerHeader.GetButtonVisibility())
+                    standart += "\n\t\t\thideButton: false,";
+                standart += "\n\t\t},";
             }
             if(Global.inventoryDrawed)
             {
-                standart += "\n\tinventory: { standart: true},";
+                standart += "\n\t\tinventory: { standart: true},";
             }
-            standart += "\n\tbackground: ";
+            standart += "\n\t\tbackground: ";
             if(Global.panelWorkspace.BackgroundImage!=null)
             {
                 standart += "{bitmap: \"" + Global.BackgroundImageName +"\"}";
@@ -524,27 +542,27 @@ namespace InnerCoreUIEditor
 
             if(Params.slotImageName != Params.Default_SlotImage)
             {
-                _params += "\n\tslot: \"" + Params.slotImageName.Replace(".png", "") + "\",";
+                _params += "\n\t\tslot: \"" + Params.slotImageName.Replace(".png", "") + "\",";
             }
 
             if (Params.invSlotImageName != Params.Default_InvSlotImage)
             {
-                _params += "\n\tinvSlot: \"" + Params.invSlotImageName.Replace(".png", "") + "\",";
+                _params += "\n\t\tinvSlot: \"" + Params.invSlotImageName.Replace(".png", "") + "\",";
             }
 
             if (Params.selectionImageName != Params.Default_SelectionImage)
             {
-                _params += "\n\tselection: \"" + Params.selectionImageName.Replace(".png", "") + "\",";
+                _params += "\n\t\tselection: \"" + Params.selectionImageName.Replace(".png", "") + "\",";
             }
 
             if (Params.closeButtonImageName != Params.Default_CloseButtonImage)
             {
-                _params += "\n\tcloseButton: \"" + Params.closeButtonImageName.Replace(".png", "") + "\",";
+                _params += "\n\t\tcloseButton: \"" + Params.closeButtonImageName.Replace(".png", "") + "\",";
             }
 
             if (Params.closeButton2ImageName != Params.Default_CloseButton2Image)
             {
-                _params += "\n\tcloseButton: \"" + Params.closeButton2ImageName.Replace(".png", "") + "\",";
+                _params += "\n\t\tcloseButton: \"" + Params.closeButton2ImageName.Replace(".png", "") + "\",";
             }
 
             _params += "\n},\n";

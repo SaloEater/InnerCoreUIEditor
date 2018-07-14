@@ -279,7 +279,7 @@ namespace InnerCoreUIEditor
             trackBar.Minimum = 1;
             trackBar.Value = 100;
             trackBar.ValueChanged += TrackBar_ValueChanged;
-            trackBar.LostFocus += (sender, e) => { ((TrackBar)sender).Value = 100; };
+            trackBar.LostFocus += (sender, e) => { ((TrackBar)sender).Value = 100; pictureBox1.Location = new Point(0, 0); };
             propPanel.Controls.Add(trackBar);
 
             Label _overlayEnabled = new Label();
@@ -386,6 +386,7 @@ namespace InnerCoreUIEditor
 
         private void OpenFileDialogOriginImage_Click(object sender, EventArgs e)
         {
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -410,28 +411,50 @@ namespace InnerCoreUIEditor
         {
             TrackBar trackBar = (TrackBar)sender;
             int value = trackBar.Value;
-            switch(chosenItem)
+            if (!invert)
             {
-                case 0:
-                    pictureBox1.Width = pictureBox1.Image.Size.Width * value / 100;
-                    break;
+                switch (chosenItem)
+                {
+                    case 0:
+                        pictureBox1.Width = pictureBox1.Image.Size.Width * value / 100;
+                        break;
 
-                case 1:
-                    if (value == 100) break;
-                    pictureBox1.Top = Height - Height * value / 100;
-                    pictureBox1.Image = ImageBlend.CropVertical(scaledActiveImage, value);
-                    break;
+                    case 1:
+                        pictureBox1.Top = Height - Height * value / 100;
+                        pictureBox1.Image = ImageBlend.CropVertical(scaledActiveImage, value);
+                        break;
 
-                case 2:
-                    if (value == 100) break;
-                    //pictureBox1.Left = Width - Width * value / 100;
-                    pictureBox1.Image = ImageBlend.CropHorizontal(scaledActiveImage, value);
+                    case 2:
+                        pictureBox1.Left = Width - Width * value / 100;
+                        pictureBox1.Image = ImageBlend.CropHorizontal(scaledActiveImage, value);
 
-                    break;
+                        break;
 
-                case 3:
-                    pictureBox1.Height = pictureBox1.Image.Size.Height * value / 100;
-                    break;
+                    case 3:
+                        pictureBox1.Height = pictureBox1.Image.Size.Height * value / 100;
+                        break;
+                }
+            } else
+            {
+                switch (chosenItem)
+                {
+                    case 0:
+                        pictureBox1.Location = new Point(-Width* (100 - value) / 100, pictureBox1.Location.Y);
+                        break;
+
+                    case 1:
+                        pictureBox1.Location = new Point(pictureBox1.Location.X, Height * (100 - value) / 100);
+                        break;
+
+                    case 2:
+                        pictureBox1.Location = new Point(Width * (100-value) / 100, pictureBox1.Location.Y);
+
+                        break;
+
+                    case 3:
+                        pictureBox1.Location = new Point(pictureBox1.Location.X, -Height * (100-value)   / 100);
+                        break;
+                }
             }
         }
 
@@ -547,6 +570,7 @@ namespace InnerCoreUIEditor
         {
             if (constant) return;
             if (!overlayEnabled) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -708,6 +732,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -776,22 +801,22 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"scale\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            element += "bitmap: \"" + imageName.Split('.')[0] + "\",";
-            element += "invert: " + invert.ToString().ToLower() + ',';
-            element += "direction: " + side + ',';
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"scale\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
+            element += "\n\t\tbitmap: \"" + imageName.Split('.')[0] + "\",";
+            element += "\n\t\tinvert: " + invert.ToString().ToLower() + ',';
+            element += "\n\t\tdirection: " + chosenItem + ',';
             if (overlayEnabled)
             {
-                element += "overlay: \"" + overlayImageName.Split('.')[0] + "\",";
-                element += "overlay_scale: " + overlayScale.ToString().Replace(',', '.') + ',';
-                element += "overlayOffset: { x:" + pictureBox2.Left + " , y: " + pictureBox2.Top + "},";
+                element += "\n\t\toverlay: \"" + overlayImageName.Split('.')[0] + "\",";
+                element += "\n\t\toverlay_scale: " + overlayScale.ToString().Replace(',', '.') + ',';
+                element += "\n\t\toverlayOffset: { x:" + pictureBox2.Left + " , y: " + pictureBox2.Top + "},";
             }
 
-            element += "}";
+            element += "\n\t}";
             return element;
         }
 

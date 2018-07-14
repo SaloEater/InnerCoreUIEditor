@@ -23,10 +23,13 @@ namespace InnerCoreUIEditor
         public bool constant;
         public bool hidden;
 
+        public string clicker;
+
         public InnerControl()
         {
             InitializeComponent();
             elementName = this.GetType().ToString() + "_" + Global.counter;
+            clicker = "";
             elementY = 0;
             constant = false;
             hidden = false;
@@ -157,7 +160,7 @@ namespace InnerCoreUIEditor
             if (constant) return;
             TextBox textBox = (TextBox)sender;
             string newName = textBox.Text;
-            foreach(TextBox c in Global.panelExplorer.Controls)
+            foreach(Label c in Global.panelExplorer.Controls)
             {
                 if (c.Text.Equals(newName))
                 {

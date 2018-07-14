@@ -363,6 +363,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -380,6 +381,7 @@ namespace InnerCoreUIEditor
         private void OpenFileDialog2_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -447,15 +449,15 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"closeButton\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            element += "bitmap: \"" + activeImageName.Split('.')[0] + "\",";
-            element += "bitmap2: \"" + activeImage2Name.Split('.')[0] + "\",";
-            element += "global: " + global + ',';
-            element += "}";
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"closeButton\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
+            if(activeImageName!=Params.closeButtonImageName)element += "\n\t\tbitmap: \"" + activeImageName.Split('.')[0] + "\",";
+            if (activeImage2Name != Params.closeButton2ImageName) element += "\n\t\tbitmap2: \"" + activeImage2Name.Split('.')[0] + "\",";
+            if (global) element += "\n\t\tglobal: true,";
+            element += "\n\t}";
             return element;
         }
 

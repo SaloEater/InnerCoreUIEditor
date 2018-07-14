@@ -16,7 +16,6 @@ namespace InnerCoreUIEditor
     {
         public Image activeImage { get; set; }
         public Image activeImage2 { get; set; }
-        public string Clicker { get; set; }
         public string activeImageName { get; set; }
         public string activeImage2Name { get; set; }
         public float scale { get; set; }
@@ -200,21 +199,25 @@ namespace InnerCoreUIEditor
 
             propPanel.Controls.Add(_imagePicPath);
 
-            /* Придумать как сделать окно для вставки функции кликера
             Label _clicker = new Label();
             _clicker.Location = new Point(0, elementY += elementSpacing);
             _clicker.Size = new Size(102, elementSpacing);
-            _clicker.Text = "Кликер";
+            _clicker.Text = "Клик по объекту";
             propPanel.Controls.Add(_clicker);
 
-            TextBox _imagePicPath = new TextBox();
-            _imagePicPath.Location = new Point(103, elementY += elementSpacing);
-            _imagePicPath.Size = new Size(102, elementSpacing);
-            _imagePicPath.Text = ImageName;
-            _imagePicPath.GotFocus += new EventHandler(_imagePicPath_GotFocus);
-            _imagePicPath.ReadOnly = true;
-            propPanel.Controls.Add(_imagePicPath);*/
+            Button clickerForm = new Button();
+            clickerForm.Location = new Point(103, elementY);
+            clickerForm.Size = new Size(elementSpacing, elementSpacing);
+            clickerForm.Click += ClickerForm_Click; 
+            propPanel.Controls.Add(clickerForm);
             base.FillPropPanel(propPanel);
+        }
+
+        private void ClickerForm_Click(object sender, EventArgs e)
+        {
+            ClickerInput clickerInput = new ClickerInput();
+            clickerInput.Location = MousePosition;
+            clickerInput.Show();
         }
 
         internal void Apply(string name, int x, int y, float scale, string activeImage2Name, string activeImageName, string clicker)
@@ -236,7 +239,7 @@ namespace InnerCoreUIEditor
                 activeImage2Name = "_button_next_48x24p.png";
             }
 
-            Clicker = clicker;
+            this.clicker = clicker;
         }
 
         private void ApplyImage(string path)
@@ -336,6 +339,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -353,6 +357,7 @@ namespace InnerCoreUIEditor
         private void OpenFileDialog2_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -420,14 +425,15 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"button\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            element += "bitmap: \"" + activeImageName.Split('.')[0] + "\",";
-            if(activeImage2Name.Split('.')[0]!= "_button_next_48x24p")element += "bitmap2: \"" + activeImage2Name.Split('.')[0] + "\",";
-            element += "}";
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"button\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
+            element += "\n\t\tbitmap: \"" + activeImageName.Split('.')[0] + "\",";
+            if(activeImage2Name.Split('.')[0]!= "_button_next_48x24p")element += "\n\t\tbitmap2: \"" + activeImage2Name.Split('.')[0] + "\",";
+            if(clicker != "")element += "\n\t\tclicker: " + clicker + ',';
+            element += "\n\t}";
             return element;
         }
 

@@ -197,13 +197,13 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"invSlot\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "size: " + Width + ',';
-            element += "index: " + index + ',';
-            if (ImageName != "_default_slot_light.png") element += "bitmap: \"" + ImageName.Split('.')[0] + "\",";
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"invSlot\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tsize: " + Width + ',';
+            element += "\n\t\tindex: " + index + ',';
+            if (ImageName != Params.invSlotImageName) element += "\n\t\tbitmap: \"" + ImageName.Split('.')[0] + "\",";
             element += "}";
             return element;
         }
@@ -355,6 +355,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;

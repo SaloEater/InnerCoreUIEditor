@@ -11,7 +11,7 @@ namespace InnerCoreUIEditor
     {
         public static void Color(string elementName)
         {
-            foreach(TextBox t in Global.panelExplorer.Controls)
+            foreach(Label t in Global.panelExplorer.Controls)
             {
                 if(t.Text == elementName)
                 {
@@ -23,7 +23,7 @@ namespace InnerCoreUIEditor
 
         public static void Uncolor(string elementName)
         {
-            foreach (TextBox t in Global.panelExplorer.Controls)
+            foreach (Label t in Global.panelExplorer.Controls)
             {
                 if (t.Text == elementName)
                 {

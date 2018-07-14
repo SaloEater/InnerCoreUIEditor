@@ -77,6 +77,7 @@ namespace InnerCoreUIEditor
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
+            openFileDialog1.Filter = "Javascript files (*.js)|*.js|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -160,6 +161,7 @@ namespace InnerCoreUIEditor
 
         private void OpenDefaultFileDialog()
         {
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             openFileDialog1.FileName = "";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;

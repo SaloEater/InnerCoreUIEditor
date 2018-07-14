@@ -15,7 +15,6 @@ namespace InnerCoreUIEditor
     public partial class InnerImage : InnerControl
     {
         public Image activeImage { get; set; }
-        public string Clicker { get; set; }
         public string imageName { get; set; }
         public float scale { get; set; }
         public Size originSize { get; set; }
@@ -296,21 +295,27 @@ namespace InnerCoreUIEditor
             _overlaySizeValue.TextChanged += (sender, e) => { overlayScaleTextChanged = true; };
             propPanel.Controls.Add(_overlaySizeValue);
 
-            /* Придумать как сделать окно для вставки функции кликера
+
+
             Label _clicker = new Label();
             _clicker.Location = new Point(0, elementY += elementSpacing);
             _clicker.Size = new Size(102, elementSpacing);
-            _clicker.Text = "Кликер";
+            _clicker.Text = "Клик по объекту";
             propPanel.Controls.Add(_clicker);
 
-            TextBox _imagePicPath = new TextBox();
-            _imagePicPath.Location = new Point(103, elementY += elementSpacing);
-            _imagePicPath.Size = new Size(102, elementSpacing);
-            _imagePicPath.Text = ImageName;
-            _imagePicPath.GotFocus += new EventHandler(_imagePicPath_GotFocus);
-            _imagePicPath.ReadOnly = true;
-            propPanel.Controls.Add(_imagePicPath);*/
+            Button clickerForm = new Button();
+            clickerForm.Location = new Point(103, elementY);
+            clickerForm.Size = new Size(elementSpacing, elementSpacing);
+            clickerForm.Click += ClickerForm_Click;
+            propPanel.Controls.Add(clickerForm);
             base.FillPropPanel(propPanel);
+        }
+
+        private void ClickerForm_Click(object sender, EventArgs e)
+        {
+            ClickerInput clickerInput = new ClickerInput();
+            clickerInput.Location = MousePosition;
+            clickerInput.Show();
         }
 
         internal override void SelectControl()
@@ -409,6 +414,7 @@ namespace InnerCoreUIEditor
         {
             if (constant) return;
             if (!overlayEnabled) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -460,7 +466,7 @@ namespace InnerCoreUIEditor
             pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
             pictureBox2.Location = overlayOffset;
             ImageBlend.Blend(pictureBox1.Image, overlayImage);
-            Clicker = clicker;
+            this.clicker = clicker;
         }
 
         internal void Apply(string name, int x, int y, float scale, string imageName, string clicker)
@@ -473,7 +479,7 @@ namespace InnerCoreUIEditor
             string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + imageName + ".png";
             ApplyImage(path);
 
-            Clicker = clicker;
+            this.clicker = clicker;
         }
 
         private void ApplyImage(string path)
@@ -564,6 +570,7 @@ namespace InnerCoreUIEditor
         private void openFileDialog_Click(object sender, EventArgs e)
         {
             if (constant) return;
+            openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel) return;
             if (openFileDialog1.SafeFileName == "") return;
@@ -631,19 +638,20 @@ namespace InnerCoreUIEditor
         internal override string MakeOutput()
         {
             string element = "\n\t";
-            element += '\"' + elementName + "\": {";
-            element += "type: \"image\",";
-            element += "x: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "y: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
-            element += "scale: " + scale.ToString().Replace(',', '.') + ',';
-            element += "bitmap: \"" + imageName.Split('.')[0] + "\",";
+            element += '\"' + elementName + "\": \n\t{";
+            element += "\n\t\ttype: \"image\",";
+            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
+            element += "\n\t\tbitmap: \"" + imageName.Split('.')[0] + "\",";
             if(overlayEnabled)
             {
-                element += "overlay: \"" + overlayImageName.Split('.')[0] + "\",";
-                element += "overlay_scale: " + overlayScale.ToString().Replace(',', '.') + ',';
-                element += "overlayOffset: { x:" + pictureBox2.Left + " , y: " + pictureBox2.Top + "},";
+                element += "\n\t\toverlay: \"" + overlayImageName.Split('.')[0] + "\",";
+                element += "\n\t\toverlay_scale: " + overlayScale.ToString().Replace(',', '.') + ',';
+                element += "\n\t\toverlayOffset: { x:" + pictureBox2.Left + " , y: " + pictureBox2.Top + "},";
             }
-            element += "}";
+            if (clicker != "") element += "\n\t\tclicker: " + clicker + ',';
+            element += "\n\t}";
             return element;
         }
 

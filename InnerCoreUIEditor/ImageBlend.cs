@@ -17,6 +17,10 @@ namespace InnerCoreUIEditor
             if (back == null || front == null) return;
             Bitmap _back = (Bitmap)back;
             Bitmap _front = (Bitmap)front;
+            if(_back.Height < _front.Height || _back.Width < _front.Width)
+            {
+                _back = new Bitmap(ResizeImage(_back, _front.Width, _front.Height));
+            }
             for (int x = 0; x < _front.Width; x++)
             {
                 for(int y = 0; y < _front.Height; y++)
@@ -111,7 +115,7 @@ namespace InnerCoreUIEditor
             Bitmap bitmap = new Bitmap(scaledActiveImage);
             if (value == 100) return bitmap;
             int newWidth = scaledActiveImage.Width * value / 100;
-            if (newWidth == 0) return bitmap;
+            if (newWidth == 0) return null;
             Bitmap newBitmap = new Bitmap(newWidth, scaledActiveImage.Height);
             int delta = scaledActiveImage.Width - newWidth;
             for (int i = 0; i < scaledActiveImage.Height; i++)
