@@ -9,81 +9,81 @@ using System.Windows.Forms;
 
 namespace InnerCoreUIEditor
 {
-    static class Global
+     class Global
     {
-        public const int defaultHeight = 700;
+        /*public const int defaultHeight = 700;
 
-        public static int X = 1000,
+        public  int X = 1000,
                         Y = defaultHeight;
 
 
-        private static Panel _panelProperties;
-        public static Panel panelProperties
+        private  Panel _panelProperties;
+        public  Panel panelProperties
         {
             get { return _panelProperties; }
             set { _panelProperties = value; }
         }
 
-        private static Panel _panelWorkspace;
-        public static Panel panelWorkspace
+        private  Panel _workspace;
+        public  Panel workspace
         {
-            get { return _panelWorkspace; }
-            set { _panelWorkspace = value; }
+            get { return _workspace; }
+            set { _workspace = value; }
         }
 
-        private static Panel _panelExplorer;
-        public static Panel panelExplorer
+        private  Panel _panelExplorer;
+        public  Panel panelExplorer
         {
             get { return _panelExplorer; }
             set { _panelExplorer = value; }
         }
 
-        private static InnerControl _activeElement;
-        public static InnerControl activeElement
+        private  InnerControl _activeElement;
+        public  InnerControl activeElement
         {
             get { return _activeElement; }
             set { _activeElement = value; }
         }
 
-        internal static void SetHeaderText(string text)
+        internal  void SetHeaderText(string text)
         {
             _innerHeader.SetText(text);
             _innerHeader.Visible = true;
         }
 
-        private static int _counter;
-        public static int counter
+        private  int _counter;
+        public  int counter
         {
             get { return _counter++; }
             set { _counter = value; }
         }
 
-        private static bool _inventoryDrawed = false;
-        public static bool inventoryDrawed
+        private  bool _inventoryDrawed = false;
+        public  bool inventoryDrawed
         {
             get { return _inventoryDrawed; }
             set { _inventoryDrawed = value; }
         }
 
-        private static InnerHeader _innerHeader;
-        public static InnerHeader innerHeader
+        private  InnerHeader _innerHeader;
+        public  InnerHeader innerHeader
         {
             get { return _innerHeader; }
             set { _innerHeader = value; }
         }
 
-        private static string _BackgroundImageName;
+        private  string _BackgroundImageName;
 
-        public static string BackgroundImageName
+        public  string BackgroundImageName
         {
             get { return _BackgroundImageName; }
             set { _BackgroundImageName = value; }
         }
 
-        internal static void TurnToDefault(Type type, Image slotDefaultImage, string slotImageName)
+        internal  void TurnToDefault(Type type, Image slotDefaultImage, string slotImageName)
         {
             //1
-            foreach(Control c in _panelWorkspace.Controls)
+            foreach(Control c in _workspace.Controls)
             {
                 if (c.GetType() == type)
                 {
@@ -101,10 +101,16 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static void TurnSlotsSelectionToDefault(Image selectionDefaultImage)
+        internal  void DeselectActiveControl()
+        {
+            if (_activeElement == null) return;
+            _activeElement.DeselectControl();
+        }
+
+        internal  void TurnSlotsSelectionToDefault(Image selectionDefaultImage)
         {
             //2
-            foreach (Control c in _panelWorkspace.Controls)
+            foreach (Control c in _workspace.Controls)
             {
                 if (c.GetType() == typeof(Slot))
                 {
@@ -121,10 +127,10 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static void TurnCloseButtonsToDefault(Image closeButtonDefaultImage, string closeButtonImageName, Image closeButton2DefaultImage, string closeButton2ImageName)
+        internal  void TurnCloseButtonsToDefault(Image closeButtonDefaultImage, string closeButtonImageName, Image closeButton2DefaultImage, string closeButton2ImageName)
         {
             //3
-            foreach (Control c in _panelWorkspace.Controls)
+            foreach (Control c in _workspace.Controls)
             {
                 if (c.GetType() == typeof(CloseButton))
                 {
@@ -134,35 +140,35 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static void SetGlobalColor(string bg_color)
+        internal  void SetGlobalColor(string bg_color)
         {
             bg_color = bg_color.Split('(')[1].Replace(")", "");
             string[] rgb = bg_color.Split(',');
-            panelWorkspace.BackColor = Color.FromArgb(int.Parse(rgb[0]), int.Parse(rgb[1]), int.Parse(rgb[2]));
+            workspace.BackColor = Color.FromArgb(int.Parse(rgb[0]), int.Parse(rgb[1]), int.Parse(rgb[2]));
             ColorAllToPanelColor();
         }
 
-        internal static void SetGlobalBackground(string bg_bitmap)
+        internal  void SetGlobalBackground(string bg_bitmap)
         {
             _BackgroundImageName = bg_bitmap;
             string path = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\gui\" + bg_bitmap + ".png";
             try
             {
-                panelWorkspace.BackgroundImage = Bitmap.FromFile(path);
+                workspace.BackgroundImage = Bitmap.FromFile(path);
             } catch(Exception)
             {
                 MessageBox.Show("Отсутствует файл " + path, "Изображение заднего фона");
             }
         }
 
-        public static void ReloadExporer()
+        public  void ReloadExporer()
         {
             foreach(Control c in _panelExplorer.Controls)
             {
                 c.Dispose();
             }
             _panelExplorer.Controls.Clear();
-            foreach(Control _c in _panelWorkspace.Controls)
+            foreach(Control _c in _workspace.Controls)
             {
                 if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;
@@ -176,10 +182,10 @@ namespace InnerCoreUIEditor
             }
         }
 
-        private static void TextBox_Click(object sender, EventArgs e)
+        private  void TextBox_Click(object sender, EventArgs e)
         {
             Label textBox = (Label)sender;
-            foreach (Control _c in panelWorkspace.Controls)
+            foreach (Control _c in workspace.Controls)
             {
                 if (_c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;
@@ -190,19 +196,19 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static void AllMergeToBackground()
+        internal  void AllMergeToBackground()
         {
-            /*foreach(Control c in _panelWorkspace.Controls)
+            foreach(Control c in _workspace.Controls)
             {
                 if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl _c = (InnerControl)c;
                 c.ToBackground();
-            }*/
+            }
         }
 
-        internal static void ColorAllToPanelColor()
+        internal  void ColorAllToPanelColor()
         {
-            foreach (Control c in panelWorkspace.Controls)
+            foreach (Control c in workspace.Controls)
             {
                 if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl innerControl = (InnerControl)c;
@@ -211,21 +217,21 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static void DrawInventorySlots()
+        internal  void DrawInventorySlots()
         {
             for (int i = 0; i < 27; i++)
             {
-                InvSlot invSlot = new InvSlot();
+                InvSlot invSlot = new InvSlot(explorerPainter, _params);
                 invSlot.index = i + 9;
-                invSlot.Location = new Point(i % 3 * invSlot.Width + _panelWorkspace.AutoScrollPosition.X, i/3 * invSlot.Width + _panelWorkspace.AutoScrollPosition.Y + (_innerHeader.Visible?40:0));
+                invSlot.Location = new Point(i % 3 * invSlot.Width + _workspace.AutoScrollPosition.X, i/3 * invSlot.Width + _workspace.AutoScrollPosition.Y + (_innerHeader.Visible?40:0));
                 invSlot.hidden = true;
                 invSlot.elementName = "__invslot" + (i+9);
-                _panelWorkspace.Controls.Add(invSlot);
+                _workspace.Controls.Add(invSlot);
             }
             inventoryDrawed = true;
         }
 
-        internal static void SwitchInventorySlots()
+        internal  void SwitchInventorySlots()
         {
             _inventoryDrawed = !_inventoryDrawed;
             switch(_inventoryDrawed)
@@ -239,14 +245,14 @@ namespace InnerCoreUIEditor
                     break;
 
             }
-            _panelWorkspace.Refresh();
+            _workspace.Refresh();
         }
 
-        internal static void SwitchHeader()
+        internal  void SwitchHeader()
         {
-            /*if(innerHeader.Visible)
+            if(innerHeader.Visible)
             {
-                foreach(Control c in _panelWorkspace.Controls)
+                foreach(Control c in _workspace.Controls)
                 {
                     if (c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                     c.Location = new Point(c.Location.X, c.Location.Y - 80);
@@ -254,12 +260,12 @@ namespace InnerCoreUIEditor
             }
             else
             {
-                foreach (Control c in _panelWorkspace.Controls)
+                foreach (Control c in _workspace.Controls)
                 {
                     if (c.GetType() == typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                     c.Location = new Point(c.Location.X, c.Location.Y - 80);
                 }
-            }*/
+            }
             //innerHeader.RefreshControl();
             _innerHeader.Visible = !_innerHeader.Visible;
             switch(_innerHeader.Visible)
@@ -267,9 +273,9 @@ namespace InnerCoreUIEditor
                 case true:
                     if(inventoryDrawed)
                     {
-                        for (int i = 0; i < _panelWorkspace.Controls.Count; i++)
+                        for (int i = 0; i < _workspace.Controls.Count; i++)
                         {
-                            Control c = _panelWorkspace.Controls[i];
+                            Control c = _workspace.Controls[i];
                             if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
                             InnerControl _c = (InnerControl)c;
                             if (_c.elementName.Contains("__invslot"))
@@ -283,9 +289,9 @@ namespace InnerCoreUIEditor
                 case false:
                     if (inventoryDrawed)
                     {
-                        for (int i = 0; i < _panelWorkspace.Controls.Count; i++)
+                        for (int i = 0; i < _workspace.Controls.Count; i++)
                         {
-                            Control c = _panelWorkspace.Controls[i];
+                            Control c = _workspace.Controls[i];
                             if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
                             InnerControl _c = (InnerControl)c;
                             if (_c.elementName.Contains("__invslot"))
@@ -298,10 +304,10 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static void ChangeHeight(int height)
+        internal  void ChangeHeight(int height)
         {
             Y = height;
-            foreach(Control c in _panelWorkspace.Controls)
+            foreach(Control c in _workspace.Controls)
             {
                 if(c.GetType() == typeof(Label))
                 {
@@ -309,24 +315,24 @@ namespace InnerCoreUIEditor
                     break;
                 }
             }
-            //_panelWorkspace.Height = height;
-            _panelWorkspace.Refresh();
+            //_workspace.Height = height;
+            _workspace.Refresh();
         }
 
-        internal static void RemoveInventorySlots()
+        internal  void RemoveInventorySlots()
         {
-            for (int i = 0; i < _panelWorkspace.Controls.Count; i++)
+            for (int i = 0; i < _workspace.Controls.Count; i++)
             {
-                Control c = _panelWorkspace.Controls[i];
+                Control c = _workspace.Controls[i];
                 if (c.GetType() == typeof(Label) || c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl _c = (InnerControl)c;
                 if (_c.elementName.Contains("__invslot"))
                 {
-                    _panelWorkspace.Controls.RemoveAt(i);
+                    _workspace.Controls.RemoveAt(i);
                     i--;
                 }
             }
             inventoryDrawed = false;
-        }
+        }*/
     }
 }

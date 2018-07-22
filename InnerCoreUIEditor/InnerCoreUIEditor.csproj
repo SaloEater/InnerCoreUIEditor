@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F0273F1F-252C-4835-A46E-353F6A28D56A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>InnerCoreUIEditor</RootNamespace>
     <AssemblyName>InnerCoreUIEditor</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionStack.cs" />
     <Compile Include="Controls\ClickerInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,12 +64,6 @@
     <Compile Include="Controls\InnerBitmap.Designer.cs">
       <DependentUpon>InnerBitmap.cs</DependentUpon>
     </Compile>
-    <Compile Include="Adders\InnerBitmapAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\InnerBitmapAdder.Designer.cs">
-      <DependentUpon>InnerBitmapAdder.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\InnerHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -80,18 +75,6 @@
     </Compile>
     <Compile Include="Controls\Scale.Designer.cs">
       <DependentUpon>Scale.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Adders\InnerImageAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\InnerImageAdder.Designer.cs">
-      <DependentUpon>InnerImageAdder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Adders\CloseButtonAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\CloseButtonAdder.Designer.cs">
-      <DependentUpon>CloseButtonAdder.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlEditor.cs" />
     <Compile Include="Controls\Workpanel.cs">
@@ -114,6 +97,7 @@
     <Compile Include="Controls\CloseButton.Designer.cs">
       <DependentUpon>CloseButton.cs</DependentUpon>
     </Compile>
+    <Compile Include="Hotkey.cs" />
     <Compile Include="ImageBlend.cs" />
     <Compile Include="Controls\InnerImage.cs">
       <SubType>UserControl</SubType>
@@ -127,11 +111,11 @@
     <Compile Include="Controls\InnerControl.Designer.cs">
       <DependentUpon>InnerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Adders\ButtonAdder.cs">
+    <Compile Include="Controls\InnerTabPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Adders\ButtonAdder.Designer.cs">
-      <DependentUpon>ButtonAdder.cs</DependentUpon>
+    <Compile Include="Controls\InnerTabPage.Designer.cs">
+      <DependentUpon>InnerTabPage.cs</DependentUpon>
     </Compile>
     <Compile Include="JSONParser.cs" />
     <Compile Include="Params.cs" />
@@ -161,50 +145,18 @@
     <Compile Include="Controls\Slot.Designer.cs">
       <DependentUpon>Slot.cs</DependentUpon>
     </Compile>
-    <Compile Include="Adders\InvSlotAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\InvSlotAdder.Designer.cs">
-      <DependentUpon>InvSlotAdder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Adders\InnerTextAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\InnerTextAdder.Designer.cs">
-      <DependentUpon>InnerTextAdder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Adders\ScaleAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\ScaleAdder.Designer.cs">
-      <DependentUpon>ScaleAdder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Adders\SlotAdder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Adders\SlotAdder.Designer.cs">
-      <DependentUpon>SlotAdder.cs</DependentUpon>
-    </Compile>
+    <Compile Include="UndoRedoStack.cs" />
     <EmbeddedResource Include="Controls\ClickerInput.resx">
       <DependentUpon>ClickerInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\InnerBitmap.resx">
       <DependentUpon>InnerBitmap.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Adders\InnerBitmapAdder.resx">
-      <DependentUpon>InnerBitmapAdder.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\InnerHeader.resx">
       <DependentUpon>InnerHeader.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Scale.resx">
       <DependentUpon>Scale.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Adders\InnerImageAdder.resx">
-      <DependentUpon>InnerImageAdder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Adders\CloseButtonAdder.resx">
-      <DependentUpon>CloseButtonAdder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -213,11 +165,11 @@
       <DependentUpon>CloseButton.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Adders\ButtonAdder.resx">
-      <DependentUpon>ButtonAdder.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\InnerImage.resx">
       <DependentUpon>InnerImage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InnerTabPage.resx">
+      <DependentUpon>InnerTabPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -241,18 +193,6 @@
     <EmbeddedResource Include="Controls\Slot.resx">
       <DependentUpon>Slot.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Adders\InvSlotAdder.resx">
-      <DependentUpon>InvSlotAdder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Adders\InnerTextAdder.resx">
-      <DependentUpon>InnerTextAdder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Adders\ScaleAdder.resx">
-      <DependentUpon>ScaleAdder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Adders\SlotAdder.resx">
-      <DependentUpon>SlotAdder.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -270,6 +210,7 @@
   <ItemGroup>
     <None Include="Resources\button_fly_off.png" />
     <None Include="bin\Debug\default_header.png" />
+    <None Include="Resources\AddTab.png" />
     <Content Include="testParse.txt" />
     <Content Include="ui\close_button_down.png" />
     <Content Include="ui\close_button_up.png" />

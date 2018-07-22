@@ -12,13 +12,14 @@ namespace InnerCoreUIEditor.Controls
 {
     public partial class InnerHeader : InnerControl
     {
+
         CloseButton closeButton;
 
-        public InnerHeader()
+        public InnerHeader(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
         {
             InitializeComponent();
-            closeButton = new CloseButton();
-            closeButton.Location = new Point(Global.X - closeButton.Width, 0);
+            closeButton = new CloseButton(explorerPainter, _params, parentTabPage);
+            closeButton.Location = new Point(Width - closeButton.Width, 0);
             closeButton.constant = true;
             closeButton.hidden = true;
             closeButton.Enabled = false;

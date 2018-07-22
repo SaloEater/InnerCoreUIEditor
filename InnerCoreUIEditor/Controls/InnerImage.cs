@@ -16,13 +16,7 @@ namespace InnerCoreUIEditor
     {
         public Image activeImage { get; set; }
         public string imageName { get; set; }
-        public float scale { get; set; }
-        public Size originSize { get; set; }
         public Point oldLocation { get; set; }
-
-        private bool scaleTextChanged;
-        private bool XTextChanged;
-        private bool YTextChanged;
 
         public Image overlayImage;
         public string overlayImageName;
@@ -34,7 +28,7 @@ namespace InnerCoreUIEditor
         private bool offsetYTextChanged;
         private bool overlayScaleTextChanged;
 
-        public InnerImage()
+        public InnerImage(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
         {
             InitializeComponent();
             Initialization();           
@@ -45,8 +39,8 @@ namespace InnerCoreUIEditor
             pictureBox1.Click += PictureBox_Click;
             pictureBox2.Click += PictureBox_Click;
             pictureBox2.VisibleChanged += PictureBox2_VisibleChanged;
-            ControlEditor.Init(pictureBox1, this);
-            ControlEditor.Init(pictureBox2, this);
+            ControlEditor.Init(pictureBox1, this, parentTabPage);
+            ControlEditor.Init(pictureBox2, this, parentTabPage);
 
             overlayImageName = "";
             overlayImage = Resources._default_slot_empty;
@@ -89,7 +83,7 @@ namespace InnerCoreUIEditor
             Size = originSize;
         }
 
-        private void ChangeScale(float scale)
+        public override void ChangeScale(float scale)
         {
             this.scale = scale;
             oldLocation = Location;
@@ -126,7 +120,7 @@ namespace InnerCoreUIEditor
 
         public override void ColorImagesToPanelColor()
         {
-            pictureBox1.Image = ImageBlend.MergeWithPanel(new Bitmap(activeImage), new Point(Location.X + Global.panelWorkspace.AutoScrollPosition.X, Location.Y + Global.panelWorkspace.AutoScrollPosition.Y));
+            pictureBox1.Image = ImageBlend.MergeWithPanel(parentTabPage.GetDesktopPanel(), new Bitmap(activeImage), new Point(Location.X + parentTabPage.GetDesktopPanel().AutoScrollPosition.X, Location.Y + parentTabPage.GetDesktopPanel().AutoScrollPosition.Y));
             if (overlayEnabled)
             {
                 pictureBox2.Image = new Bitmap(overlayImage);
@@ -168,7 +162,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsXValue = new TextBox();
             _coordsXValue.Location = new Point(52, elementY);
             _coordsXValue.Size = new Size(151, elementSpacing);
-            _coordsXValue.Text = (Location.X - Global.panelWorkspace.AutoScrollPosition.X).ToString();
+            _coordsXValue.Text = (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X).ToString();
             _coordsXValue.LostFocus += new EventHandler(_coordsXValue_LostFocus);
             _coordsXValue.KeyDown += _coordsXValue_KeyDown;
             _coordsXValue.TextChanged += (sender, e) => { XTextChanged = true; };
@@ -183,7 +177,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsYValue = new TextBox();
             _coordsYValue.Location = new Point(52, elementY);
             _coordsYValue.Size = new Size(151, elementSpacing);
-            _coordsYValue.Text = (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y).ToString();
+            _coordsYValue.Text = (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y).ToString();
             _coordsYValue.LostFocus += new EventHandler(_coordsYValue_LostFocus);
             _coordsYValue.KeyDown += _coordsYValue_KeyDown;
             _coordsYValue.TextChanged += (sender, e) => { YTextChanged = true; };
@@ -212,7 +206,7 @@ namespace InnerCoreUIEditor
 
             Label _overlayEnabled = new Label();
             _overlayEnabled.Location = new Point(0, elementY += elementSpacing);
-            _overlayEnabled.Size = new Size(203, elementSpacing);
+            _overlayEnabled.Size = new Size(151, elementSpacing);
             _overlayEnabled.Text = "Дополнительный слой";
             propPanel.Controls.Add(_overlayEnabled);
 
@@ -313,7 +307,7 @@ namespace InnerCoreUIEditor
 
         private void ClickerForm_Click(object sender, EventArgs e)
         {
-            ClickerInput clickerInput = new ClickerInput();
+            ClickerInput clickerInput = new ClickerInput(parentTabPage);
             clickerInput.Location = MousePosition;
             clickerInput.Show();
         }
@@ -426,7 +420,7 @@ namespace InnerCoreUIEditor
             overlayImageName = openFileDialog1.SafeFileName;
             overlayImage = Bitmap.FromFile(openFileDialog1.FileName);
             ApplyOverlayImage();
-            FillPropPanel(Global.panelProperties);
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
         }
 
         private void ApplyOverlayImage()
@@ -509,56 +503,6 @@ namespace InnerCoreUIEditor
             return bitmap;
         }
 
-        private void _coordsXValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsXValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _coordsYValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsYValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _sizeValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _sizeValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _sizeValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!scaleTextChanged) return;
-            scaleTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            float scale;
-            if (!float.TryParse(textBox.Text, out scale))
-            {
-                textBox.Text = scale.ToString();
-                return;
-            }
-
-            if (scale*originSize.Height > Global.X || scale*originSize.Width > Global.Y)
-            {
-                textBox.Text = scale.ToString();
-                return;
-            }
-
-            if (scale == this.scale) return;
-            ChangeScale(scale);  
-        }
-
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
             if (constant) return;
@@ -582,57 +526,7 @@ namespace InnerCoreUIEditor
 
             imageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
-            FillPropPanel(Global.panelProperties);
-        }
-
-        private void _coordsXValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!XTextChanged) return;
-            XTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int x;
-            if (!int.TryParse(textBox.Text, out x))
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            x += Global.panelWorkspace.AutoScrollPosition.X;
-            if (x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            if (x != Location.X)
-            {
-                Location = new Point(x, Location.Y);
-                Global.panelWorkspace.Refresh();
-            }
-        }
-
-        private void _coordsYValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!YTextChanged) return;
-            YTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int y;
-            if (!int.TryParse(textBox.Text, out y))
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            y += Global.panelWorkspace.AutoScrollPosition.Y;
-            if (y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            if (y != Location.Y)
-            {
-                Location = new Point(Location.X, y);
-                Global.panelWorkspace.Refresh();
-            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
         }
 
         internal override string MakeOutput()
@@ -640,8 +534,8 @@ namespace InnerCoreUIEditor
             string element = "\n\t";
             element += '\"' + elementName + "\": \n\t{";
             element += "\n\t\ttype: \"image\",";
-            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tx: " + (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y) + ',';
             element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
             element += "\n\t\tbitmap: \"" + imageName.Split('.')[0] + "\",";
             if(overlayEnabled)

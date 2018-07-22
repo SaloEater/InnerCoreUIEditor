@@ -14,10 +14,7 @@ namespace InnerCoreUIEditor
 {
     public partial class InnerText : InnerControl
     {
-        private bool XTextChanged;
-        private bool YTextChanged;
-
-        public InnerText()
+        public InnerText(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
         {
             InitializeComponent();
             Initialization();
@@ -25,7 +22,7 @@ namespace InnerCoreUIEditor
 
         public void Initialization()
         {
-            ControlEditor.Init(richTextBox1, this);
+            ControlEditor.Init(richTextBox1, this, parentTabPage);
             richTextBox1.Click += (sender, e) => SelectControl();
         }
 
@@ -49,7 +46,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsXValue = new TextBox();
             _coordsXValue.Location = new Point(52, elementY);
             _coordsXValue.Size = new Size(151, elementSpacing);
-            _coordsXValue.Text = (Location.X - Global.panelWorkspace.AutoScrollPosition.X).ToString();
+            _coordsXValue.Text = (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X).ToString();
             _coordsXValue.LostFocus += new EventHandler(_coordsXValue_LostFocus);
             _coordsXValue.KeyDown += _coordsXValue_KeyDown;
             _coordsXValue.TextChanged += (sender, e) => { XTextChanged = true; };
@@ -64,7 +61,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsYValue = new TextBox();
             _coordsYValue.Location = new Point(52, elementY);
             _coordsYValue.Size = new Size(151, elementSpacing);
-            _coordsYValue.Text = (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y).ToString();
+            _coordsYValue.Text = (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y).ToString();
             _coordsYValue.LostFocus += new EventHandler(_coordsYValue_LostFocus);
             _coordsYValue.KeyDown += _coordsYValue_KeyDown;
             _coordsYValue.TextChanged += (sender, e) => { YTextChanged = true; };
@@ -170,7 +167,7 @@ namespace InnerCoreUIEditor
                 textBox.Text = Height.ToString();
                 return;
             }
-            if (height < 0 || height > Global.Y - Top)
+            if (height < 0 || height > parentTabPage.MaxY() - Top)
             {
                 textBox.Text = Height.ToString();
                 return;
@@ -188,7 +185,7 @@ namespace InnerCoreUIEditor
                 textBox.Text = Width.ToString();
                 return;
             }
-            if (width < 0 || width > Global.X - Left)
+            if (width < 0 || width > parentTabPage.MaxX() - Left)
             {
                 textBox.Text = Width.ToString();
                 return;
@@ -213,81 +210,13 @@ namespace InnerCoreUIEditor
             richTextBox1.Text = text;
         }
 
-        private void _coordsXValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsXValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _coordsYValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsYValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _coordsXValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!XTextChanged) return;
-            XTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int x;
-            if (!int.TryParse(textBox.Text, out x))
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            x += Global.panelWorkspace.AutoScrollPosition.X;
-            if(x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            if (x != Location.X)
-            {
-                Location = new Point(x, Location.Y);
-                Global.panelWorkspace.Refresh();
-            }
-        }
-
-        private void _coordsYValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!YTextChanged) return;
-            YTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int y;
-            if (!int.TryParse(textBox.Text, out y))
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            y += Global.panelWorkspace.AutoScrollPosition.Y;
-            if( y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            if (y != Location.Y)
-            {
-                Location = new Point(Location.X, y);
-                Global.panelWorkspace.Refresh();
-            }
-        }
-
         internal override string MakeOutput()
         {
             string element = "\n\t";
             element += '\"' + elementName + "\": \n\t{";
             element += "\n\t\ttype: \"text\",";
-            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tx: " + (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y) + ',';
             element += "\n\t\twidth: " + Width + ',';
             element += "\n\t\theight: " + Height + ',';
             element += "\n\t\ttext: " + richTextBox1.Text + ',';

@@ -12,10 +12,13 @@ namespace InnerCoreUIEditor
 {
     public partial class ClickerInput : Form
     {
-        public ClickerInput()
+        InnerTabPage parentTabPage;
+
+        public ClickerInput(InnerTabPage parentTabPage)
         {
             InitializeComponent();
-            richTextBox1.Text = Global.activeElement.clicker;
+            this.parentTabPage = parentTabPage;
+            richTextBox1.Text = parentTabPage.activeElement.clicker;
             FormClosed += ClickerInput_FormClosed;
             Resize += ClickerInput_Resize;
         }
@@ -27,7 +30,7 @@ namespace InnerCoreUIEditor
 
         private void ClickerInput_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Global.activeElement.clicker = richTextBox1.Text;
+            parentTabPage.activeElement.clicker = richTextBox1.Text;
         }
     }
 }

@@ -14,9 +14,22 @@ namespace InnerCoreUIEditor
 {
     public partial class InnerControl : UserControl
     {
+        public Params _params;
+        public ExplorerPainter explorerPainter;
+
         public string elementName { get; set; }
 
         public int elementY, elementSpacing = 20;
+
+        public InnerTabPage parentTabPage;
+
+        //Editor's vars
+
+        public bool XTextChanged;
+        public bool YTextChanged;
+        public bool scaleTextChanged;
+        public float scale { get; set; }
+        public Size originSize { get; set; }
 
         //public bool propPanelCleared;
 
@@ -25,16 +38,19 @@ namespace InnerCoreUIEditor
 
         public string clicker;
 
-        public InnerControl()
+        public InnerControl(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage)
         {
             InitializeComponent();
-            elementName = this.GetType().ToString() + "_" + Global.counter;
+            this.parentTabPage = parentTabPage;
+            elementName = this.GetType().ToString() + "_" + DateTime.Now  + "_" + DateTime.Now.Millisecond;
             clicker = "";
             elementY = 0;
             constant = false;
             hidden = false;
             //propPanelCleared = false;
-            Disposed += InnerControl_Disposed;            
+            Disposed += InnerControl_Disposed;
+            this.explorerPainter = explorerPainter;
+            this._params = _params;
         }
 
         public virtual void ToDefault()
@@ -53,11 +69,11 @@ namespace InnerCoreUIEditor
 
         private void InnerControl_Disposed(object sender, EventArgs e)
         {
-            foreach(Control c in Global.panelProperties.Controls)
+            foreach(Control c in parentTabPage.GetPropertiesPanel().Controls)
             {
                 c.Dispose();
             }
-            Global.panelProperties.Controls.Clear();
+            parentTabPage.GetPropertiesPanel().Controls.Clear();
         }
 
         public void ClearPropPanel(Panel propPanel)
@@ -86,7 +102,7 @@ namespace InnerCoreUIEditor
             }*/
             if(!constant)AddRemoveButton(propPanel);
             propPanel.Refresh();
-            Console.WriteLine("Drawed");
+            //Console.WriteLine("Drawed");
         }
 
         public void FillName(Panel propPanel)
@@ -130,6 +146,112 @@ namespace InnerCoreUIEditor
             }
         }
 
+        public void _coordsXValue_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                _coordsXValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+        public void _coordsXValue_LostFocus(object sender, EventArgs e)
+        {
+            if (constant) return;
+            if (!XTextChanged) return;
+            XTextChanged = false;
+            TextBox textBox = (TextBox)sender;
+            int x;
+            if (!int.TryParse(textBox.Text, out x))
+            {
+                textBox.Text = Left.ToString();
+                return;
+            }
+            x += parentTabPage.GetDesktopPanel().AutoScrollPosition.X;
+            if (x < parentTabPage.GetDesktopPanel().AutoScrollPosition.X || x > parentTabPage.MaxX() - Size.Width)
+            {
+                textBox.Text = Left.ToString();
+                return;
+            }
+            if (x != Location.X)
+            {
+                Location = new Point(x, Location.Y);
+                parentTabPage.GetDesktopPanel().Refresh();
+            }
+        }
+
+        public void _coordsYValue_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                _coordsYValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+        public void _coordsYValue_LostFocus(object sender, EventArgs e)
+        {
+            if (constant) return;
+            if (!YTextChanged) return;
+            YTextChanged = false;
+            TextBox textBox = (TextBox)sender;
+            int y;
+            if (!int.TryParse(textBox.Text, out y))
+            {
+                textBox.Text = Top.ToString();
+                return;
+            }
+            y += parentTabPage.GetDesktopPanel().AutoScrollPosition.Y;
+            if (y < parentTabPage.GetDesktopPanel().AutoScrollPosition.Y || y > parentTabPage.MaxY() - Size.Width)
+            {
+                textBox.Text = Top.ToString();
+                return;
+            }
+            if (y != Location.Y)
+            {
+                Location = new Point(Location.X, y);
+                parentTabPage.GetDesktopPanel().Refresh();
+            }
+        }
+
+        public void _sizeValue_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                _sizeValue_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+        //Это float, а нужно оверрайдить int
+        public virtual void _sizeValue_LostFocus(object sender, EventArgs e)
+        {
+            if (constant) return;
+            if (!scaleTextChanged) return;
+            scaleTextChanged = false;
+            TextBox textBox = (TextBox)sender;
+            float scale;
+            if (!float.TryParse(textBox.Text, out scale))
+            {
+                textBox.Text = scale.ToString();
+                return;
+            }
+
+            if (scale * originSize.Height > parentTabPage.MaxX() || scale * originSize.Width > parentTabPage.MaxY())
+            {
+                textBox.Text = scale.ToString();
+                return;
+            }
+
+            if (scale == this.scale) return;
+            ChangeScale(scale);
+        }
+
+        public virtual void ChangeScale(float scale)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void Remove()
         {
             RemoveButton_Click(null, null);
@@ -137,22 +259,22 @@ namespace InnerCoreUIEditor
 
         internal virtual void SelectControl()
         {
-            if (Global.activeElement != null) Global.activeElement.DeselectControl();
-            Global.activeElement = this;
+            if (parentTabPage.activeElement != null) parentTabPage.activeElement.DeselectControl();
+            parentTabPage.activeElement = this;
             //propPanelCleared = false;
             elementY = 0;
-            //Global.panelWorkspace.ScrollControlIntoView(this);
+            //parentTabPage.GetDesktopPanel().ScrollControlIntoView(this);
             //Сделать фокусировку панели на элементе
-            ExplorerPainter.Color(elementName);
-            Global.activeElement.FillPropPanel(Global.panelProperties);
+            explorerPainter.Color(elementName);
+            parentTabPage.activeElement.FillPropPanel(parentTabPage.GetPropertiesPanel());
         }
 
         internal virtual void DeselectControl()
         {
-            Global.activeElement = null;
+            parentTabPage.activeElement = null;
             //propPanelCleared = false;
-            ClearPropPanel(Global.panelProperties);
-            ExplorerPainter.Uncolor(elementName);
+            ClearPropPanel(parentTabPage.GetPropertiesPanel());
+            explorerPainter.Uncolor(elementName);
         }
 
         private void _nameValue_LostFocus(object sender, EventArgs e)
@@ -160,7 +282,7 @@ namespace InnerCoreUIEditor
             if (constant) return;
             TextBox textBox = (TextBox)sender;
             string newName = textBox.Text;
-            foreach(Label c in Global.panelExplorer.Controls)
+            foreach(Label c in parentTabPage.GetExplorerPanel().Controls)
             {
                 if (c.Text.Equals(newName))
                 {
@@ -169,7 +291,8 @@ namespace InnerCoreUIEditor
                 }
             }
             elementName = newName;
-            Global.ReloadExporer();
+            parentTabPage.ReloadExporer();
+            SelectControl();
         }
 
         public virtual void ResizeControl(char longestSide, int distance)
@@ -235,22 +358,22 @@ namespace InnerCoreUIEditor
         private void ToFrontButton_Click(object sender, EventArgs e)
         {
             BringToFront();
-            Global.panelWorkspace.Refresh();
+            parentTabPage.GetDesktopPanel().Refresh();
         }
 
         private void RemoveButton_Click(object sender, EventArgs e)
         {
-            foreach(Control _c in Global.panelWorkspace.Controls)
+            foreach(Control _c in parentTabPage.GetDesktopPanel().Controls)
             {
                 if (_c.GetType()== typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;
                 if (c.elementName == elementName)
                 {   
-                    Global.panelWorkspace.Controls.Remove(_c);
+                    parentTabPage.GetDesktopPanel().Controls.Remove(_c);
                     break;
                 }
             }
-            Global.ReloadExporer();
+            parentTabPage.ReloadExporer();
             this.Dispose();
         }
 

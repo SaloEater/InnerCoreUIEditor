@@ -243,6 +243,16 @@ namespace InnerCoreUIEditor.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AddTab {
+            get {
+                object obj = ResourceManager.GetObject("AddTab", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap button_to_front {
             get {
                 object obj = ResourceManager.GetObject("button_to_front", resourceCulture);

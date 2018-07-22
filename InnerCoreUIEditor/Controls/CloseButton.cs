@@ -14,37 +14,32 @@ namespace InnerCoreUIEditor
 {
     public partial class CloseButton : InnerControl
     {
+
         public Image activeImage { get; set; }
         public Image activeImage2 { get; set; }
         public string Clicker { get; set; }
         public string activeImageName { get; set; }
         public string activeImage2Name { get; set; }
-        public float scale { get; set; }
-        public Size originSize { get; set; }
         public Point oldLocation { get; set; }
         private bool global { get; set; }
 
         private int TimerSec;
 
-        private bool scaleTextChanged;
-        private bool XTextChanged;
-        private bool YTextChanged;
-
-        public CloseButton()
+        public CloseButton(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
         {
             InitializeComponent();
-            Initialization();           
+            Initialization();
         }
 
         public void Initialization()
         {
             scale = 1;
-            ControlEditor.Init(pictureBox1, this);
-            activeImage = Params.GetCloseButtonImage(out string image);
+            ControlEditor.Init(pictureBox1, this, parentTabPage);
+            activeImage = _params.GetCloseButtonImage(out string image);
             activeImageName = image;
             ApplyImage(activeImage);
             pictureBox1.Click += button_Click;
-            activeImage2 = Params.GetCloseButton2Image(out image);
+            activeImage2 = _params.GetCloseButton2Image(out image);
             activeImage2Name = image;
             BringToFront();
         }
@@ -67,7 +62,7 @@ namespace InnerCoreUIEditor
             Size = originSize;
         }
 
-        private void ChangeScale(float scale)
+        public override void ChangeScale(float scale)
         {
             this.scale = scale;
             oldLocation = Location;
@@ -139,7 +134,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsXValue = new TextBox();
             _coordsXValue.Location = new Point(52, elementY);
             _coordsXValue.Size = new Size(151, elementSpacing);
-            _coordsXValue.Text = (Location.X - Global.panelWorkspace.AutoScrollPosition.X).ToString();
+            _coordsXValue.Text = (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X).ToString();
             _coordsXValue.LostFocus += new EventHandler(_coordsXValue_LostFocus);
             _coordsXValue.KeyDown += _coordsXValue_KeyDown;
             _coordsXValue.TextChanged += (sender, e) => { XTextChanged = true; };
@@ -154,7 +149,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsYValue = new TextBox();
             _coordsYValue.Location = new Point(52, elementY);
             _coordsYValue.Size = new Size(151, elementSpacing);
-            _coordsYValue.Text = (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y).ToString();
+            _coordsYValue.Text = (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y).ToString();
             _coordsYValue.LostFocus += new EventHandler(_coordsYValue_LostFocus);
             _coordsYValue.KeyDown += _coordsYValue_KeyDown;
             _coordsYValue.TextChanged += (sender, e) => { YTextChanged = true; };
@@ -259,7 +254,7 @@ namespace InnerCoreUIEditor
             activeImage2 = CreateBitmap(path, out bool success);
             if (!success)
             {
-                activeImage2 = Params.GetCloseButton2Image(out string _name);
+                activeImage2 = _params.GetCloseButton2Image(out string _name);
                 activeImage2Name = _name;
             }
 
@@ -271,7 +266,7 @@ namespace InnerCoreUIEditor
             activeImage = CreateBitmap(path, out bool success);
             if(!success)
             {
-                activeImage = Params.GetCloseButtonImage(out string name);
+                activeImage = _params.GetCloseButtonImage(out string name);
                 activeImageName = name;
             }
             ApplyImage(activeImage);
@@ -302,56 +297,6 @@ namespace InnerCoreUIEditor
             return bitmap;
         }
 
-        private void _coordsXValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsXValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _coordsYValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsYValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _sizeValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _sizeValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _sizeValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!scaleTextChanged) return;
-            scaleTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            float scale;
-            if (!float.TryParse(textBox.Text, out scale))
-            {
-                textBox.Text = scale.ToString();
-                return;
-            }
-
-            if (scale*originSize.Height > Global.X || scale*originSize.Width > Global.Y)
-            {
-                textBox.Text = scale.ToString();
-                return;
-            }
-
-            if (scale == this.scale) return;
-            ChangeScale(scale);  
-        }
-
         private void _imagePicPath_LostFocus(object sender, EventArgs e)
         {
             if (constant) return;
@@ -375,7 +320,7 @@ namespace InnerCoreUIEditor
 
             activeImageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
-            FillPropPanel(Global.panelProperties);
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
         }
 
         private void OpenFileDialog2_Click(object sender, EventArgs e)
@@ -393,57 +338,7 @@ namespace InnerCoreUIEditor
 
             activeImage2Name = openFileDialog1.SafeFileName;
             activeImage2 = Image.FromFile(openFileDialog1.FileName);
-            FillPropPanel(Global.panelProperties);
-        }
-
-        private void _coordsXValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!XTextChanged) return;
-            XTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int x;
-            if (!int.TryParse(textBox.Text, out x))
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            x += Global.panelWorkspace.AutoScrollPosition.X;
-            if (x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            if (x != Location.X)
-            {
-                Location = new Point(x, Location.Y);
-                Global.panelWorkspace.Refresh();
-            }
-        }
-
-        private void _coordsYValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!YTextChanged) return;
-            YTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int y;
-            if (!int.TryParse(textBox.Text, out y))
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            y += Global.panelWorkspace.AutoScrollPosition.Y;
-            if (y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            if (y != Location.Y)
-            {
-                Location = new Point(Location.X, y);
-                Global.panelWorkspace.Refresh();
-            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
         }
 
         internal override string MakeOutput()
@@ -451,11 +346,11 @@ namespace InnerCoreUIEditor
             string element = "\n\t";
             element += '\"' + elementName + "\": \n\t{";
             element += "\n\t\ttype: \"closeButton\",";
-            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tx: " + (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y) + ',';
             element += "\n\t\tscale: " + scale.ToString().Replace(',', '.') + ',';
-            if(activeImageName!=Params.closeButtonImageName)element += "\n\t\tbitmap: \"" + activeImageName.Split('.')[0] + "\",";
-            if (activeImage2Name != Params.closeButton2ImageName) element += "\n\t\tbitmap2: \"" + activeImage2Name.Split('.')[0] + "\",";
+            if(activeImageName!=_params.closeButtonImageName)element += "\n\t\tbitmap: \"" + activeImageName.Split('.')[0] + "\",";
+            if (activeImage2Name != _params.closeButton2ImageName) element += "\n\t\tbitmap2: \"" + activeImage2Name.Split('.')[0] + "\",";
             if (global) element += "\n\t\tglobal: true,";
             element += "\n\t}";
             return element;

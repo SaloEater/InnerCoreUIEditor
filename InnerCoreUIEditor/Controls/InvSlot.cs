@@ -19,10 +19,8 @@ namespace InnerCoreUIEditor
         public string ImageName { get; set; }
 
         private bool sizeTextChanged;
-        private bool XTextChanged;
-        private bool YTextChanged;
 
-        public InvSlot()
+        public InvSlot(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
         {
             InitializeComponent();
             Initialization();
@@ -30,8 +28,8 @@ namespace InnerCoreUIEditor
 
         public void Initialization()
         {
-            ControlEditor.Init(pictureBoxSlot, this);
-            ControlEditor.Init(pictureBoxSelection, this);
+            ControlEditor.Init(pictureBoxSlot, this, parentTabPage);
+            ControlEditor.Init(pictureBoxSelection, this, parentTabPage);
             pictureBoxSelection.SizeMode = PictureBoxSizeMode.StretchImage;
             ToDefault();
             pictureBoxSlot.Click += PictureBoxSlot_Click;
@@ -40,10 +38,10 @@ namespace InnerCoreUIEditor
 
         public override void ToDefault()
         {
-            ActiveImage = Params.GetInvSlotImage(out string imageName);
+            ActiveImage = _params.GetInvSlotImage(out string imageName);
             pictureBoxSlot.Image = new Bitmap(ActiveImage);
             ImageName = imageName;
-            pictureBoxSelection.Image = new Bitmap(Params.GetSelectionImage(out imageName));
+            pictureBoxSelection.Image = new Bitmap(_params.GetSelectionImage(out imageName));
             ImageBlend.Blend(pictureBoxSlot.Image, pictureBoxSelection.Image);
             Refresh();
         }
@@ -99,7 +97,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsXValue = new TextBox();
             _coordsXValue.Location = new Point(52, elementY);
             _coordsXValue.Size = new Size(151, elementSpacing);
-            _coordsXValue.Text = (Location.X - Global.panelWorkspace.AutoScrollPosition.X).ToString();
+            _coordsXValue.Text = (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X).ToString();
             _coordsXValue.LostFocus += new EventHandler(_coordsXValue_LostFocus);
             _coordsXValue.KeyDown += _coordsXValue_KeyDown;
             _coordsXValue.TextChanged += (sender, e) => { XTextChanged = true; };
@@ -114,7 +112,7 @@ namespace InnerCoreUIEditor
             TextBox _coordsYValue = new TextBox();
             _coordsYValue.Location = new Point(52, elementY);
             _coordsYValue.Size = new Size(151, elementSpacing);
-            _coordsYValue.Text = (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y).ToString();
+            _coordsYValue.Text = (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y).ToString();
             _coordsYValue.LostFocus += new EventHandler(_coordsYValue_LostFocus);
             _coordsYValue.KeyDown += _coordsYValue_KeyDown;
             _coordsYValue.TextChanged += (sender, e) => { YTextChanged = true; };
@@ -199,11 +197,11 @@ namespace InnerCoreUIEditor
             string element = "\n\t";
             element += '\"' + elementName + "\": \n\t{";
             element += "\n\t\ttype: \"invSlot\",";
-            element += "\n\t\tx: " + (Location.X - Global.panelWorkspace.AutoScrollPosition.X) + ',';
-            element += "\n\t\ty: " + (Location.Y - Global.panelWorkspace.AutoScrollPosition.Y) + ',';
+            element += "\n\t\tx: " + (Location.X - parentTabPage.GetDesktopPanel().AutoScrollPosition.X) + ',';
+            element += "\n\t\ty: " + (Location.Y - parentTabPage.GetDesktopPanel().AutoScrollPosition.Y) + ',';
             element += "\n\t\tsize: " + Width + ',';
             element += "\n\t\tindex: " + index + ',';
-            if (ImageName != Params.invSlotImageName) element += "\n\t\tbitmap: \"" + ImageName.Split('.')[0] + "\",";
+            if (ImageName != _params.invSlotImageName) element += "\n\t\tbitmap: \"" + ImageName.Split('.')[0] + "\",";
             element += "}";
             return element;
         }
@@ -290,34 +288,7 @@ namespace InnerCoreUIEditor
             return bitmap;
         }
 
-        private void _coordsXValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsXValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _coordsYValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _coordsYValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _sizeValue_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                _sizeValue_LostFocus(sender, null);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void _sizeValue_LostFocus(object sender, EventArgs e)
+        public override void _sizeValue_LostFocus(object sender, EventArgs e)
         {
             if (constant) return;
             if (!sizeTextChanged) return;
@@ -330,7 +301,7 @@ namespace InnerCoreUIEditor
                 return;
             }
 
-            if (size + Left < 0 || size + Left > Global.X || size + Top > Global.Y)
+            if (size + Left < 0 || size + Left > parentTabPage.MaxX() || size + Top > parentTabPage.MaxY())
             {
                 textBox.Text = Width.ToString();
                 return;
@@ -367,58 +338,8 @@ namespace InnerCoreUIEditor
 
             ImageName = openFileDialog1.SafeFileName;
             ApplyImage(openFileDialog1.FileName);
-            SetSelection(Params.GetSelectionImage(out string a));
-            FillPropPanel(Global.panelProperties);
-        }
-
-        private void _coordsXValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!XTextChanged) return;
-            XTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int x;
-            if (!int.TryParse(textBox.Text, out x))
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            x += Global.panelWorkspace.AutoScrollPosition.X;
-            if (x < Global.panelWorkspace.AutoScrollPosition.X || x > Global.X - Size.Width)
-            {
-                textBox.Text = Left.ToString();
-                return;
-            }
-            if (x != Location.X)
-            {
-                Location = new Point(x, Location.Y);
-                Global.panelWorkspace.Refresh();
-            }
-        }
-
-        private void _coordsYValue_LostFocus(object sender, EventArgs e)
-        {
-            if (constant) return;
-            if (!YTextChanged) return;
-            YTextChanged = false;
-            TextBox textBox = (TextBox)sender;
-            int y;
-            if (!int.TryParse(textBox.Text, out y))
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            y += Global.panelWorkspace.AutoScrollPosition.Y;
-            if (y < Global.panelWorkspace.AutoScrollPosition.Y || y > Global.Y - Size.Width)
-            {
-                textBox.Text = Top.ToString();
-                return;
-            }
-            if (y != Location.Y)
-            {
-                Location = new Point(Location.X, y);
-                Global.panelWorkspace.Refresh();
-            }
+            SetSelection(_params.GetSelectionImage(out string a));
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
         }
     }
 }

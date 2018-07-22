@@ -25,13 +25,16 @@ namespace InnerCoreUIEditor
 
         private static char longestSide;
 
-        public static void Init(Control origin)
+        private static InnerTabPage parent;
+
+        public static void Init(Control origin, InnerTabPage _parent)
         {
-            Init(origin, origin);
+            Init(origin, origin, _parent);
         }
 
-        public static void Init(Control origin, Control target)
+        public static void Init(Control origin, Control target, InnerTabPage _parent)
         {
+            parent = _parent;
             moving = false;
             scaling = false;
             bottomEdge = false;
@@ -40,7 +43,7 @@ namespace InnerCoreUIEditor
             rightEdge = false;
             cursorOrigin = Point.Empty;
 
-            origin.Click += (sender, e) => { ((InnerControl)target).FillPropPanel(Global.panelProperties); };
+            origin.Click += (sender, e) => { ((InnerControl)target).FillPropPanel(parent.GetPropertiesPanel()); };
             origin.MouseDown += Control_MouseDown; // Активировать изменение объекта
             origin.MouseUp += Control_MouseUp; // Прекратить изменение объекта
             origin.MouseMove += (sender, e) => MoveControl(target, e); // Само изменение рассчитывается здесь
@@ -88,8 +91,12 @@ namespace InnerCoreUIEditor
             {
                 int x = (e.X - cursorOrigin.X) + obj.Left;
                 int y = (e.Y - cursorOrigin.Y) + obj.Top;
-                if (x + obj.Width - Global.panelWorkspace.AutoScrollPosition.X > Global.X || x - Global.panelWorkspace.AutoScrollPosition.X < 0) return;
-                if (y + obj.Height - Global.panelWorkspace.AutoScrollPosition.Y > Global.Y || y - Global.panelWorkspace.AutoScrollPosition.Y < 0) return;
+                int _x = parent.GetDesktopPanel().AutoScrollPosition.X;
+                int _y = parent.GetDesktopPanel().AutoScrollPosition.Y;
+                int maxx = parent.MaxX();
+                int maxy = parent.MaxY();
+                if (x + obj.Width > maxx || x - _x < 0) return;
+                if (y + obj.Height > maxy || y - _y < 0) return;
                 obj.Location = new Point(x, y);
             }
             else if (scaling)
@@ -99,16 +106,16 @@ namespace InnerCoreUIEditor
                     if (upperEdge)
                     {
                         /*int x = obj.Location.X - cursorOrigin.X + e.X;
-                        if (x < 0 || x > Global.X - obj.Size.Width)return;
+                        if (x < 0 || x > parent.X - obj.Size.Width)return;
                         int y = obj.Location.Y - cursorOrigin.X + e.X;
-                        if (y < 0 || y > Global.Y - obj.Size.Y)return;
+                        if (y < 0 || y > parent.Y - obj.Size.Y)return;
                         obj.Location = new Point(x, y);
                         obj.ResizeControl(obj.Width + cursorOrigin.X - e.X);*/
                     }
                     else if (bottomEdge)
                     {
                         /*int x = obj.Location.X - cursorOrigin.X + e.X;
-                        if (x < 0 || x > Global.X - obj.Size.Width) return;
+                        if (x < 0 || x > parent.X - obj.Size.Width) return;
                         int y = obj.Location.Y;
                         obj.Location = new Point(x, y);
                         obj.ResizeControl(obj.Width + cursorOrigin.X - e.X);*/
@@ -124,7 +131,7 @@ namespace InnerCoreUIEditor
                     {
                         /*int x = obj.Location.X;
                         int y = obj.Location.Y - cursorOrigin.Y + e.Y;
-                        if (y < 0 || y > Global.Y - obj.Size.Width) return;
+                        if (y < 0 || y > parent.Y - obj.Size.Width) return;
                         obj.Location = new Point(x, y);
                         obj.ResizeControl(obj.Height + cursorOrigin.Y - e.Y);*/
                     }
@@ -134,7 +141,7 @@ namespace InnerCoreUIEditor
                         {
                             int x = e.X - cursorOrigin.X + startSize.Width;
                             int y = e.Y - cursorOrigin.Y + startSize.Height;
-                            Console.WriteLine("{0} - {1}", x, y);
+                            //Console.WriteLine("{0} - {1}", x, y);
                             obj.ResizeControl(longestSide, longestSide == 'x' ?x: y);
                             cursorLastPos = e.Location;
                         }

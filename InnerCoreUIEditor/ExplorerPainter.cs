@@ -7,27 +7,34 @@ using System.Windows.Forms;
 
 namespace InnerCoreUIEditor
 {
-    static class ExplorerPainter
+    public class ExplorerPainter
     {
-        public static void Color(string elementName)
+        private Panel panelExplorer;
+
+        public ExplorerPainter(Panel panelExplorer)
         {
-            foreach(Label t in Global.panelExplorer.Controls)
+            this.panelExplorer = panelExplorer;
+        }
+
+        public void Color(string elementName)
+        {
+            foreach(Label t in panelExplorer.Controls)
             {
                 if(t.Text == elementName)
                 {
-                    t.BackColor = System.Drawing.Color.Gray;
+                    t.BackColor = System.Drawing.Color.LightBlue;
                     break;
                 }
             }
         }
 
-        public static void Uncolor(string elementName)
+        public void Uncolor(string elementName)
         {
-            foreach (Label t in Global.panelExplorer.Controls)
+            foreach (Label t in panelExplorer.Controls)
             {
                 if (t.Text == elementName)
                 {
-                    t.BackColor = System.Drawing.Color.White;
+                    t.BackColor = panelExplorer.BackColor;
                     break;
                 }
             }

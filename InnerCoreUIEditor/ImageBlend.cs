@@ -43,10 +43,10 @@ namespace InnerCoreUIEditor
             }
         }
 
-        internal static Image ToPanelColor(Image activeImage)
+        internal static Image ToPanelColor(Panel desktop, Image activeImage)
         {
             Bitmap bitmap = new Bitmap(activeImage);
-            Color panelColor = Global.panelWorkspace.BackColor;
+            Color panelColor = desktop.BackColor;
             for (int x = 0; x < bitmap.Width; x++)
             {
                 for (int y = 0; y < bitmap.Height; y++)
@@ -61,9 +61,9 @@ namespace InnerCoreUIEditor
             return bitmap;
         }
 
-        internal static Image MergeWithPanel(Bitmap bitmap, Point point)
+        internal static Image MergeWithPanel(Panel desktop, Bitmap bitmap, Point point)
         {
-            return ToPanelColor(bitmap);
+            return ToPanelColor(desktop, bitmap);
         }
 
         internal static Image ResizeImage(Image image, int width, int height)
