@@ -97,7 +97,6 @@
     <Compile Include="Controls\CloseButton.Designer.cs">
       <DependentUpon>CloseButton.cs</DependentUpon>
     </Compile>
-    <Compile Include="Hotkey.cs" />
     <Compile Include="ImageBlend.cs" />
     <Compile Include="Controls\InnerImage.cs">
       <SubType>UserControl</SubType>
@@ -211,6 +210,8 @@
     <None Include="Resources\button_fly_off.png" />
     <None Include="bin\Debug\default_header.png" />
     <None Include="Resources\AddTab.png" />
+    <None Include="Resources\if_wrench_416405.png" />
+    <None Include="Resources\expandIcon.png" />
     <Content Include="testParse.txt" />
     <Content Include="ui\close_button_down.png" />
     <Content Include="ui\close_button_up.png" />

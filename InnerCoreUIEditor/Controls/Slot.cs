@@ -37,6 +37,31 @@ namespace InnerCoreUIEditor
             Visual = false;
         }
 
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            Slot control = new Slot(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+            control.originSize = originSize;
+
+            control.ActiveImage = ActiveImage;
+            control.ImageName = ImageName;
+            control.Visual = Visual;
+            control.TransparentBg = TransparentBg;
+            control.ApplyImage();
+
+            return control;
+        }
+
+        private void ApplyImage()
+        {
+            pictureBoxSlot.Image = ActiveImage;
+        }
+
         public override void ToDefault()
         {
             ActiveImage = _params.GetSlotImage(out string imageName);
@@ -167,6 +192,8 @@ namespace InnerCoreUIEditor
             clickerForm.Location = new Point(103, elementY);
             clickerForm.Size = new Size(elementSpacing, elementSpacing);
             clickerForm.Click += ClickerForm_Click;
+            clickerForm.BackgroundImage = Resources.expandIcon;
+            clickerForm.BackgroundImageLayout = ImageLayout.Stretch;
             propPanel.Controls.Add(clickerForm);
             base.FillPropPanel(propPanel);
         }

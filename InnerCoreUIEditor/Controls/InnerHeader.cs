@@ -23,6 +23,7 @@ namespace InnerCoreUIEditor.Controls
             closeButton.constant = true;
             closeButton.hidden = true;
             closeButton.Enabled = false;
+            
             Controls.Add(closeButton);
             closeButton.BringToFront();
             richTextBox1.BackColor = Color.FromArgb(114, 106, 112);

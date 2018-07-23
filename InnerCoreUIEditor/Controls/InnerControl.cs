@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnerCoreUIEditor.Properties;
 using InnerCoreUIEditor.Controls;
+using System.Globalization;
 
 namespace InnerCoreUIEditor
 {
@@ -58,33 +59,28 @@ namespace InnerCoreUIEditor
             throw new NotImplementedException();
         }
 
-        public void ResizeAll(Size size)
+        public virtual void ResizeAll(Size size)
         {
+            Size = size;
             foreach (Control c in Controls)
             {
                 c.Size = size;
             }
-            Size = size;
         }
 
         private void InnerControl_Disposed(object sender, EventArgs e)
         {
-            foreach(Control c in parentTabPage.GetPropertiesPanel().Controls)
-            {
-                c.Dispose();
-            }
-            parentTabPage.GetPropertiesPanel().Controls.Clear();
+            ClearPropPanel(parentTabPage.GetPropertiesPanel());
         }
 
         public void ClearPropPanel(Panel propPanel)
         {
-            foreach (Control c in propPanel.Controls)
+            /*for (int i = 0; i < propPanel.Controls.Count; i++)
             {
-                c.Dispose();
-            }
-            propPanel.Controls.Clear();
-            propPanel.Refresh();
-            //propPanelCleared = true;
+                Control control = propPanel.Controls[i];
+                control.Dispose();
+                i--;
+            }*/
             elementY = 0;
         }
 
@@ -131,10 +127,21 @@ namespace InnerCoreUIEditor
             _globalCheck.Location = new Point(103, elementY);
             _globalCheck.Size = new Size(101, elementSpacing);
             _globalCheck.Checked = Visible;
-            _globalCheck.CheckedChanged += (sender, e) => { Visible = ((CheckBox)sender).Checked; };
+            _globalCheck.CheckedChanged += _globalCheck_CheckedChanged;
             propPanel.Controls.Add(_globalCheck);
 
             elementY += elementSpacing;
+        }
+
+        internal virtual InnerControl MakeCopy()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void _globalCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            if (constant) return;
+            Visible = ((CheckBox)sender).Checked;
         }
 
         private void _nameValue_KeyDown(object sender, KeyEventArgs e)
@@ -231,7 +238,7 @@ namespace InnerCoreUIEditor
             scaleTextChanged = false;
             TextBox textBox = (TextBox)sender;
             float scale;
-            if (!float.TryParse(textBox.Text, out scale))
+            if (!float.TryParse(textBox.Text, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out scale))
             {
                 textBox.Text = scale.ToString();
                 return;
@@ -363,7 +370,8 @@ namespace InnerCoreUIEditor
 
         private void RemoveButton_Click(object sender, EventArgs e)
         {
-            foreach(Control _c in parentTabPage.GetDesktopPanel().Controls)
+            if (constant) return;
+            foreach (Control _c in parentTabPage.GetDesktopPanel().Controls)
             {
                 if (_c.GetType()== typeof(Label) || _c.GetType() == typeof(InnerHeader)) continue;
                 InnerControl c = (InnerControl)_c;

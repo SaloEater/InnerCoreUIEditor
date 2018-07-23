@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnerCoreUIEditor.Properties;
 using System.IO;
+using System.Globalization;
 
 namespace InnerCoreUIEditor
 {
@@ -19,10 +20,10 @@ namespace InnerCoreUIEditor
         public string imageName { get; set; }
         public Point oldLocation { get; set; }
 
-        private Image scaledActiveImage;
+        public Image scaledActiveImage;
 
-        private bool invert;
-        private int chosenItem;
+        public bool invert;
+        public int chosenItem;
 
         //Добавить привязку к заднему фону
 
@@ -46,6 +47,9 @@ namespace InnerCoreUIEditor
         {
             pictureBox1.Click += PictureBox_Click;
             pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
+
+            pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
+
             pictureBox2.Click += PictureBox_Click;
             pictureBox2.VisibleChanged += PictureBox2_VisibleChanged;
             ControlEditor.Init(pictureBox1, this, parentTabPage);
@@ -58,11 +62,39 @@ namespace InnerCoreUIEditor
             overlayScale = 1;
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
             ApplyOverlayImage();
-
-            scale = 1;
             activeImage = Resources._selection;
             imageName = "_selection.png";
             ApplyImage(activeImage);
+            scale = parentTabPage.globalScale;
+            ChangeScale(scale);
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            Scale control = new Scale(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+            control.oldLocation = oldLocation;
+            control.originSize = originSize;
+
+            control.activeImage = activeImage;
+            control.imageName = imageName;
+            control.overlayImage = overlayImage;
+            control.overlayImageName = overlayImageName;
+            control.overlayScale = overlayScale;
+            control.overlayOriginSize = overlayOriginSize;
+            control.overlayEnabled = overlayEnabled;
+            control.pictureBox2.Visible = overlayEnabled;
+            control.scaledActiveImage = scaledActiveImage;
+            control.invert = invert;
+            control.chosenItem = chosenItem;
+            control.ApplyImage(control.activeImage);
+
+            return control;
         }
 
         private void PictureBox2_VisibleChanged(object sender, EventArgs e)
@@ -80,6 +112,8 @@ namespace InnerCoreUIEditor
 
         private void ApplyImage(Image activeImage)
         {
+            pictureBox1.Image = activeImage;
+            pictureBox2.Image = overlayImage;
             originSize = activeImage.Size;
             //ChangeControlSize(originSize);
             ColorImagesToPanelColor();
@@ -99,14 +133,16 @@ namespace InnerCoreUIEditor
             oldLocation = Location;
             ChangeControlSize(originSize);
             Scale(new SizeF(scale, scale));
-            scaledActiveImage = ImageBlend.ResizeImage(pictureBox1.Image, (int)(originSize.Width * scale), (int)(originSize.Height * scale));
+            scaledActiveImage = ImageBlend.ResizeImage(pictureBox1.Image, Width, Height);
             pictureBox1.Image = scaledActiveImage;
             pictureBox2.Size = overlayImage.Size;
             if (overlayEnabled)
             {
                 overlayScale *= scale;
                 pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
+                pictureBox2.Image = ImageBlend.ResizeImage(pictureBox2.Image, pictureBox2.Width, pictureBox2.Height);
             }
+            if(BackgroundImage != null)ApplyMask(new Bitmap(BackgroundImage));
             Location = oldLocation;
         }
 
@@ -134,11 +170,11 @@ namespace InnerCoreUIEditor
         {
             //pictureBox1.Image = new Bitmap(activeImage);
             pictureBox1.Image = ImageBlend.MergeWithPanel(parentTabPage.GetDesktopPanel(), new Bitmap(activeImage), new Point(Location.X + parentTabPage.GetDesktopPanel().AutoScrollPosition.X, Location.Y + parentTabPage.GetDesktopPanel().AutoScrollPosition.Y));
-            if (overlayEnabled)
+            /*if (overlayEnabled)
             {
                 pictureBox2.Image = new Bitmap(overlayImage);
                 ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
-            }
+            }*/
         }
 
         public override void FillPropPanel(Panel propPanel)
@@ -397,8 +433,8 @@ namespace InnerCoreUIEditor
         public void ApplyMask(Bitmap image)
         {
             ImageBlend.MergeWithPanel(parentTabPage.GetDesktopPanel(), new Bitmap(image), new Point(Location.X + parentTabPage.GetDesktopPanel().AutoScrollPosition.X, Location.Y + parentTabPage.GetDesktopPanel().AutoScrollPosition.Y));
-            //ImageBlend.Blend(image, pictureBox1.Image);
-            BackgroundImage = image;
+            ImageBlend.Blend(image, activeImage);
+            BackgroundImage = ImageBlend.ResizeImage(image, Width, Height);
         }
 
         private void TrackBar_ValueChanged(object sender, EventArgs e)
@@ -411,21 +447,25 @@ namespace InnerCoreUIEditor
                 {
                     case 0:
                         pictureBox1.Width = pictureBox1.Image.Size.Width * value / 100;
+                        SyncWithOverlay();
                         break;
 
                     case 1:
                         pictureBox1.Top = Height - Height * value / 100;
                         pictureBox1.Image = ImageBlend.CropVertical(scaledActiveImage, value);
+                        SyncWithOverlay();
                         break;
 
                     case 2:
                         pictureBox1.Left = Width - Width * value / 100;
                         pictureBox1.Image = ImageBlend.CropHorizontal(scaledActiveImage, value);
+                        SyncWithOverlay();
 
                         break;
 
                     case 3:
                         pictureBox1.Height = pictureBox1.Image.Size.Height * value / 100;
+                        SyncWithOverlay();
                         break;
                 }
             } else
@@ -434,22 +474,31 @@ namespace InnerCoreUIEditor
                 {
                     case 0:
                         pictureBox1.Location = new Point(-Width* (100 - value) / 100, pictureBox1.Location.Y);
+                        SyncWithOverlay();
                         break;
 
                     case 1:
                         pictureBox1.Location = new Point(pictureBox1.Location.X, Height * (100 - value) / 100);
+                        SyncWithOverlay();
                         break;
 
                     case 2:
                         pictureBox1.Location = new Point(Width * (100-value) / 100, pictureBox1.Location.Y);
+                        SyncWithOverlay();
 
                         break;
 
                     case 3:
                         pictureBox1.Location = new Point(pictureBox1.Location.X, -Height * (100-value)   / 100);
+                        SyncWithOverlay();
                         break;
                 }
             }
+        }
+
+        private void SyncWithOverlay()
+        {
+            //throw new NotImplementedException();
         }
 
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -481,7 +530,7 @@ namespace InnerCoreUIEditor
             overlayScaleTextChanged = false;
             TextBox textBox = (TextBox)sender;
             float scale;
-            if (!float.TryParse(textBox.Text, out scale))
+            if (!float.TryParse(textBox.Text, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out scale))
             {
                 textBox.Text = overlayScale.ToString();
                 return;
@@ -617,7 +666,7 @@ namespace InnerCoreUIEditor
             pictureBox2.Image = new Bitmap(overlayImage);
             pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
             pictureBox2.Location = overlayOffset;
-            ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
+            ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);     
             chosenItem = side;
             this.invert = invert;
             Clicker = clicker;

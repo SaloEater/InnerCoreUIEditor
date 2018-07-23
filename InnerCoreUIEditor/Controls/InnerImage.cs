@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnerCoreUIEditor.Properties;
 using System.IO;
+using System.Globalization;
 
 namespace InnerCoreUIEditor
 {
@@ -48,11 +49,36 @@ namespace InnerCoreUIEditor
             overlayScale = 1;
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
             ApplyOverlayImage();
-
-            scale = 1;
             activeImage = Resources._selection;
             imageName = "_selection.png";
+
             ApplyImage(activeImage);
+            scale = parentTabPage.globalScale;
+            ChangeScale(scale);
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            InnerImage control = new InnerImage(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+            control.oldLocation = oldLocation;
+            control.originSize = originSize;
+
+            control.activeImage = activeImage;
+            control.imageName = imageName;
+            control.overlayImage = overlayImage;
+            control.overlayImageName = overlayImageName;
+            control.overlayScale = overlayScale;
+            control.overlayOriginSize = overlayOriginSize;
+            control.overlayEnabled = overlayEnabled;
+            control.ApplyImage(control.activeImage);
+
+            return control;
         }
 
         private void PictureBox2_VisibleChanged(object sender, EventArgs e)
@@ -72,6 +98,8 @@ namespace InnerCoreUIEditor
         {
             originSize = activeImage.Size;
             ChangeControlSize(originSize);
+            pictureBox1.Image = activeImage;
+            pictureBox2.Image = overlayImage;
             ColorImagesToPanelColor();
             ChangeScale(scale);
             Console.Write(Size);
@@ -89,11 +117,13 @@ namespace InnerCoreUIEditor
             oldLocation = Location;
             ChangeControlSize(originSize);
             Scale(new SizeF(scale, scale));
+            pictureBox1.Image = ImageBlend.ResizeImage(pictureBox1.Image, Width, Height);
             pictureBox2.Size = overlayImage.Size;
             if (overlayEnabled)
             {
                 overlayScale *= scale;
                 pictureBox2.Scale(new SizeF(overlayScale, overlayScale));
+                pictureBox2.Image = ImageBlend.ResizeImage(pictureBox2.Image, pictureBox2.Width, pictureBox2.Height);
             }
             Location = oldLocation;
         }
@@ -301,6 +331,8 @@ namespace InnerCoreUIEditor
             clickerForm.Location = new Point(103, elementY);
             clickerForm.Size = new Size(elementSpacing, elementSpacing);
             clickerForm.Click += ClickerForm_Click;
+            clickerForm.BackgroundImage = Resources.expandIcon;
+            clickerForm.BackgroundImageLayout = ImageLayout.Stretch;
             propPanel.Controls.Add(clickerForm);
             base.FillPropPanel(propPanel);
         }
@@ -325,7 +357,7 @@ namespace InnerCoreUIEditor
             overlayScaleTextChanged = false;
             TextBox textBox = (TextBox)sender;
             float scale;
-            if (!float.TryParse(textBox.Text, out scale))
+            if (!float.TryParse(textBox.Text, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out scale))
             {
                 textBox.Text = overlayScale.ToString();
                 return;

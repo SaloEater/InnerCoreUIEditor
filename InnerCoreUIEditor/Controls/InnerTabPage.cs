@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnerCoreUIEditor.Controls;
+using System.Globalization;
 
 namespace InnerCoreUIEditor
 {
@@ -25,13 +26,14 @@ namespace InnerCoreUIEditor
         JSONParser jSONParser;
 
         bool changed = false;
+        public float globalScale = 1;
 
         public InnerTabPage()
         {
             InitializeComponent();
             panelDesktop.BackColor = Color.FromArgb(114, 106, 112);
             _params = new Params(this);
-            explorerPainter = new ExplorerPainter(tabPageExplorer);
+            explorerPainter = new ExplorerPainter(tabPageExplorer);            
 
             jSONParser = new JSONParser(_params, explorerPainter, this);
 
@@ -53,6 +55,31 @@ namespace InnerCoreUIEditor
             toolStripTextBoxHeight.Text = MaxY().ToString();
             toolStripTextBoxHeight.LostFocus += ToolStripTextBoxHeight_LostFocus;
             toolStripTextBoxHeight.KeyDown += ToolStripTextBoxHeight_KeyDown;
+
+            toolStripTextBoxScale.Text = "1";
+            toolStripTextBoxScale.LostFocus += ToolStripTextBoxScale_LostFocus;
+            toolStripTextBoxScale.KeyDown += ToolStripTextBoxScale_KeyDown;
+        }
+
+        private void ToolStripTextBoxScale_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                ToolStripTextBoxScale_LostFocus(sender, null);
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+        private void ToolStripTextBoxScale_LostFocus(object sender, EventArgs e)
+        {
+            ToolStripTextBox textBox = (ToolStripTextBox)sender;
+            float scale;
+            if (!float.TryParse(textBox.Text, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out scale))
+            {
+                textBox.Text = globalScale.ToString();
+                return;
+            }
+            ChangeGlobalScale(scale);
         }
 
         private void ToolStripTextBoxHeight_KeyDown(object sender, KeyEventArgs e)
@@ -137,6 +164,11 @@ namespace InnerCoreUIEditor
             }
         }
 
+        internal void AddElement(InnerControl copy)
+        {
+            panelDesktop.Controls.Add(copy);
+        }
+
         internal void Parse(string filename, string gui)
         {
             jSONParser.Parse(gui);
@@ -164,7 +196,7 @@ namespace InnerCoreUIEditor
         {
             canceled = false;
             openFileDialog1.Filter = "PNG (*.png)|*.png|All files (*.*)|*.*";
-            openFileDialog1.FileName = "";
+            openFileDialog1.FileName = "";            
             DialogResult res = openFileDialog1.ShowDialog();
             if (res == DialogResult.Cancel)
             {
@@ -189,6 +221,22 @@ namespace InnerCoreUIEditor
             return tabPageExplorer;
         }
 
+        internal void ShowRemoveWarning(out bool cancelled)
+        {
+            if (changed)
+            {
+                DialogResult res = MessageBox.Show("Вы не сохранили вашу работу. \nПродолжить?", "Закрытие окна", MessageBoxButtons.OKCancel);
+                if (res == DialogResult.Cancel)
+                    cancelled = true;
+                else
+                    cancelled = false;
+            }
+            else
+            {
+                cancelled = false;
+            }
+        }
+
         private void инвентарьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SwitchInventorySlots();
@@ -204,24 +252,9 @@ namespace InnerCoreUIEditor
             _params.CloseButton2ToDefault();
         }
 
-        internal void ShowRemoveWarning(out bool cancelled)
-        {
-            if(changed)
-            {
-                DialogResult res = MessageBox.Show("Вы не сохранили вашу работу. \nПродолжить?", "Закрытие окна", MessageBoxButtons.OKCancel);
-                if (res == DialogResult.Cancel)
-                    cancelled = true;
-                else
-                    cancelled = false;
-            }
-            else
-            {
-                cancelled = false;
-            }
-        }
-
         private void цветToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            стандартныеВозможностиToolStripMenuItem.DropDown.Close();
             panelDesktop.BackgroundImage = null;
             colorDialog1.ShowDialog();
             panelDesktop.BackColor = colorDialog1.Color;
@@ -230,6 +263,7 @@ namespace InnerCoreUIEditor
 
         private void изображениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            стандартныеВозможностиToolStripMenuItem.DropDown.Close();
             OpenDefaultFileDialog(out bool canceled);
             if (canceled) return;
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
@@ -240,6 +274,7 @@ namespace InnerCoreUIEditor
 
         private void слотToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            параметрыToolStripMenuItem.DropDown.Close();
             OpenDefaultFileDialog(out bool canceled);
             if (canceled) return;
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
@@ -248,6 +283,7 @@ namespace InnerCoreUIEditor
 
         private void слотИнвентаряToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            параметрыToolStripMenuItem.DropDown.Close();
             OpenDefaultFileDialog(out bool canceled);
             if (canceled) return;
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
@@ -256,6 +292,7 @@ namespace InnerCoreUIEditor
 
         private void рамкаСлотаToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            параметрыToolStripMenuItem.DropDown.Close();
             OpenDefaultFileDialog(out bool canceled);
             if (canceled) return;
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
@@ -264,6 +301,7 @@ namespace InnerCoreUIEditor
 
         private void кнопкаЗакрытияВыклToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            параметрыToolStripMenuItem.DropDown.Close();
             OpenDefaultFileDialog(out bool canceled);
             if (canceled) return;
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
@@ -272,6 +310,7 @@ namespace InnerCoreUIEditor
 
         private void кнопкаЗакрытияВклToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            параметрыToolStripMenuItem.DropDown.Close();
             OpenDefaultFileDialog(out bool canceled);
             if (canceled) return;
             Image image = Bitmap.FromFile(openFileDialog1.FileName);
@@ -512,6 +551,7 @@ namespace InnerCoreUIEditor
                 InvSlot invSlot = new InvSlot(explorerPainter, _params, this);
                 invSlot.index = i + 9;
                 invSlot.Location = new Point(i % 3 * invSlot.Width + panelDesktop.AutoScrollPosition.X, i / 3 * invSlot.Width + panelDesktop.AutoScrollPosition.Y + (innerHeader.Visible ? 40 : 0));
+                invSlot.constant = true;
                 invSlot.hidden = true;
                 invSlot.elementName = "__invslot" + (i + 9);
                 panelDesktop.Controls.Add(invSlot);
@@ -638,7 +678,7 @@ namespace InnerCoreUIEditor
         private void button4_Click(object sender, EventArgs e)
         {
             CloseButton control = new CloseButton(explorerPainter, _params, this);
-            control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
+            control.Location = new Point(panelDesktop.Width -control.Width, 0);
             panelDesktop.Controls.Add(control);
         }
 
@@ -678,6 +718,16 @@ namespace InnerCoreUIEditor
         private void сброситьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panelDesktop.BackColor = Color.FromArgb(114, 106, 112);
+        }
+
+        private void сбросить1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChangeGlobalScale(1);
+        }
+
+        private void ChangeGlobalScale(float v)
+        {
+            globalScale = v;
         }
 
         private void сбросить700ToolStripMenuItem_Click(object sender, EventArgs e)

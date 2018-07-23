@@ -33,15 +33,40 @@ namespace InnerCoreUIEditor
 
         public void Initialization()
         {
-            scale = 1;
             ControlEditor.Init(pictureBox1, this, parentTabPage);
+            pictureBox1.Dock = DockStyle.Fill;
             activeImage = _params.GetCloseButtonImage(out string image);
             activeImageName = image;
             ApplyImage(activeImage);
             pictureBox1.Click += button_Click;
             activeImage2 = _params.GetCloseButton2Image(out image);
             activeImage2Name = image;
+            scale = parentTabPage.globalScale;
+            ChangeScale(scale);
             BringToFront();
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            CloseButton control = new CloseButton(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+            control.oldLocation = oldLocation;
+            control.originSize = originSize;
+
+            control.activeImage = activeImage;
+            control.activeImage2 = activeImage2;
+            control.Clicker = Clicker;
+            control.activeImageName = activeImageName;
+            control.activeImage2Name = activeImage2Name;
+            control.global = global;
+            control.ApplyImage(control.activeImage);
+
+            return control;
         }
 
         private void ApplyImage(Image activeImage)
@@ -55,7 +80,7 @@ namespace InnerCoreUIEditor
 
         private void ChangeControlSize(Size originSize)
         {
-            foreach(Control c in Controls)
+            foreach (Control c in Controls)
             {
                 c.Size = originSize;
             }

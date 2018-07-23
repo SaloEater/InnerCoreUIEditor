@@ -28,7 +28,7 @@ namespace InnerCoreUIEditor
                     int a = _front.GetPixel(x, y).A;
                     try
                     {
-                        if (a < 255)
+                        if (a == 0)
                         {
                             Color newColor = _back.GetPixel(x, y);
                             _front.SetPixel(x, y, newColor);
@@ -52,7 +52,7 @@ namespace InnerCoreUIEditor
                 for (int y = 0; y < bitmap.Height; y++)
                 {
                     int a = bitmap.GetPixel(x, y).A;
-                    if (a < 255)
+                    if (a == 0)
                     {
                         bitmap.SetPixel(x, y, panelColor);
                     }

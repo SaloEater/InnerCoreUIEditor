@@ -28,11 +28,30 @@ namespace InnerCoreUIEditor
         {
             pictureBox1.Click += PictureBox_Click;
             ControlEditor.Init(pictureBox1, this, parentTabPage);
-
-            scale = 1;
+            pictureBox1.Dock = DockStyle.Fill;
             activeImage = Resources._selection;
             imageName = "_selection.png";
             ApplyImage(activeImage);
+            scale = parentTabPage.globalScale;
+            ChangeScale(scale);
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            InnerBitmap control = new InnerBitmap(explorerPainter, _params, parentTabPage);
+            control.oldLocation = oldLocation;
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+
+            control.activeImage = activeImage;
+            control.imageName = imageName;
+            control.ApplyImage(control.activeImage);
+
+            return control;
         }
 
         private void PictureBox_Click(object sender, EventArgs e)
@@ -44,6 +63,7 @@ namespace InnerCoreUIEditor
         {
             originSize = activeImage.Size;
             ChangeControlSize(originSize);
+            pictureBox1.Image = activeImage;
             ColorImagesToPanelColor();
             ChangeScale(scale);
             elementName = imageName;
@@ -64,6 +84,7 @@ namespace InnerCoreUIEditor
             oldLocation = Location;
             ChangeControlSize(originSize);
             Scale(new SizeF(scale, scale));
+            pictureBox1.Image = ImageBlend.ResizeImage(pictureBox1.Image, Width, Height);
             Location = oldLocation;
         }
 

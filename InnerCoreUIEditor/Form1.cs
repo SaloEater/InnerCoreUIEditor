@@ -17,16 +17,6 @@ namespace InnerCoreUIEditor
     public partial class Form1 : Form
     {
 
-
-        //Global hotkeys
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindow(String sClassName, String sAppName);
-
-        private IntPtr thisWindow;
-        private Hotkey hotkey;
-
-        //Global hotkeys
-
         public Form1()
         {
             InitializeComponent();
@@ -40,57 +30,19 @@ namespace InnerCoreUIEditor
             Global.workspace = workspace;
             Global.panelExplorer = panelExplorer;*/
 
+            KeyPreview = true;
             tabControl1.Click += TabControl1_Click;
             KeyDown += Form1_KeyDown;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            thisWindow = FindWindow(null, "Form1");
-            hotkey = new Hotkey(thisWindow);
-            hotkey.RegisterControlHotKey(1, Keys.O);
-            hotkey.RegisterControlHotKey(2, Keys.N);
-            hotkey.RegisterControlHotKey(3, Keys.S);
-            hotkey.RegisterControlHotKey(4, Keys.W);
-            hotkey.RegisterHotKey(5, Keys.Delete);
+            
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            hotkey.UnRegisterHotKeys();
-        }
-
-        protected override void WndProc(ref Message keyPressed)
-        {
-            if (keyPressed.Msg == 0x0312)
-            {
-                IntPtr hotkeyID = keyPressed.WParam;
-                int hk = (int)hotkeyID;
-                //if(tabControl1.SelectedIndex>=0) InnerTabPage innerTabPage = (InnerTabPage)tabControl1.SelectedTab.Controls[0];
-                switch(hk)
-                {
-                    case 1:
-                        toolStripMenuItem2_Click(null, null);
-                        break;
-
-                    case 2:
-                        новоеГпиToolStripMenuItem_Click(null, null);
-                        break;
-
-                    case 3:
-                        toolStripMenuItem1_Click(null, null);
-                        break;
-
-                    case 4:
-                        удалитьToolStripMenuItem_Click(null, null);
-                        break;
-
-                    case 5:
-                        DeleteActiveElement();
-                        break;
-                }
-            }
-            base.WndProc(ref keyPressed);
+            
         }
 
         private void DeleteActiveElement()
@@ -125,15 +77,52 @@ namespace InnerCoreUIEditor
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            /*InnerControl innerControl = Global.activeElement;
-            if (e.KeyData == Keys.Delete && innerControl != null)
+            if(e.Modifiers == Keys.Control)
             {
-                innerControl.DeselectControl();
-                Global.workspace.Controls.Remove(innerControl);
-                innerControl.Dispose();
-                Global.ReloadExporer();
-                Global.activeElement = null;
-            }*/
+                switch(e.KeyCode)
+                {
+                    case Keys.O:
+                        toolStripMenuItem2_Click(null, null);
+                        break;
+
+                    case Keys.N:
+                        новоеГпиToolStripMenuItem_Click(null, null);
+                        break;
+
+                    case Keys.S:
+                        toolStripMenuItem1_Click(null, null);
+                        break;
+
+                    case Keys.W:
+                        удалитьToolStripMenuItem_Click(null, null);
+                        break;
+
+                    case Keys.D:
+                        CloneActiveElement();
+                        break;
+                    
+                }
+            }
+            else if(e.KeyCode == Keys.Delete)
+            {
+                DeleteActiveElement();
+            }
+        }
+
+        private void CloneActiveElement()
+        {
+            if (tabControl1.SelectedIndex < 0) return;
+            InnerTabPage innerTabPage = (InnerTabPage)tabControl1.SelectedTab.Controls[0];
+            if (innerTabPage.activeElement == null) return;
+            try
+            {
+                InnerControl copy = innerTabPage.activeElement.MakeCopy();
+                innerTabPage.AddElement(copy);
+                copy.BringToFront();
+            } catch (ArgumentOutOfRangeException e)
+            {
+
+            }
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -195,7 +184,10 @@ namespace InnerCoreUIEditor
             ((InnerTabPage)tabControl1.SelectedTab.Controls[0]).ShowRemoveWarning(out bool cancelled);
             if (!cancelled)
             {
+                int prevIndex = tabControl1.SelectedIndex;
                 tabControl1.SelectedTab.Dispose();
+                if (tabControl1.TabPages.Count == 0) return;
+                tabControl1.SelectedIndex = prevIndex < tabControl1.TabPages.Count ? prevIndex : tabControl1.TabPages.Count - 1;
             }
         }
     }

@@ -31,9 +31,34 @@ namespace InnerCoreUIEditor
             ControlEditor.Init(pictureBoxSlot, this, parentTabPage);
             ControlEditor.Init(pictureBoxSelection, this, parentTabPage);
             pictureBoxSelection.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxSlot.Dock = DockStyle.Fill;
             ToDefault();
             pictureBoxSlot.Click += PictureBoxSlot_Click;
             index = 0;
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            InvSlot control = new InvSlot(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+            control.originSize = originSize;
+
+            control.ActiveImage = ActiveImage;
+            control.ImageName = ImageName;
+            control.index = index;
+            control.ApplyImage();
+
+            return control;
+        }
+
+        private void ApplyImage()
+        {
+            pictureBoxSlot.Image = ActiveImage;
         }
 
         public override void ToDefault()
@@ -79,7 +104,7 @@ namespace InnerCoreUIEditor
             _sizeValue.Text = Size.Height.ToString();
             _sizeValue.LostFocus += _sizeValue_LostFocus;
             _sizeValue.KeyDown += _sizeValue_KeyDown;
-            _sizeValue.TextChanged += (sender, e) => { sizeTextChanged = true; };
+            _sizeValue.TextChanged += _sizeValue_TextChanged;
             propPanel.Controls.Add(_sizeValue);
 
             Label _coords = new Label();
@@ -140,6 +165,12 @@ namespace InnerCoreUIEditor
             propPanel.Controls.Add(_imagePicPath);
 
             base.FillPropPanel(propPanel);
+        }
+
+        private void _sizeValue_TextChanged(object sender, EventArgs e)
+        {
+            if (constant) return;
+            sizeTextChanged = true;
         }
 
         internal void SetSelection(Image selectionDefaultImage)

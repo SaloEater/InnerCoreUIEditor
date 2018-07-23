@@ -445,7 +445,7 @@ namespace InnerCoreUIEditor
             for (int i = 0; i < element.Length; i++)
             {
                 int j;
-                for (j = 0; j < v.Length; j++)
+                for (j = 0; j < v.Length && i + j < element.Length; j++)
                 {
                     if (element[i + j] != v[j]) break;
                 }
@@ -536,7 +536,7 @@ namespace InnerCoreUIEditor
                                 if (c3.GetType() != typeof(PictureBox)) continue;
                                 if (c3.Name == "pictureBox1") front = ((PictureBox)c3).Image;
                             }
-                            Image back = ((PictureBox)innerBitmap.Controls[0]).Image;
+                            Image back = innerBitmap.activeImage;
                             back = ImageBlend.ResizeImage(back, (int)(back.Width * scale.scale), (int)(back.Height * scale.scale));
                             //ImageBlend.Blend(back, front);
                             scale.ApplyMask(new Bitmap(back));

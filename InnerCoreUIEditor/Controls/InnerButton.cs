@@ -32,12 +32,36 @@ namespace InnerCoreUIEditor
         {
             scale = 1;
             ControlEditor.Init(pictureBox1, this, parentTabPage);
+            pictureBox1.Dock = DockStyle.Fill;
             activeImage = Resources._button_next_48x24;
             activeImageName = "_button_next_48x24.png";
             ApplyImage(activeImage);
             pictureBox1.Click += button_Click;
             activeImage2 = Resources._button_next_48x24p;
             activeImage2Name = "_button_next_48x24p.png";
+            scale = parentTabPage.globalScale;
+            ChangeScale(scale);
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            InnerButton control = new InnerButton(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+            control.oldLocation = oldLocation;
+            control.originSize = originSize;
+
+            control.activeImage = activeImage;
+            control.activeImage2 = activeImage2;
+            control.activeImageName = activeImageName;
+            control.activeImage2Name = activeImage2Name;
+            control.ApplyImage(control.activeImage);
+
+            return control;
         }
 
         private void ApplyImage(Image activeImage)
@@ -51,7 +75,7 @@ namespace InnerCoreUIEditor
 
         private void ChangeControlSize(Size originSize)
         {
-            foreach(Control c in Controls)
+            foreach (Control c in Controls)
             {
                 c.Size = originSize;
             }
@@ -65,6 +89,7 @@ namespace InnerCoreUIEditor
             ChangeControlSize(originSize);
             Scale(new SizeF(this.scale, this.scale));
             Location = oldLocation;
+            pictureBox1.Image = ImageBlend.ResizeImage(pictureBox1.Image, Width, Height);
         }
 
         public override void CountScale(char axis, int distance)
@@ -196,13 +221,15 @@ namespace InnerCoreUIEditor
             Label _clicker = new Label();
             _clicker.Location = new Point(0, elementY += elementSpacing);
             _clicker.Size = new Size(102, elementSpacing);
-            _clicker.Text = "Клик по объекту";
+            _clicker.Text = "Клик по объекту";            
             propPanel.Controls.Add(_clicker);
 
             Button clickerForm = new Button();
             clickerForm.Location = new Point(103, elementY);
             clickerForm.Size = new Size(elementSpacing, elementSpacing);
-            clickerForm.Click += ClickerForm_Click; 
+            clickerForm.Click += ClickerForm_Click;
+            clickerForm.BackgroundImage = Resources.expandIcon;
+            clickerForm.BackgroundImageLayout = ImageLayout.Stretch;
             propPanel.Controls.Add(clickerForm);
             base.FillPropPanel(propPanel);
         }
@@ -230,7 +257,7 @@ namespace InnerCoreUIEditor
             if (!success)
             {
                 activeImage2 = Resources._button_next_48x24p;
-                activeImage2Name = "_button_next_48x24p.png";
+                this.activeImage2Name = "_button_next_48x24p.png";
             }
 
             this.clicker = clicker;

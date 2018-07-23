@@ -74,6 +74,10 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.постоянныеЗначенияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.масштабToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBoxScale = new System.Windows.Forms.ToolStripTextBox();
+            this.сбросить1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -125,11 +129,12 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.стандартныеВозможностиToolStripMenuItem,
             this.параметрыToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.постоянныеЗначенияToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(583, 24);
@@ -154,7 +159,7 @@
             this.toolStripTextBoxHeight,
             this.сбросить700ToolStripMenuItem});
             this.высотаToolStripMenuItem.Name = "высотаToolStripMenuItem";
-            this.высотаToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.высотаToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.высотаToolStripMenuItem.Text = "Высота";
             // 
             // toolStripTextBoxHeight
@@ -165,21 +170,21 @@
             // сбросить700ToolStripMenuItem
             // 
             this.сбросить700ToolStripMenuItem.Name = "сбросить700ToolStripMenuItem";
-            this.сбросить700ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.сбросить700ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.сбросить700ToolStripMenuItem.Text = "Сбросить (700)";
             this.сбросить700ToolStripMenuItem.Click += new System.EventHandler(this.сбросить700ToolStripMenuItem_Click);
             // 
             // инвентарьToolStripMenuItem
             // 
             this.инвентарьToolStripMenuItem.Name = "инвентарьToolStripMenuItem";
-            this.инвентарьToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.инвентарьToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.инвентарьToolStripMenuItem.Text = "Инвентарь";
             this.инвентарьToolStripMenuItem.Click += new System.EventHandler(this.инвентарьToolStripMenuItem_Click);
             // 
             // заголовокToolStripMenuItem
             // 
             this.заголовокToolStripMenuItem.Name = "заголовокToolStripMenuItem";
-            this.заголовокToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.заголовокToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.заголовокToolStripMenuItem.Text = "Заголовок";
             this.заголовокToolStripMenuItem.Click += new System.EventHandler(this.заголовокToolStripMenuItem_Click);
             // 
@@ -189,7 +194,7 @@
             this.цветToolStripMenuItem,
             this.изображениеToolStripMenuItem});
             this.заднийФонToolStripMenuItem.Name = "заднийФонToolStripMenuItem";
-            this.заднийФонToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.заднийФонToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.заднийФонToolStripMenuItem.Text = "Задний фон";
             // 
             // цветToolStripMenuItem
@@ -199,7 +204,7 @@
             this.цветToolStripMenuItem.Name = "цветToolStripMenuItem";
             this.цветToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.цветToolStripMenuItem.Text = "Цвет";
-            this.цветToolStripMenuItem.Click += new System.EventHandler(this.поУмолчаниюЗакрыть2ToolStripMenuItem_Click);
+            this.цветToolStripMenuItem.Click += new System.EventHandler(this.цветToolStripMenuItem_Click);
             // 
             // сброситьToolStripMenuItem
             // 
@@ -215,6 +220,7 @@
             this.изображениеToolStripMenuItem.Name = "изображениеToolStripMenuItem";
             this.изображениеToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.изображениеToolStripMenuItem.Text = "Изображение";
+            this.изображениеToolStripMenuItem.Click += new System.EventHandler(this.изображениеToolStripMenuItem_Click);
             // 
             // удалитьToolStripMenuItem
             // 
@@ -226,7 +232,7 @@
             // очиститьЭкранToolStripMenuItem
             // 
             this.очиститьЭкранToolStripMenuItem.Name = "очиститьЭкранToolStripMenuItem";
-            this.очиститьЭкранToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.очиститьЭкранToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.очиститьЭкранToolStripMenuItem.Text = "Очистить экран";
             this.очиститьЭкранToolStripMenuItem.Click += new System.EventHandler(this.очиститьЭкранToolStripMenuItem_Click);
             // 
@@ -255,7 +261,7 @@
             // поУмолчаниюСлотToolStripMenuItem
             // 
             this.поУмолчаниюСлотToolStripMenuItem.Name = "поУмолчаниюСлотToolStripMenuItem";
-            this.поУмолчаниюСлотToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.поУмолчаниюСлотToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.поУмолчаниюСлотToolStripMenuItem.Text = "По умолчанию";
             this.поУмолчаниюСлотToolStripMenuItem.Click += new System.EventHandler(this.поУмолчаниюСлотToolStripMenuItem_Click);
             // 
@@ -271,7 +277,7 @@
             // поУмолчаниюСлотИнвентаряToolStripMenuItem
             // 
             this.поУмолчаниюСлотИнвентаряToolStripMenuItem.Name = "поУмолчаниюСлотИнвентаряToolStripMenuItem";
-            this.поУмолчаниюСлотИнвентаряToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.поУмолчаниюСлотИнвентаряToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.поУмолчаниюСлотИнвентаряToolStripMenuItem.Text = "По умолчанию";
             this.поУмолчаниюСлотИнвентаряToolStripMenuItem.Click += new System.EventHandler(this.поУмолчаниюСлотИнвентаряToolStripMenuItem_Click);
             // 
@@ -287,7 +293,7 @@
             // поУмолчаниюВыделениеToolStripMenuItem
             // 
             this.поУмолчаниюВыделениеToolStripMenuItem.Name = "поУмолчаниюВыделениеToolStripMenuItem";
-            this.поУмолчаниюВыделениеToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.поУмолчаниюВыделениеToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.поУмолчаниюВыделениеToolStripMenuItem.Text = "По умолчанию";
             this.поУмолчаниюВыделениеToolStripMenuItem.Click += new System.EventHandler(this.поУмолчаниюВыделениеToolStripMenuItem_Click);
             // 
@@ -303,7 +309,7 @@
             // поУмолчаниюЗакрытьToolStripMenuItem
             // 
             this.поУмолчаниюЗакрытьToolStripMenuItem.Name = "поУмолчаниюЗакрытьToolStripMenuItem";
-            this.поУмолчаниюЗакрытьToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.поУмолчаниюЗакрытьToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.поУмолчаниюЗакрытьToolStripMenuItem.Text = "По умолчанию";
             this.поУмолчаниюЗакрытьToolStripMenuItem.Click += new System.EventHandler(this.поУмолчаниюЗакрытьToolStripMenuItem_Click);
             // 
@@ -319,7 +325,7 @@
             // поУмолчаниюЗакрыть2ToolStripMenuItem
             // 
             this.поУмолчаниюЗакрыть2ToolStripMenuItem.Name = "поУмолчаниюЗакрыть2ToolStripMenuItem";
-            this.поУмолчаниюЗакрыть2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.поУмолчаниюЗакрыть2ToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.поУмолчаниюЗакрыть2ToolStripMenuItem.Text = "По умолчанию";
             this.поУмолчаниюЗакрыть2ToolStripMenuItem.Click += new System.EventHandler(this.поУмолчаниюЗакрыть2ToolStripMenuItem_Click);
             // 
@@ -366,7 +372,7 @@
             // 
             // tabPageElements
             // 
-            this.tabPageElements.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPageElements.BackColor = System.Drawing.SystemColors.Control;
             this.tabPageElements.Controls.Add(this.button8);
             this.tabPageElements.Controls.Add(this.button7);
             this.tabPageElements.Controls.Add(this.button6);
@@ -464,7 +470,7 @@
             // 
             // tabPageExplorer
             // 
-            this.tabPageExplorer.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPageExplorer.BackColor = System.Drawing.SystemColors.Control;
             this.tabPageExplorer.Location = new System.Drawing.Point(4, 22);
             this.tabPageExplorer.Name = "tabPageExplorer";
             this.tabPageExplorer.Padding = new System.Windows.Forms.Padding(3);
@@ -478,7 +484,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelProperties.AutoScroll = true;
-            this.panelProperties.BackColor = System.Drawing.Color.DarkGray;
+            this.panelProperties.BackColor = System.Drawing.SystemColors.Control;
             this.panelProperties.Location = new System.Drawing.Point(4, 4);
             this.panelProperties.Name = "panelProperties";
             this.panelProperties.Size = new System.Drawing.Size(224, 271);
@@ -487,6 +493,35 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // постоянныеЗначенияToolStripMenuItem
+            // 
+            this.постоянныеЗначенияToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.масштабToolStripMenuItem});
+            this.постоянныеЗначенияToolStripMenuItem.Name = "постоянныеЗначенияToolStripMenuItem";
+            this.постоянныеЗначенияToolStripMenuItem.Size = new System.Drawing.Size(142, 20);
+            this.постоянныеЗначенияToolStripMenuItem.Text = "Постоянные значения";
+            // 
+            // масштабToolStripMenuItem
+            // 
+            this.масштабToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBoxScale,
+            this.сбросить1ToolStripMenuItem});
+            this.масштабToolStripMenuItem.Name = "масштабToolStripMenuItem";
+            this.масштабToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.масштабToolStripMenuItem.Text = "Масштаб";
+            // 
+            // toolStripTextBoxScale
+            // 
+            this.toolStripTextBoxScale.Name = "toolStripTextBoxScale";
+            this.toolStripTextBoxScale.Size = new System.Drawing.Size(100, 23);
+            // 
+            // сбросить1ToolStripMenuItem
+            // 
+            this.сбросить1ToolStripMenuItem.Name = "сбросить1ToolStripMenuItem";
+            this.сбросить1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.сбросить1ToolStripMenuItem.Text = "Сбросить (1)";
+            this.сбросить1ToolStripMenuItem.Click += new System.EventHandler(this.сбросить1ToolStripMenuItem_Click);
             // 
             // InnerTabPage
             // 
@@ -558,5 +593,9 @@
         private System.Windows.Forms.ToolStripMenuItem высотаToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBoxHeight;
         private System.Windows.Forms.ToolStripMenuItem сбросить700ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem постоянныеЗначенияToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem масштабToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBoxScale;
+        private System.Windows.Forms.ToolStripMenuItem сбросить1ToolStripMenuItem;
     }
 }

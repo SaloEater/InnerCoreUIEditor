@@ -14,6 +14,9 @@ namespace InnerCoreUIEditor
 {
     public partial class InnerText : InnerControl
     {
+        bool WValueChanged;
+        bool HValueChanged;
+
         public InnerText(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
         {
             InitializeComponent();
@@ -24,6 +27,21 @@ namespace InnerCoreUIEditor
         {
             ControlEditor.Init(richTextBox1, this, parentTabPage);
             richTextBox1.Click += (sender, e) => SelectControl();
+        }
+
+        internal override InnerControl MakeCopy()
+        {
+            if (constant || hidden) throw new ArgumentOutOfRangeException();
+            InnerText control = new InnerText(explorerPainter, _params, parentTabPage);
+            control.Location = Location;
+            control.Size = Size;
+            control.Visible = Visible;
+            control.scale = scale;
+            control.originSize = originSize;
+
+            control.richTextBox1.Text = richTextBox1.Text;
+
+            return control;
         }
 
         public override void FillPropPanel(Panel propPanel)
@@ -150,6 +168,7 @@ namespace InnerCoreUIEditor
 
         private void _heightValue_KeyDown(object sender, KeyEventArgs e)
         {
+            HValueChanged = true;
             if (e.KeyCode == Keys.Enter)
             {
                 _heightValue_LostFocus(sender, null);
@@ -159,7 +178,7 @@ namespace InnerCoreUIEditor
 
         private void _heightValue_LostFocus(object sender, EventArgs e)
         {
-            if (constant) return;
+            if (constant || !HValueChanged) return;
             TextBox textBox = (TextBox)sender;
             int height;
             if (!int.TryParse(textBox.Text, out height))
@@ -172,12 +191,12 @@ namespace InnerCoreUIEditor
                 textBox.Text = Height.ToString();
                 return;
             }
-            ResizeAll(new Size(Size.Width, height));
+            ResizeAll(new Size(richTextBox1.Width, height));
         }
 
         private void _widthValue_LostFocus(object sender, EventArgs e)
         {
-            if (constant) return;
+            if (constant || !WValueChanged) return;
             TextBox textBox = (TextBox)sender;
             int width;
             if (!int.TryParse(textBox.Text, out width))
@@ -190,11 +209,12 @@ namespace InnerCoreUIEditor
                 textBox.Text = Width.ToString();
                 return;
             }
-            ResizeAll(new Size(width, Size.Height));
+            ResizeAll(new Size(width, richTextBox1.Height));
         }
 
         private void _widthValue_KeyDown(object sender, KeyEventArgs e)
         {
+            WValueChanged = true;
             if (e.KeyCode == Keys.Enter)
             {
                 _widthValue_LostFocus(sender, null);
