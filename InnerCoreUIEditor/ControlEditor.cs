@@ -27,6 +27,8 @@ namespace InnerCoreUIEditor
 
         private static InnerTabPage parent;
 
+        static ControlAligment controlAligment;
+
         public static void Init(Control origin, InnerTabPage _parent)
         {
             Init(origin, origin, _parent);
@@ -35,6 +37,7 @@ namespace InnerCoreUIEditor
         public static void Init(Control origin, Control target, InnerTabPage _parent)
         {
             parent = _parent;
+            controlAligment = new ControlAligment(parent.GetDesktopPanel());            
             moving = false;
             scaling = false;
             bottomEdge = false;
@@ -63,6 +66,7 @@ namespace InnerCoreUIEditor
             else
             {
                 moving = true;
+                controlAligment.Init(parent.activeElement);
                 control.Cursor = Cursors.Hand;
             }
         }
@@ -89,6 +93,7 @@ namespace InnerCoreUIEditor
             }
             else if (moving)
             {
+                Console.WriteLine(parent.aligment);
                 int x = (e.X - cursorOrigin.X) + obj.Left;
                 int y = (e.Y - cursorOrigin.Y) + obj.Top;
                 int _x = parent.GetDesktopPanel().AutoScrollPosition.X;
@@ -97,7 +102,10 @@ namespace InnerCoreUIEditor
                 int maxy = parent.MaxY();
                 if (x + obj.Width > maxx || x - _x < 0) return;
                 if (y + obj.Height > maxy || y - _y < 0) return;
-                obj.Location = new Point(x, y);
+                if (parent.aligment)
+                    controlAligment.TryToMove(obj, new Point(x, y));
+                else
+                    obj.Location = new Point(x, y);
             }
             else if (scaling)
             {

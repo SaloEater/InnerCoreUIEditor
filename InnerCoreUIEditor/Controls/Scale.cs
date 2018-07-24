@@ -48,8 +48,6 @@ namespace InnerCoreUIEditor
             pictureBox1.Click += PictureBox_Click;
             pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
 
-            pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
-
             pictureBox2.Click += PictureBox_Click;
             pictureBox2.VisibleChanged += PictureBox2_VisibleChanged;
             ControlEditor.Init(pictureBox1, this, parentTabPage);
@@ -169,12 +167,12 @@ namespace InnerCoreUIEditor
         public override void ColorImagesToPanelColor()
         {
             //pictureBox1.Image = new Bitmap(activeImage);
-            pictureBox1.Image = ImageBlend.MergeWithPanel(parentTabPage.GetDesktopPanel(), new Bitmap(activeImage), new Point(Location.X + parentTabPage.GetDesktopPanel().AutoScrollPosition.X, Location.Y + parentTabPage.GetDesktopPanel().AutoScrollPosition.Y));
-            /*if (overlayEnabled)
+            pictureBox1.Image = ImageBlend.ResizeImage(ImageBlend.MergeWithPanel(parentTabPage.GetDesktopPanel(), new Bitmap(activeImage), new Point(Location.X + parentTabPage.GetDesktopPanel().AutoScrollPosition.X, Location.Y + parentTabPage.GetDesktopPanel().AutoScrollPosition.Y)), Width, Height);
+            if (overlayEnabled)
             {
                 pictureBox2.Image = new Bitmap(overlayImage);
                 ImageBlend.Blend(pictureBox1.Image, pictureBox2.Image);
-            }*/
+            }
         }
 
         public override void FillPropPanel(Panel propPanel)

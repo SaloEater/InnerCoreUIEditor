@@ -33,6 +33,15 @@ namespace InnerCoreUIEditor
             KeyPreview = true;
             tabControl1.Click += TabControl1_Click;
             KeyDown += Form1_KeyDown;
+            KeyUp += Form1_KeyUp;
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.ShiftKey)
+            {
+                if (tabControl1.SelectedIndex >= 0) ((InnerTabPage)tabControl1.SelectedTab.Controls[0]).aligment = false;
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -106,6 +115,9 @@ namespace InnerCoreUIEditor
             else if(e.KeyCode == Keys.Delete)
             {
                 DeleteActiveElement();
+            } else if(e.Shift)
+            {
+                if(tabControl1.SelectedIndex >= 0)((InnerTabPage)tabControl1.SelectedTab.Controls[0]).aligment = true;
             }
         }
 

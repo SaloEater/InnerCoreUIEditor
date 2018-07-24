@@ -28,6 +28,8 @@ namespace InnerCoreUIEditor
         bool changed = false;
         public float globalScale = 1;
 
+        public bool aligment = false;
+
         public InnerTabPage()
         {
             InitializeComponent();
@@ -42,7 +44,7 @@ namespace InnerCoreUIEditor
             label.Location = new Point(defaultWidth, defaultHeight);
             label.Size = new Size(0, 0);
             panelDesktop.Controls.Add(label);
-            //Console.WriteLine("{0}, {1}", panelDesktop.Width, panelDesktop.Height);
+            //Console.WriteLine("{0}, {1}", panelDesktop.Width, panelDesktop.Height);            
 
             innerHeader = new InnerHeader(explorerPainter, _params, this);
             innerHeader.Location = new Point(0, 0);

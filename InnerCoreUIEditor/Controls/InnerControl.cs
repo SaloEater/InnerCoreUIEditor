@@ -75,12 +75,12 @@ namespace InnerCoreUIEditor
 
         public void ClearPropPanel(Panel propPanel)
         {
-            /*for (int i = 0; i < propPanel.Controls.Count; i++)
+            for (int i = 0; i < propPanel.Controls.Count; i++)
             {
                 Control control = propPanel.Controls[i];
                 control.Dispose();
                 i--;
-            }*/
+            }
             elementY = 0;
         }
 
