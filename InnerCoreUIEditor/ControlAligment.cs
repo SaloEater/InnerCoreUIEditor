@@ -13,11 +13,10 @@ namespace InnerCoreUIEditor
         private List<int> horizontalBounds;
         private List<int> verticalBounds;
 
-        List<Pen> pens;
-
         Panel parent;
         Graphics g;
         int error = 3;
+        List<Pen> pens;
 
         public ControlAligment(Control parent)
         {
@@ -27,8 +26,8 @@ namespace InnerCoreUIEditor
 
         public void Init(Control target)
         {
-            parent.Refresh();
             pens = new List<Pen>();
+            parent.Refresh();
             horizontalBounds = new List<int>();
             verticalBounds = new List<int>();
             foreach (Control c in parent.Controls)

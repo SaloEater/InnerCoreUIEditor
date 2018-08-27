@@ -17,10 +17,38 @@ namespace InnerCoreUIEditor
         bool WValueChanged;
         bool HValueChanged;
 
-        public InnerText(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public InnerText(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();
+        }
+
+        internal override void ApplyChanges(int type, object value)
+        {
+            /*
+            Типы изменений:
+            4 - размер
+             */
+            switch (type)
+            {
+                case 4:
+                    Size = (Size)value;
+                    break;
+            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
+        }
+
+        internal override ActionStack MakeSnapshot(int type)
+        {
+            ActionStack action = null;
+            switch (type)
+            {
+                case 4:
+                    //позиция
+                    action = new ActionStack(this, 4, Size);
+                    break;
+            }
+            return action;
         }
 
         public void Initialization()
@@ -32,7 +60,7 @@ namespace InnerCoreUIEditor
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            InnerText control = new InnerText(explorerPainter, _params, parentTabPage);
+            InnerText control = new InnerText(parentTabPage);
             control.Location = Location;
             control.Size = Size;
             control.Visible = Visible;

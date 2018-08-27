@@ -29,6 +29,60 @@ namespace InnerCoreUIEditor
         public bool XTextChanged;
         public bool YTextChanged;
         public bool scaleTextChanged;
+
+        internal virtual void ApplyChanges(int type, object value)
+        {
+            /*
+            Типы изменений:
+            1 - позиция
+            2 - размер
+            3 - видимость
+            4-inf - отдельно для каждого
+
+             */
+            switch (type)
+            {
+                case 1:
+                    //позиция
+                    Location = (Point)value;
+                    break;
+
+                case 2:
+                    //размер
+                    ChangeScale((float)value);
+                    break;
+
+                case 3:
+                    //видимость
+                    Visible = (Boolean)value;
+                    break;
+            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
+        }
+
+        internal virtual ActionStack MakeSnapshot(int type)
+        {
+            ActionStack action = null;
+            switch(type)
+            {
+                case 1:
+                    //позиция
+                    action = new ActionStack(this, 1, Location);
+                    break;
+
+                case 2:
+                    //размер
+                    action = new ActionStack(this, 2, scale);
+                    break;
+
+                case 3:
+                    //видимость
+                    action = new ActionStack(this, 2, Visible);
+                    break;
+            }
+            return action;
+        }
+
         public float scale { get; set; }
         public Size originSize { get; set; }
 
@@ -39,7 +93,7 @@ namespace InnerCoreUIEditor
 
         public string clicker;
 
-        public InnerControl(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage)
+        public InnerControl(InnerTabPage parentTabPage)
         {
             InitializeComponent();
             this.parentTabPage = parentTabPage;
@@ -50,8 +104,8 @@ namespace InnerCoreUIEditor
             hidden = false;
             //propPanelCleared = false;
             Disposed += InnerControl_Disposed;
-            this.explorerPainter = explorerPainter;
-            this._params = _params;
+            this.explorerPainter = parentTabPage.explorerPainter;
+            this._params = parentTabPage._params;
         }
 
         public virtual void ToDefault()
@@ -141,6 +195,7 @@ namespace InnerCoreUIEditor
         private void _globalCheck_CheckedChanged(object sender, EventArgs e)
         {
             if (constant) return;
+            parentTabPage.SaveUndoAction(new ActionStack(this, 3, Visible));
             Visible = ((CheckBox)sender).Checked;
         }
 
@@ -182,6 +237,7 @@ namespace InnerCoreUIEditor
             }
             if (x != Location.X)
             {
+                parentTabPage.SaveUndoAction(new ActionStack(this, 1, Location));
                 Location = new Point(x, Location.Y);
                 parentTabPage.GetDesktopPanel().Refresh();
             }
@@ -216,6 +272,7 @@ namespace InnerCoreUIEditor
             }
             if (y != Location.Y)
             {
+                parentTabPage.SaveUndoAction(new ActionStack(this, 1, Location));
                 Location = new Point(Location.X, y);
                 parentTabPage.GetDesktopPanel().Refresh();
             }
@@ -251,6 +308,7 @@ namespace InnerCoreUIEditor
             }
 
             if (scale == this.scale) return;
+            parentTabPage.SaveUndoAction(new ActionStack(this, 2, this.scale));
             ChangeScale(scale);
         }
 
@@ -359,7 +417,7 @@ namespace InnerCoreUIEditor
 
         public virtual void ColorImagesToPanelColor()
         {
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         private void ToFrontButton_Click(object sender, EventArgs e)

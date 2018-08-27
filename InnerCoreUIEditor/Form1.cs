@@ -40,7 +40,7 @@ namespace InnerCoreUIEditor
         {
             if(e.KeyCode == Keys.ShiftKey)
             {
-                if (tabControl1.SelectedIndex >= 0) ((InnerTabPage)tabControl1.SelectedTab.Controls[0]).aligment = false;
+                if (tabControl1.SelectedIndex >= 0) GetActivePage().aligment = false;
             }
         }
 
@@ -57,10 +57,10 @@ namespace InnerCoreUIEditor
         private void DeleteActiveElement()
         {
             if (tabControl1.SelectedIndex < 0) return;
-            InnerTabPage innerTabPage = (InnerTabPage)tabControl1.SelectedTab.Controls[0];
+            InnerTabPage innerTabPage = GetActivePage();
             if(innerTabPage.activeElement != null)
             {
-                innerTabPage.activeElement.Remove();
+                innerTabPage.DeleteActiveElement();
             }
         }
 
@@ -109,6 +109,14 @@ namespace InnerCoreUIEditor
                     case Keys.D:
                         CloneActiveElement();
                         break;
+
+                    case Keys.Z:
+                        GetActivePage().Undo();
+                        break;
+
+                    case Keys.Y:
+                        GetActivePage().Redo();
+                        break;
                     
                 }
             }
@@ -117,21 +125,21 @@ namespace InnerCoreUIEditor
                 DeleteActiveElement();
             } else if(e.Shift)
             {
-                if(tabControl1.SelectedIndex >= 0)((InnerTabPage)tabControl1.SelectedTab.Controls[0]).aligment = true;
+                if(tabControl1.SelectedIndex >= 0) GetActivePage().aligment = true;
             }
         }
 
         private void CloneActiveElement()
         {
             if (tabControl1.SelectedIndex < 0) return;
-            InnerTabPage innerTabPage = (InnerTabPage)tabControl1.SelectedTab.Controls[0];
+            InnerTabPage innerTabPage = GetActivePage();
             if (innerTabPage.activeElement == null) return;
             try
             {
                 InnerControl copy = innerTabPage.activeElement.MakeCopy();
                 innerTabPage.AddElement(copy);
                 copy.BringToFront();
-            } catch (ArgumentOutOfRangeException e)
+            } catch (ArgumentOutOfRangeException)
             {
 
             }
@@ -145,7 +153,7 @@ namespace InnerCoreUIEditor
             if (saveFileDialog1.FileName == "") return;
             string filename = saveFileDialog1.FileName;
             //Сохранить активную вкладку    
-            ((InnerTabPage)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0]).Save(filename);
+            GetActivePage().Save(filename);
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -156,7 +164,7 @@ namespace InnerCoreUIEditor
             if (openFileDialog1.SafeFileName == "") return;
             string gui = File.ReadAllText(openFileDialog1.FileName);
             новоеГпиToolStripMenuItem_Click(null, null);
-            ((InnerTabPage)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0]).Parse(openFileDialog1.SafeFileName, gui);
+            GetActivePage().Parse(openFileDialog1.SafeFileName, gui);
         }
 
         private void OpenDefaultFileDialog()
@@ -201,6 +209,11 @@ namespace InnerCoreUIEditor
                 if (tabControl1.TabPages.Count == 0) return;
                 tabControl1.SelectedIndex = prevIndex < tabControl1.TabPages.Count ? prevIndex : tabControl1.TabPages.Count - 1;
             }
+        }
+
+        InnerTabPage GetActivePage()
+        {
+            return ((InnerTabPage)tabControl1.SelectedTab.Controls[0]);
         }
     }
 }

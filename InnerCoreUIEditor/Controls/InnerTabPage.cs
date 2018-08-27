@@ -14,8 +14,8 @@ namespace InnerCoreUIEditor
 {
     public partial class InnerTabPage : UserControl
     {
-        Params _params;
-        ExplorerPainter explorerPainter;
+        public Params _params;
+        public ExplorerPainter explorerPainter;
         public InnerHeader innerHeader;
 
         Label label;
@@ -24,6 +24,8 @@ namespace InnerCoreUIEditor
                 defaultWidth = 1000;
 
         JSONParser jSONParser;
+
+        UndoRedoStack stack;
 
         bool changed = false;
         public float globalScale = 1;
@@ -35,7 +37,8 @@ namespace InnerCoreUIEditor
             InitializeComponent();
             panelDesktop.BackColor = Color.FromArgb(114, 106, 112);
             _params = new Params(this);
-            explorerPainter = new ExplorerPainter(tabPageExplorer);            
+            explorerPainter = new ExplorerPainter(tabPageExplorer);
+            stack = new UndoRedoStack();
 
             jSONParser = new JSONParser(_params, explorerPainter, this);
 
@@ -43,10 +46,9 @@ namespace InnerCoreUIEditor
             label.Text = "";
             label.Location = new Point(defaultWidth, defaultHeight);
             label.Size = new Size(0, 0);
-            panelDesktop.Controls.Add(label);
-            //Console.WriteLine("{0}, {1}", panelDesktop.Width, panelDesktop.Height);            
+            panelDesktop.Controls.Add(label);           
 
-            innerHeader = new InnerHeader(explorerPainter, _params, this);
+            innerHeader = new InnerHeader(this);
             innerHeader.Location = new Point(0, 0);
             innerHeader.Visible = false;
             panelDesktop.Controls.Add(innerHeader);
@@ -61,6 +63,90 @@ namespace InnerCoreUIEditor
             toolStripTextBoxScale.Text = "1";
             toolStripTextBoxScale.LostFocus += ToolStripTextBoxScale_LostFocus;
             toolStripTextBoxScale.KeyDown += ToolStripTextBoxScale_KeyDown;
+        }
+
+        internal void DeleteActiveElement()
+        {
+            if(activeElement!=null)
+            {
+                SaveUndoAction(new ActionStack(this, 1, activeElement.MakeCopy()));
+                activeElement.Remove();
+                activeElement = null;                
+            }
+        }
+
+        internal void ApplyChanges(int type, object value)
+        {
+            /*
+            Типы изменений:
+            1 - удаление
+            2 - высота
+            3 - цвет
+            4 - Глобальный масштаб
+            5 - Заголовок
+            6 - Инвентарь
+             */
+            switch(type)
+            {
+                case 1:
+                    InnerControl copy = (InnerControl)value;
+                    AddElement(copy);
+                    copy.BringToFront();
+                    break;
+
+                case 2:
+                    label.Top = (int)value;
+                    break;
+
+                case 3:
+                    panelDesktop.BackColor = (Color)value;
+                    break;
+
+                case 4:
+                    globalScale = (float)value;
+                    break;
+
+                case 5:
+                    SwitchHeaderOnly();
+                    break;
+
+                case 6:
+                    SwitchInventorySlotsOnly();
+                    break;
+            }
+        }
+
+        internal ActionStack MakeSnapshot(int type)
+        {
+            ActionStack action = null;
+            switch (type)
+            {
+                case 2:
+                    action = new ActionStack(this, 2, label.Top);
+                    break;
+
+                case 3:
+                    action = new ActionStack(this, 3, panelDesktop.BackColor);
+                    break;
+
+                case 4:
+                    action = new ActionStack(this, 4, globalScale);
+                    break;
+
+                case 5:
+                    action = new ActionStack(this, 5, innerHeader.Visible);
+                    break;
+
+                case 6:
+                    action = new ActionStack(this, 6, _inventoryDrawed);
+                    break;
+            }
+            return action;
+        }
+
+        public void SaveUndoAction(ActionStack action)
+        {
+            stack.UndoPush(action);
         }
 
         private void ToolStripTextBoxScale_KeyDown(object sender, KeyEventArgs e)
@@ -91,6 +177,18 @@ namespace InnerCoreUIEditor
                 ToolStripTextBoxHeight_LostFocus(sender, null);
                 e.Handled = e.SuppressKeyPress = true;
             }
+        }
+
+        internal void Undo()
+        {
+            stack.UndoPop();
+            Refresh();
+        }
+
+        internal void Redo()
+        {
+            stack.RedoPop();
+            Refresh();
         }
 
         private void ToolStripTextBoxHeight_LostFocus(object sender, EventArgs e)
@@ -259,6 +357,7 @@ namespace InnerCoreUIEditor
             стандартныеВозможностиToolStripMenuItem.DropDown.Close();
             panelDesktop.BackgroundImage = null;
             colorDialog1.ShowDialog();
+            SaveUndoAction(new ActionStack(this, 3, panelDesktop.BackColor));
             panelDesktop.BackColor = colorDialog1.Color;
             ColorAllToPanelColor();
         }
@@ -550,7 +649,7 @@ namespace InnerCoreUIEditor
         {
             for (int i = 0; i < 27; i++)
             {
-                InvSlot invSlot = new InvSlot(explorerPainter, _params, this);
+                InvSlot invSlot = new InvSlot(this);
                 invSlot.index = i + 9;
                 invSlot.Location = new Point(i % 3 * invSlot.Width + panelDesktop.AutoScrollPosition.X, i / 3 * invSlot.Width + panelDesktop.AutoScrollPosition.Y + (innerHeader.Visible ? 40 : 0));
                 invSlot.constant = true;
@@ -562,6 +661,12 @@ namespace InnerCoreUIEditor
         }
 
         internal void SwitchInventorySlots()
+        {
+            SaveUndoAction(new ActionStack(this, 6, _inventoryDrawed));
+            SwitchInventorySlotsOnly();
+        }
+
+        private void SwitchInventorySlotsOnly()
         {
             _inventoryDrawed = !_inventoryDrawed;
             switch (_inventoryDrawed)
@@ -597,12 +702,19 @@ namespace InnerCoreUIEditor
                 }
             }*/
             //innerHeader.RefreshControl();
+            SaveUndoAction(new ActionStack(this, 5, innerHeader.Visible));
+            SwitchHeaderOnly();
+        }
+
+        private void SwitchHeaderOnly()
+        {
             innerHeader.Visible = !innerHeader.Visible;
-            switch (innerHeader.Visible)
+            if (inventoryDrawed)
             {
-                case true:
-                    if (inventoryDrawed)
-                    {
+                switch (innerHeader.Visible)
+                {
+                    case true:
+
                         for (int i = 0; i < panelDesktop.Controls.Count; i++)
                         {
                             Control c = panelDesktop.Controls[i];
@@ -613,12 +725,9 @@ namespace InnerCoreUIEditor
                                 _c.Location = new Point(_c.Location.X, _c.Location.Y + 40);
                             }
                         }
-                    }
-                    break;
+                        break;
 
-                case false:
-                    if (inventoryDrawed)
-                    {
+                    case false:
                         for (int i = 0; i < panelDesktop.Controls.Count; i++)
                         {
                             Control c = panelDesktop.Controls[i];
@@ -629,13 +738,14 @@ namespace InnerCoreUIEditor
                                 _c.Location = new Point(_c.Location.X, _c.Location.Y - 40);
                             }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
         internal void ChangeHeight(int height)
         {
+            SaveUndoAction(new ActionStack(this, 2, label.Top));
             label.Location  = new Point(label.Left, height);
             toolStripTextBoxHeight.Text = height.ToString();
         }
@@ -658,56 +768,56 @@ namespace InnerCoreUIEditor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Slot control = new Slot(explorerPainter, _params, this);
+            Slot control = new Slot(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            InvSlot control = new InvSlot(explorerPainter, _params, this);
+            InvSlot control = new InvSlot(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            InnerButton control = new InnerButton(explorerPainter, _params, this);
+            InnerButton control = new InnerButton(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            CloseButton control = new CloseButton(explorerPainter, _params, this);
+            CloseButton control = new CloseButton(this);
             control.Location = new Point(panelDesktop.Width -control.Width, 0);
             panelDesktop.Controls.Add(control);
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Scale control = new Scale(explorerPainter, _params, this);
+            Scale control = new Scale(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            InnerText control = new InnerText(explorerPainter, _params, this);
+            InnerText control = new InnerText(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            InnerImage control = new InnerImage(explorerPainter, _params, this);
+            InnerImage control = new InnerImage(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
-            InnerBitmap control = new InnerBitmap(explorerPainter, _params, this);
+            InnerBitmap control = new InnerBitmap(this);
             control.Location = new Point(panelDesktop.Width / 2, panelDesktop.Height / 2);
             panelDesktop.Controls.Add(control);
         }
@@ -729,6 +839,7 @@ namespace InnerCoreUIEditor
 
         private void ChangeGlobalScale(float v)
         {
+            SaveUndoAction(new ActionStack(this, 4, globalScale));
             globalScale = v;
         }
 

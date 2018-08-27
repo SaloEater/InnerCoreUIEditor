@@ -20,7 +20,7 @@ namespace InnerCoreUIEditor
 
         private bool sizeTextChanged;
 
-        public InvSlot(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public InvSlot(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();
@@ -40,7 +40,7 @@ namespace InnerCoreUIEditor
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            InvSlot control = new InvSlot(explorerPainter, _params, parentTabPage);
+            InvSlot control = new InvSlot(parentTabPage);
             control.Location = Location;
             control.Size = Size;
             control.Visible = Visible;
@@ -341,6 +341,7 @@ namespace InnerCoreUIEditor
             if (textBox.Text == Size.Height.ToString()) return;
 
             SizeF sizeF = new SizeF((float)size / this.GetWidth(), (float)size / GetWidth());
+            parentTabPage.SaveUndoAction(new ActionStack(this, 2, size));
             Point oldLocation = Location;
             this.Scale(sizeF);
             Location = oldLocation;

@@ -113,7 +113,7 @@ namespace InnerCoreUIEditor
             {
                 case "bitmap":
                     {
-                        InnerBitmap bitmap = new InnerBitmap(explorerPainter, _params, parentTabPage);
+                        InnerBitmap bitmap = new InnerBitmap(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x)) x = parentTabPage.MaxX() / 2;
@@ -242,7 +242,7 @@ namespace InnerCoreUIEditor
             {
                 case "slot":
                     { 
-                        Slot slot = new Slot(explorerPainter, this._params, parentTabPage);
+                        Slot slot = new Slot(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x))x = parentTabPage.MaxX() / 2;
@@ -265,7 +265,7 @@ namespace InnerCoreUIEditor
 
                 case "invSlot":
                     {
-                        InvSlot slot = new InvSlot(explorerPainter, this._params, parentTabPage);
+                        InvSlot slot = new InvSlot(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x)) x = parentTabPage.MaxX() / 2;
@@ -288,7 +288,7 @@ namespace InnerCoreUIEditor
 
                 case "button":
                     {
-                        InnerButton slot = new InnerButton(explorerPainter, this._params, parentTabPage);
+                        InnerButton slot = new InnerButton(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x)) x = parentTabPage.MaxX() / 2;
@@ -311,7 +311,7 @@ namespace InnerCoreUIEditor
 
                 case "text":
                     {
-                        InnerText text = new InnerText(explorerPainter, this._params, parentTabPage);
+                        InnerText text = new InnerText(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x)) x = parentTabPage.MaxX() / 2;
@@ -332,7 +332,7 @@ namespace InnerCoreUIEditor
 
                 case "image":
                     {
-                        InnerImage image = new InnerImage(explorerPainter, this._params, parentTabPage);
+                        InnerImage image = new InnerImage(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x)) x = parentTabPage.MaxX() / 2;
@@ -374,7 +374,7 @@ namespace InnerCoreUIEditor
 
                 case "scale":
                     {
-                        Scale _scale = new Scale(explorerPainter, this._params, parentTabPage);
+                        Scale _scale = new Scale(parentTabPage);
                         int x;
                         Expression e = new Expression(GetClearField(element, "x"));
                         if (!int.TryParse(e.Evaluate().ToString().Split(',')[0], out x)) x = parentTabPage.MaxX() / 2;

@@ -37,10 +37,58 @@ namespace InnerCoreUIEditor
         private bool offsetYTextChanged;
         private bool overlayScaleTextChanged;
 
-        public Scale(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public Scale(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();           
+        }
+
+        internal override void ApplyChanges(int type, object value)
+        {
+            if (type < 4) base.ApplyChanges(type, value);
+            switch (type)
+            {
+                case 4:
+                    overlayEnabled = (Boolean)value;
+                    pictureBox2.Visible = overlayEnabled;
+                    break;
+
+                case 5:
+                    pictureBox2.Scale(new SizeF((float)value, (float)value));
+                    break;
+
+                case 6:
+                    pictureBox2.Location = (Point)value;
+                    break;
+            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
+        }
+
+        internal override ActionStack MakeSnapshot(int type)
+        {
+            /*
+             * 4 - overlayEnabled
+             * 5 - overlayScale
+             * 6 - overlayLocation
+             * 
+             */
+            if (type < 4) return base.MakeSnapshot(type);
+            ActionStack action = null;
+            switch (type)
+            {
+                case 4:
+                    action = new ActionStack(this, 4, overlayEnabled);
+                    break;
+
+                case 5:
+                    action = new ActionStack(this, 5, overlayScale);
+                    break;
+
+                case 6:
+                    action = new ActionStack(this, 6, pictureBox2.Location);
+                    break;
+            }
+            return action;
         }
 
         public void Initialization()
@@ -70,7 +118,7 @@ namespace InnerCoreUIEditor
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            Scale control = new Scale(explorerPainter, _params, parentTabPage);
+            Scale control = new Scale(parentTabPage);
             control.Location = Location;
             control.Size = Size;
             control.Visible = Visible;

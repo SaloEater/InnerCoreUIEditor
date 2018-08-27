@@ -22,7 +22,7 @@ namespace InnerCoreUIEditor
 
         private int TimerSec;
 
-        public InnerButton(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public InnerButton(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();           
@@ -46,7 +46,7 @@ namespace InnerCoreUIEditor
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            InnerButton control = new InnerButton(explorerPainter, _params, parentTabPage);
+            InnerButton control = new InnerButton(parentTabPage);
             control.Location = Location;
             control.Size = Size;
             control.Visible = Visible;

@@ -25,7 +25,7 @@ namespace InnerCoreUIEditor
 
         private int TimerSec;
 
-        public CloseButton(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public CloseButton(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();
@@ -46,10 +46,41 @@ namespace InnerCoreUIEditor
             BringToFront();
         }
 
+        internal override void ApplyChanges(int type, object value)
+        {
+            if (type < 4) base.ApplyChanges(type, value);
+            switch (type)
+            {
+                case 4:
+                    //позиция
+                    global = (Boolean)value;
+                    break;
+            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
+        }
+
+        internal override ActionStack MakeSnapshot(int type)
+        {
+            /*
+             * 4 - global 
+             * 
+             */
+            if(type < 4)return base.MakeSnapshot(type);
+            ActionStack action = null;
+            switch (type)
+            {
+                case 4:
+                    //позиция
+                    action = new ActionStack(this, 4, global);
+                    break;
+            }
+            return action;
+        }
+
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            CloseButton control = new CloseButton(explorerPainter, _params, parentTabPage);
+            CloseButton control = new CloseButton(parentTabPage);
             control.Location = Location;
             control.Size = Size;
             control.Visible = Visible;

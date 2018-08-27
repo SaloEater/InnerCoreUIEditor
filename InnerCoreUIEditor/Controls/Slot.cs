@@ -21,7 +21,7 @@ namespace InnerCoreUIEditor
 
         private bool sizeTextChanged;
 
-        public Slot(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public Slot(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();
@@ -37,10 +37,47 @@ namespace InnerCoreUIEditor
             Visual = false;
         }
 
+        internal override void ApplyChanges(int type, object value)
+        {
+            if (type < 4) base.ApplyChanges(type, value);
+            switch (type)
+            {
+                case 4:
+                    Visual = (Boolean)value;
+                    break;
+
+                case 5:
+                    TransparentBg = (Boolean)value;
+                    break;
+            }
+            FillPropPanel(parentTabPage.GetPropertiesPanel());
+        }
+
+        internal override ActionStack MakeSnapshot(int type)
+        {
+            /*
+             * 4 - visual
+             * 5 - transparent
+             */
+            if (type < 4) return base.MakeSnapshot(type);
+            ActionStack action = null;
+            switch (type)
+            {
+                case 4:
+                    action = new ActionStack(this, 4, Visual);
+                    break;
+
+                case 5:
+                    action = new ActionStack(this, 5, TransparentBg);
+                    break;
+            }
+            return action;
+        }
+
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            Slot control = new Slot(explorerPainter, _params, parentTabPage);
+            Slot control = new Slot(parentTabPage);
             control.Location = Location;
             control.Size = Size;
             control.Visible = Visible;
@@ -289,6 +326,7 @@ namespace InnerCoreUIEditor
             if (textBox.Text == Size.Height.ToString()) return;
 
             SizeF sizeF = new SizeF((float)size/GetWidth(), (float)size / GetWidth());
+            parentTabPage.SaveUndoAction(new ActionStack(this, 2, sizeF));
             Point oldLocation = Location;
             Scale(sizeF);
             Location = oldLocation;

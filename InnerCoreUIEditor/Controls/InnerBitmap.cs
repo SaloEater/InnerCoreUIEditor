@@ -18,7 +18,7 @@ namespace InnerCoreUIEditor
         public string imageName { get; set; }
         public Point oldLocation { get; set; }
 
-        public InnerBitmap(ExplorerPainter explorerPainter, Params _params, InnerTabPage parentTabPage) : base(explorerPainter, _params, parentTabPage)
+        public InnerBitmap(InnerTabPage parentTabPage) : base(parentTabPage)
         {
             InitializeComponent();
             Initialization();           
@@ -39,7 +39,7 @@ namespace InnerCoreUIEditor
         internal override InnerControl MakeCopy()
         {
             if (constant || hidden) throw new ArgumentOutOfRangeException();
-            InnerBitmap control = new InnerBitmap(explorerPainter, _params, parentTabPage);
+            InnerBitmap control = new InnerBitmap(parentTabPage);
             control.oldLocation = oldLocation;
             control.Location = Location;
             control.Size = Size;

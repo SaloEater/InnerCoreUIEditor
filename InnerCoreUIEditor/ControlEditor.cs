@@ -29,6 +29,8 @@ namespace InnerCoreUIEditor
 
         static ControlAligment controlAligment;
 
+        static Point startLocation;
+
         public static void Init(Control origin, InnerTabPage _parent)
         {
             Init(origin, origin, _parent);
@@ -49,6 +51,14 @@ namespace InnerCoreUIEditor
             origin.Click += (sender, e) => { ((InnerControl)target).FillPropPanel(parent.GetPropertiesPanel()); };
             origin.MouseDown += Control_MouseDown; // Активировать изменение объекта
             origin.MouseUp += Control_MouseUp; // Прекратить изменение объекта
+            origin.MouseDown += (sender, e) =>
+            {
+                startLocation = target.Location;
+            };
+            origin.MouseUp += (sender, e) =>
+            {
+                if (((Control)sender).Location != startLocation) parent.SaveUndoAction(new ActionStack((InnerControl)target, 1, startLocation));
+            };
             origin.MouseMove += (sender, e) => MoveControl(target, e); // Само изменение рассчитывается здесь
         }
 
@@ -73,14 +83,13 @@ namespace InnerCoreUIEditor
 
         private static void Control_MouseUp(object sender, MouseEventArgs e)
         {
-            startSize = ((Control)sender).Size;
+            Control c = ((Control)sender);
+            startSize = c.Size;
             cursorOrigin = Point.Empty;
             moving = false;
             scaling = false;
-            UpdateCursor((Control)sender);
+            UpdateCursor(c);
         }
-
-
 
         private static void MoveControl(object container, MouseEventArgs e)
         {
